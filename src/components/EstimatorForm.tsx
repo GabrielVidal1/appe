@@ -3,10 +3,10 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Plus, X } from "lucide-react";
 
 interface EstimatorFormProps {
@@ -20,7 +20,7 @@ interface EstimatorFormProps {
 
 const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
   const [dataCount, setDataCount] = useState([1000]);
-  const [dataType, setDataType] = useState("");
+  const [dataType, setDataType] = useState("prompt");
   const [prompt, setPrompt] = useState("");
   const [examples, setExamples] = useState<string[]>([""]);
 
@@ -47,55 +47,66 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
     });
   };
 
+  const renderPromptSection = () => (
+    <div className="space-y-2">
+      <Label htmlFor="prompt">Processing Prompt</Label>
+      <Textarea
+        id="prompt"
+        placeholder="example"
+        value={prompt}
+        onChange={(e) => setPrompt(e.target.value)}
+        rows={4}
+        className="resize-none"
+      />
+    </div>
+  );
+
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader>
         <CardTitle className="text-2xl text-center">Cost Estimator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-4">
-          <Label className="text-lg font-medium">
-            I have {dataCount[0].toLocaleString()} items to process
-          </Label>
-          <Slider
-            value={dataCount}
-            onValueChange={setDataCount}
-            max={10000}
-            min={200}
-            step={100}
-            className="w-full"
-          />
-          <div className="flex justify-between text-sm text-gray-500">
-            <span>200</span>
-            <span>10,000</span>
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="dataType">Data Type</Label>
+        <div className="flex items-center gap-2 text-lg">
+          <span>I have</span>
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="text-blue-600 hover:text-blue-800 font-medium underline cursor-pointer">
+                {dataCount[0].toLocaleString()}
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-4">
+                <Label className="text-sm font-medium">
+                  Number of items: {dataCount[0].toLocaleString()}
+                </Label>
+                <Slider
+                  value={dataCount}
+                  onValueChange={setDataCount}
+                  max={10000}
+                  min={200}
+                  step={100}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs text-gray-500">
+                  <span>200</span>
+                  <span>10,000</span>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
           <Select value={dataType} onValueChange={setDataType}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select data type..." />
+            <SelectTrigger className="w-auto border-none shadow-none p-0 h-auto">
+              <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="images">Images</SelectItem>
-              <SelectItem value="files">Files</SelectItem>
-              <SelectItem value="pdfs">PDFs</SelectItem>
+              <SelectItem value="prompt">prompts</SelectItem>
             </SelectContent>
           </Select>
+          <span>to process</span>
         </div>
 
-        <div className="space-y-2">
-          <Label htmlFor="prompt">Processing Prompt</Label>
-          <Textarea
-            id="prompt"
-            placeholder="Describe what you want the AI to do with your data..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            rows={4}
-            className="resize-none"
-          />
-        </div>
+        {dataType === "prompt" && renderPromptSection()}
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -114,11 +125,12 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
           
           {examples.map((example, index) => (
             <div key={index} className="flex gap-2">
-              <Input
+              <Textarea
                 placeholder={`Example output ${index + 1}...`}
                 value={example}
                 onChange={(e) => updateExample(index, e.target.value)}
-                className="flex-1"
+                className="flex-1 resize-none"
+                rows={2}
               />
               {examples.length > 1 && (
                 <Button
@@ -126,6 +138,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
                   variant="outline"
                   size="sm"
                   onClick={() => removeExample(index)}
+                  className="self-start mt-1"
                 >
                   <X size={16} />
                 </Button>
