@@ -2,7 +2,7 @@
 import { Plus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
-import { Textarea } from "../ui/textarea";
+import { TextareaWithCounts } from "../ui/textarea-with-counts";
 import { useFormContext } from "react-hook-form";
 
 const ExampleOutputs = () => {
@@ -42,7 +42,7 @@ const ExampleOutputs = () => {
 
       {examples.map((example: string, index: number) => (
         <div key={index} className="flex gap-2">
-          <Textarea
+          <TextareaWithCounts
             placeholder={`Example output ${index + 1}...`}
             value={example}
             onChange={(e) => updateExample(index, e.target.value)}

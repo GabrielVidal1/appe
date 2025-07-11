@@ -1,5 +1,5 @@
 
-import { Textarea } from "@/components/ui/textarea";
+import { TextareaWithCounts } from "@/components/ui/textarea-with-counts";
 import ExampleTemplates from "@/components/ExampleTemplates";
 import { useFormContext } from "react-hook-form";
 
@@ -22,7 +22,7 @@ const PromptInput = () => {
 
   return (
     <div className="space-y-2 relative">
-      <Textarea
+      <TextareaWithCounts
         id="prompt"
         placeholder="Example prompt..."
         value={prompt || ""}
