@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -19,26 +18,25 @@ import { useState } from "react";
 interface ImageSizeSelectorProps {
   onSizeChange: (width: number, height: number) => void;
   defaultSize?: string;
+  className?: string;
 }
 
-const ImageSizeSelector = ({ onSizeChange, defaultSize = "512×512" }: ImageSizeSelectorProps) => {
+const ImageSizeSelector = ({
+  onSizeChange,
+  defaultSize = "512×512",
+  className,
+}: ImageSizeSelectorProps) => {
   const [selectedSize, setSelectedSize] = useState(defaultSize);
   const [customWidth, setCustomWidth] = useState("");
   const [customHeight, setCustomHeight] = useState("");
   const [isCustom, setIsCustom] = useState(false);
 
-  const presetSizes = [
-    "200×200",
-    "512×512", 
-    "768×768",
-    "896×896",
-    "1024×1024"
-  ];
+  const presetSizes = ["200×200", "512×512", "768×768", "896×896", "1024×1024"];
 
   const handlePresetSelect = (size: string) => {
     setSelectedSize(size);
     setIsCustom(false);
-    const [width, height] = size.split('×').map(Number);
+    const [width, height] = size.split("×").map(Number);
     onSizeChange(width, height);
   };
 
@@ -52,19 +50,24 @@ const ImageSizeSelector = ({ onSizeChange, defaultSize = "512×512" }: ImageSize
     }
   };
 
-  const displaySize = isCustom ? `${customWidth}×${customHeight}` : selectedSize;
+  const displaySize = isCustom
+    ? `${customWidth}×${customHeight}`
+    : selectedSize;
 
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="underline text-lg border-none shadow-none p-0 h-auto">
+        <Button
+          variant="outline"
+          className={`underline text-lg border-none shadow-none p-0 h-auto ${className}`}
+        >
           {displaySize}
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="space-y-4">
           <Label className="text-sm font-medium">Image Size</Label>
-          
+
           <Select value={selectedSize} onValueChange={handlePresetSelect}>
             <SelectTrigger>
               <SelectValue placeholder="Select size" />

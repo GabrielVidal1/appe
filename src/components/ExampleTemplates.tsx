@@ -1,5 +1,5 @@
-
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 interface ExampleTemplate {
   name: string;
@@ -13,29 +13,36 @@ const examples: ExampleTemplate[] = [
     name: "Translation",
     type: "text",
     prompt: "Translate the following sentence to French",
-    output: '{ "translation": "Bonjour le monde" }'
+    output: '{ "translation": "Bonjour le monde" }',
   },
   {
-    name: "Summarization", 
+    name: "Summarization",
     type: "text",
     prompt: "Summarize the following article in one sentence",
-    output: '{ "summary": "The article discusses the impact of climate change on global weather patterns." }'
+    output:
+      '{ "summary": "The article discusses the impact of climate change on global weather patterns." }',
   },
   {
     name: "Image Description",
-    type: "image", 
+    type: "image",
     prompt: "Describe the content of this image",
-    output: "The image shows a beautiful sunset over a mountain range with a clear sky."
-  }
+    output:
+      "The image shows a beautiful sunset over a mountain range with a clear sky.",
+  },
 ];
 
 interface ExampleTemplatesProps {
   dataType: string;
   onSelectExample: (prompt: string, output: string) => void;
+  className?: string;
 }
 
-const ExampleTemplates = ({ dataType, onSelectExample }: ExampleTemplatesProps) => {
-  const filteredExamples = examples.filter(example => {
+const ExampleTemplates = ({
+  dataType,
+  onSelectExample,
+  className = "",
+}: ExampleTemplatesProps) => {
+  const filteredExamples = examples.filter((example) => {
     if (dataType === "prompts") return example.type === "text";
     if (dataType === "images") return example.type === "image";
     return false;
@@ -44,8 +51,7 @@ const ExampleTemplates = ({ dataType, onSelectExample }: ExampleTemplatesProps) 
   if (filteredExamples.length === 0) return null;
 
   return (
-    <div className="space-y-2">
-      <div className="text-sm text-gray-600">Quick examples:</div>
+    <div className={cn(className, "space-y-2")}>
       <div className="flex flex-wrap gap-2">
         {filteredExamples.map((example) => (
           <Badge
