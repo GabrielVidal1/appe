@@ -8,18 +8,22 @@
     "input_cost": 0.3,
     "output_cost": 0.3,
     "cache_cost": 0,
-    "max_token": 128000
+    "max_token": 128000,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "Mistral",
     "model": "Mistral Large 2",
     "version": "Large 2 123B",
-    "description": "123 B open-weight multilingual model, fluent in dozens of languages and programming languages.",
+    "description": "123\u202fB open-weight multilingual model, fluent in dozens of languages and programming languages.",
     "model_size": 123,
     "input_cost": 3.0,
     "output_cost": 9.0,
     "cache_cost": 0,
-    "max_token": 128000
+    "max_token": 128000,
+    "tier": "big",
+    "tag": ["multilingual"]
   },
   {
     "provider": "Mistral",
@@ -30,29 +34,35 @@
     "input_cost": 2.75,
     "output_cost": 8.1,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "medium",
+    "tag": ["reasonning", "code"]
   },
   {
     "provider": "Mistral",
     "model": "Mistral Small",
     "version": "Small 3.1 24B",
-    "description": "Open-weight small model (24 B) with image understanding capabilities (v3.1, released Mar 2025).",
+    "description": "Open-weight small model (24\u202fB) with image understanding capabilities (v3.1, released Mar 2025).",
     "model_size": 24,
     "input_cost": 1.0,
     "output_cost": 3.0,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "Mistral",
     "model": "Codestral",
     "version": "Codestral 22B",
-    "description": "Code-focused model fluent in 80+ programming languages, open-weight (22 B).",
+    "description": "Code-focused model fluent in 80+ programming languages, open-weight (22\u202fB).",
     "model_size": 22,
     "input_cost": 1.0,
     "output_cost": 3.0,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "small",
+    "tag": ["multilingual", "code"]
   },
   {
     "provider": "Mistral",
@@ -63,73 +73,87 @@
     "input_cost": 0.01,
     "output_cost": 0.01,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "small",
+    "tag": ["code", "embedded"]
   },
   {
     "provider": "Mistral",
     "model": "Mistral 7B",
     "version": "7B v0.1",
-    "description": "Apache-2.0 open-source model (7.3 B params), strong on reasoning and code.",
+    "description": "Apache-2.0 open-source model (7.3\u202fB params), strong on reasoning and code.",
     "model_size": 7.3,
     "input_cost": 0.25,
     "output_cost": 0.25,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "small",
+    "tag": ["reasonning", "code"]
   },
   {
     "provider": "Mistral",
     "model": "Mixtral 8x7B",
-    "version": "Mixtral 8×7B",
-    "description": "Sparse MoE model with 8 experts, ~46.7 B total (12.9 B per token active).",
+    "version": "Mixtral 8\u00d77B",
+    "description": "Sparse MoE model with 8 experts, ~46.7\u202fB total (12.9\u202fB per token active).",
     "model_size": 46.7,
     "input_cost": 0.7,
     "output_cost": 0.7,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "medium",
+    "tag": []
   },
   {
     "provider": "Mistral",
     "model": "Mixtral 8x22B",
-    "version": "Mixtral 8×22B",
-    "description": "Sparse MoE model with 8 experts of 22 B params each (~141 B total).",
+    "version": "Mixtral 8\u00d722B",
+    "description": "Sparse MoE model with 8 experts of 22\u202fB params each (~141\u202fB total).",
     "model_size": 141,
     "input_cost": 2.0,
     "output_cost": 6.0,
     "cache_cost": 0,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": []
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑4.1",
-    "version": "GPT‑4.1",
-    "description": "Flagship GPT‑4.1 model—high capability for complex tasks, coding, long-context.",
+    "model": "GPT\u20114.1",
+    "version": "GPT\u20114.1",
+    "description": "Flagship GPT\u20114.1 model\u2014high capability for complex tasks, coding, long-context.",
     "model_size": null,
     "input_cost": 2.0,
     "output_cost": 8.0,
     "cache_cost": 0.5,
-    "max_token": 1000000
+    "max_token": 1000000,
+    "tier": "big",
+    "tag": []
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑4.1 mini",
-    "version": "GPT‑4.1 mini",
-    "description": "Smaller, cost‑efficient variant of GPT‑4.1.",
+    "model": "GPT\u20114.1 mini",
+    "version": "GPT\u20114.1 mini",
+    "description": "Smaller, cost\u2011efficient variant of GPT\u20114.1.",
     "model_size": null,
     "input_cost": 0.4,
     "output_cost": 1.6,
     "cache_cost": 0.1,
-    "max_token": 1000000
+    "max_token": 1000000,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑4.1 nano",
-    "version": "GPT‑4.1 nano",
-    "description": "Fastest, most affordable GPT‑4.1 variant.",
+    "model": "GPT\u20114.1 nano",
+    "version": "GPT\u20114.1 nano",
+    "description": "Fastest, most affordable GPT\u20114.1 variant.",
     "model_size": null,
     "input_cost": 0.1,
     "output_cost": 0.4,
     "cache_cost": 0.025,
-    "max_token": 1000000
+    "max_token": 1000000,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "OpenAI",
@@ -140,62 +164,74 @@
     "input_cost": 2.0,
     "output_cost": 8.0,
     "cache_cost": 0.5,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": ["reasonning"]
   },
   {
     "provider": "OpenAI",
-    "model": "o4‑mini",
-    "version": "o4‑mini",
-    "description": "Faster, cost‑efficient reasoning model.",
+    "model": "o4\u2011mini",
+    "version": "o4\u2011mini",
+    "description": "Faster, cost\u2011efficient reasoning model.",
     "model_size": null,
     "input_cost": 1.1,
     "output_cost": 4.4,
     "cache_cost": 0.275,
-    "max_token": null
+    "max_token": null,
+    "tier": "medium",
+    "tag": ["reasonning"]
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑4o",
-    "version": "GPT‑4o",
-    "description": "Multimodal ‘omni’ model (text, image, audio) with 128k context window.",
+    "model": "GPT\u20114o",
+    "version": "GPT\u20114o",
+    "description": "Multimodal \u2018omni\u2019 model (text, image, audio) with 128k context window.",
     "model_size": null,
     "input_cost": 5.0,
     "output_cost": 20.0,
     "cache_cost": 2.5,
-    "max_token": 128000
+    "max_token": 128000,
+    "tier": "big",
+    "tag": []
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑4o mini",
-    "version": "GPT‑4o mini",
-    "description": "Smaller, cheaper multimodal GPT‑4o variant.",
+    "model": "GPT\u20114o mini",
+    "version": "GPT\u20114o mini",
+    "description": "Smaller, cheaper multimodal GPT\u20114o variant.",
     "model_size": null,
     "input_cost": 0.6,
     "output_cost": 2.4,
     "cache_cost": 0.3,
-    "max_token": 128000
+    "max_token": 128000,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "OpenAI",
-    "model": "GPT‑image‑1",
-    "version": "GPT‑image‑1",
+    "model": "GPT\u2011image\u20111",
+    "version": "GPT\u2011image\u20111",
     "description": "Image generation/editing model.",
     "model_size": null,
     "input_cost": 5.0,
     "output_cost": 40.0,
     "cache_cost": 1.25,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": []
   },
   {
     "provider": "Claude",
     "model": "Claude Instant",
     "version": "Instant 1.2",
-    "description": "Fastest, low‑latency model with modest capabilities.",
+    "description": "Fastest, low\u2011latency model with modest capabilities.",
     "model_size": null,
     "input_cost": 0.8,
     "output_cost": 2.4,
     "cache_cost": null,
-    "max_token": 100000
+    "max_token": 100000,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "Claude",
@@ -206,7 +242,9 @@
     "input_cost": 8.0,
     "output_cost": 24.0,
     "cache_cost": null,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": ["reasonning"]
   },
   {
     "provider": "Claude",
@@ -217,7 +255,9 @@
     "input_cost": 0.25,
     "output_cost": 1.25,
     "cache_cost": null,
-    "max_token": null
+    "max_token": null,
+    "tier": "small",
+    "tag": []
   },
   {
     "provider": "Claude",
@@ -228,7 +268,9 @@
     "input_cost": 3.0,
     "output_cost": 15.0,
     "cache_cost": null,
-    "max_token": 200000
+    "max_token": 200000,
+    "tier": "medium",
+    "tag": ["reasonning"]
   },
   {
     "provider": "Claude",
@@ -239,18 +281,22 @@
     "input_cost": 15.0,
     "output_cost": 75.0,
     "cache_cost": null,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": ["reasonning"]
   },
   {
     "provider": "Claude",
     "model": "Claude Sonnet 4",
     "version": "Sonnet 4",
-    "description": "Latest hybrid‑reasoning Sonnet model; fast plus deep reasoning.",
+    "description": "Latest hybrid\u2011reasoning Sonnet model; fast plus deep reasoning.",
     "model_size": null,
     "input_cost": 3.0,
     "output_cost": 15.0,
     "cache_cost": null,
-    "max_token": null
+    "max_token": null,
+    "tier": "medium",
+    "tag": ["reasonning"]
   },
   {
     "provider": "Claude",
@@ -261,6 +307,8 @@
     "input_cost": 15.0,
     "output_cost": 75.0,
     "cache_cost": null,
-    "max_token": null
+    "max_token": null,
+    "tier": "big",
+    "tag": ["reasonning"]
   }
 ]
