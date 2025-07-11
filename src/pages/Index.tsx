@@ -1,12 +1,44 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { useState } from "react";
+import Hero from "@/components/Hero";
+import EstimatorForm from "@/components/EstimatorForm";
+import ResultsTable from "@/components/ResultsTable";
+
+interface EstimationData {
+  dataCount: number;
+  dataType: string;
+  prompt: string;
+  examples: string[];
+}
 
 const Index = () => {
+  const [estimationData, setEstimationData] = useState<EstimationData | null>(null);
+
+  const handleFormSubmit = (data: EstimationData) => {
+    setEstimationData(data);
+    // Scroll to results
+    setTimeout(() => {
+      document.getElementById('results')?.scrollIntoView({ 
+        behavior: 'smooth' 
+      });
+    }, 100);
+  };
+
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-white">
+      <Hero />
+      
+      <div className="container mx-auto px-4 py-16">
+        <EstimatorForm onSubmit={handleFormSubmit} />
       </div>
+
+      {estimationData && (
+        <div id="results" className="bg-gray-50 py-16">
+          <div className="container mx-auto px-4">
+            <ResultsTable data={estimationData} />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
