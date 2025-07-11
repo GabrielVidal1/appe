@@ -77,7 +77,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
 
     const bestValue = findBestValue(results);
     return { results, bestValue };
-  }, [data]);
+  }, [data, searchTerm, selectedProvider, selectedTiers, tags]);
 
   const { filteredResults } = useMemo(() => {
     if (!pricingResults) return { filteredResults: [] };

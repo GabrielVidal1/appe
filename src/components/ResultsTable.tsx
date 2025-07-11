@@ -11,14 +11,15 @@ interface ResultsTableProps {
 
 const ResultsTable = ({ data }: ResultsTableProps) => {
   const { watch } = useFormContext();
-  const modelSize = watch("modelSize");
+  const selectedTiers: FormDataContext["selectedTiers"] =
+    watch("selectedTiers");
   const modelCapabilities: string[] = watch("modelCapabilities");
 
   if (!data) return null;
 
   const models = ALL_MODELS.filter((model) => {
     return (
-      model.tier === modelSize &&
+      (selectedTiers.length === 0 || selectedTiers.includes(model.tier)) &&
       model.tags.some((tag) =>
         modelCapabilities.length ? modelCapabilities.includes(tag) : true
       )
