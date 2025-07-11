@@ -17,6 +17,9 @@ const PromptInput = () => {
   ) => {
     setValue("prompt", examplePrompt);
     setValue("example", exampleOutput);
+
+    const randomCount = Math.ceil(Math.floor(Math.random() * 5000) + 1000);
+    setValue("dataCount", randomCount);
     setValue("dataType", dataType);
   };
 

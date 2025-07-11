@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import ResultsSummary from "./ResultsSummary";
 import ResultsTableFiltered from "./ResultsTableFiltered";
@@ -17,7 +16,7 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
   if (!data) return null;
 
   return (
-    <div className="w-full max-w-7xl mx-auto space-y-6">
+    <div className="w-full mx-auto space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center">

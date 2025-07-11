@@ -1,8 +1,11 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { ChevronDown } from "lucide-react";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { estimateTokens } from "@/lib/computations";
+import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface TokenEstimatorProps {
@@ -54,28 +57,33 @@ const TokenEstimator = ({
     <Card className="bg-muted/50">
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         <CollapsibleTrigger asChild>
-          <CardHeader className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors">
+          <CardHeader className="cursor-pointer hover:bg-muted/30 transition-colors">
             <CardTitle className="text-base font-medium flex items-center justify-between">
               <span>Token Summary</span>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-sm">
-                  {tokenStats.totalTokens.toLocaleString()} tokens
+                <span className="font-mono text-sm mr-9">
+                  <span className="opacity-50">Total:</span>
+                  <span className="ml-4 font-bold">
+                    {tokenStats.totalTokens.toLocaleString()} tokens
+                  </span>
                 </span>
-                <ChevronDown 
+                <ChevronDown
                   className={`h-4 w-4 transition-transform duration-200 ${
-                    isOpen ? 'rotate-180' : ''
-                  }`} 
+                    isOpen ? "rotate-180" : ""
+                  }`}
                 />
               </div>
             </CardTitle>
           </CardHeader>
         </CollapsibleTrigger>
-        
+
         <CollapsibleContent>
           <CardContent className="pt-0">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div>
-                <div className="font-medium text-muted-foreground">Single Item</div>
+                <div className="font-medium text-muted-foreground">
+                  Single Item
+                </div>
                 <div className="mt-1 space-y-1">
                   <div className="flex justify-between">
                     <span>Input:</span>
@@ -114,7 +122,7 @@ const TokenEstimator = ({
                       {tokenStats.totalOutput.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between font-medium">
+                  <div className="flex justify-between font-bold">
                     <span>Total:</span>
                     <span className="font-mono">
                       {tokenStats.totalTokens.toLocaleString()}
