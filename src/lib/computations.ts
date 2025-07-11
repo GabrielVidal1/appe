@@ -1,5 +1,6 @@
 import modelsData from "../data/models.json";
 import { Model } from "./types";
+import { computeImagePrice } from "./imageCost";
 
 // Type assertion to ensure data matches our Model type
 const models: Model[] = modelsData as Model[];
@@ -21,7 +22,8 @@ export interface ComputationParams {
 export const estimateTokens = (
   dataType: string,
   prompt: string,
-  examples: string[]
+  examples: string[],
+  imageSize?: { width: number; height: number }
 ): { input: number; output: number } => {
   // Base tokens for different data types
   const dataTypeTokens = {
@@ -32,8 +34,15 @@ export const estimateTokens = (
 
   // Estimate input tokens: prompt + data type processing
   const promptTokens = Math.ceil(prompt.length / 4); // Rough estimation: ~4 chars per token
-  const baseDataTokens =
-    dataTypeTokens[dataType as keyof typeof dataTypeTokens] || 150;
+  let baseDataTokens = dataTypeTokens[dataType as keyof typeof dataTypeTokens] || 150;
+
+  // For images, add the image tokens based on size
+  if (dataType === "images" && imageSize) {
+    // Calculate average image tokens across providers (using Claude as baseline)
+    const imageTokens = computeImagePrice("claude", imageSize.width, imageSize.height).tokens;
+    baseDataTokens += Math.ceil(imageTokens);
+  }
+
   const inputTokensPerItem = promptTokens + baseDataTokens;
 
   // Estimate output tokens based on examples

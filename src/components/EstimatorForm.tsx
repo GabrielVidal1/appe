@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -17,6 +18,7 @@ import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
+import ImageSizeSelector from "./ImageSizeSelector";
 
 interface EstimatorFormProps {
   onSubmit: (data: {
@@ -24,14 +26,16 @@ interface EstimatorFormProps {
     dataType: string;
     prompt: string;
     examples: string[];
+    imageSize?: { width: number; height: number };
   }) => void;
 }
 
 const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
   const [dataCount, setDataCount] = useState([1000]);
-  const [dataType, setDataType] = useState("prompt");
+  const [dataType, setDataType] = useState("prompts");
   const [prompt, setPrompt] = useState("");
   const [examples, setExamples] = useState<string[]>([""]);
+  const [imageSize, setImageSize] = useState({ width: 512, height: 512 });
 
   const addExample = () => {
     setExamples([...examples, ""]);
@@ -47,12 +51,17 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
     setExamples(newExamples);
   };
 
+  const handleImageSizeChange = (width: number, height: number) => {
+    setImageSize({ width, height });
+  };
+
   const handleSubmit = () => {
     onSubmit({
       dataCount: dataCount[0],
       dataType,
       prompt,
       examples: examples.filter((ex) => ex.trim() !== ""),
+      imageSize: dataType === "images" ? imageSize : undefined,
     });
   };
 
@@ -76,7 +85,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
         <CardTitle className="text-2xl text-center">Cost Estimator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-2 text-lg font-medium">
+        <div className="flex items-center gap-2 text-lg font-medium flex-wrap">
           <span>I have</span>
           <Popover>
             <PopoverTrigger asChild>
@@ -109,15 +118,23 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="prompt" className="">
-                prompts
-              </SelectItem>
+              <SelectItem value="prompts">prompts</SelectItem>
+              <SelectItem value="images">images</SelectItem>
             </SelectContent>
           </Select>
           <span>to process</span>
+          {dataType === "images" && (
+            <>
+              <span>of the size</span>
+              <ImageSizeSelector
+                onSizeChange={handleImageSizeChange}
+                defaultSize="512×512"
+              />
+            </>
+          )}
         </div>
 
-        {dataType === "prompt" && renderPromptSection()}
+        {renderPromptSection()}
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">

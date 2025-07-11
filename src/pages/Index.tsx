@@ -9,6 +9,7 @@ interface EstimationData {
   dataType: string;
   prompt: string;
   examples: string[];
+  imageSize?: { width: number; height: number };
 }
 
 const Index = () => {

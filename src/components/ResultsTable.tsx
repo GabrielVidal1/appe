@@ -11,6 +11,7 @@ interface ResultsTableProps {
     dataType: string;
     prompt: string;
     examples: string[];
+    imageSize?: { width: number; height: number };
   } | null;
 }
 
@@ -18,7 +19,12 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
   const pricingResults = useMemo(() => {
     if (!data) return null;
 
-    const tokenEstimates = estimateTokens(data.dataType, data.prompt, data.examples);
+    const tokenEstimates = estimateTokens(
+      data.dataType, 
+      data.prompt, 
+      data.examples,
+      data.imageSize
+    );
     const results = calculatePricing({
       dataCount: data.dataCount,
       inputTokensPerItem: tokenEstimates.input,
@@ -43,6 +49,9 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
           <CardTitle className="text-2xl text-center">AI Model Cost Comparison</CardTitle>
           <div className="text-center text-gray-600">
             <p>Processing {data.dataCount.toLocaleString()} {data.dataType} items</p>
+            {data.imageSize && (
+              <p className="text-sm">Image size: {data.imageSize.width}×{data.imageSize.height}</p>
+            )}
             <p className="text-sm">Estimated ~{tokenEstimates.input} input + ~{tokenEstimates.output} output tokens per item</p>
             <Badge variant="secondary" className="mt-2">
               Best Value: {bestValue.model.model} (${bestValue.totalCost.toFixed(2)})
@@ -101,6 +110,12 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
               <h4 className="font-semibold text-gray-700">Data Type:</h4>
               <p className="text-gray-600 capitalize">{data.dataType}</p>
             </div>
+            {data.imageSize && (
+              <div>
+                <h4 className="font-semibold text-gray-700">Image Size:</h4>
+                <p className="text-gray-600">{data.imageSize.width}×{data.imageSize.height}</p>
+              </div>
+            )}
             <div>
               <h4 className="font-semibold text-gray-700">Processing Prompt:</h4>
               <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{data.prompt}</p>
