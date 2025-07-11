@@ -1,6 +1,5 @@
-
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { calculatePricing, estimateTokens } from "@/lib/computations";
 import { useMemo } from "react";
 
@@ -22,7 +21,7 @@ const ResultsSummary = ({ data }: ResultsSummaryProps) => {
       data.example,
       data.imageSize
     );
-    
+
     const results = calculatePricing({
       dataCount: data.dataCount,
       inputTokensPerItem: tokenEstimates.input,
@@ -33,61 +32,54 @@ const ResultsSummary = ({ data }: ResultsSummaryProps) => {
     const totalOutputTokens = tokenEstimates.output * data.dataCount;
     const totalTokens = totalInputTokens + totalOutputTokens;
 
-    const costs = results.map(r => r.totalCost);
-    const minCost = Math.min(...costs);
-    const maxCost = Math.max(...costs);
+    const minResult = results.reduce((prev, curr) =>
+      curr.totalCost < prev.totalCost ? curr : prev
+    );
+    const maxResult = results.reduce((prev, curr) =>
+      curr.totalCost > prev.totalCost ? curr : prev
+    );
 
     return {
       tokenEstimates,
       totalInputTokens,
       totalOutputTokens,
       totalTokens,
-      minCost,
-      maxCost,
-      modelCount: results.length
+      minCost: minResult.totalCost,
+      maxCost: maxResult.totalCost,
+      minModel: minResult.model.model,
+      maxModel: maxResult.model.model,
+      modelCount: results.length,
     };
   }, [data]);
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">Processing Summary</CardTitle>
-      </CardHeader>
+      <CardHeader></CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-blue-600">
-              {summaryData.totalInputTokens.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600">Input Tokens</div>
-          </div>
-          <div className="text-center">
-            <div className="text-2xl font-bold text-green-600">
-              {summaryData.totalOutputTokens.toLocaleString()}
-            </div>
-            <div className="text-sm text-gray-600">Output Tokens</div>
-          </div>
-          <div className="text-center">
+            <div className="text-sm text-gray-600">Total Tokens</div>
             <div className="text-2xl font-bold text-purple-600">
               {summaryData.totalTokens.toLocaleString()}
             </div>
-            <div className="text-sm text-gray-600">Total Tokens</div>
           </div>
           <div className="text-center">
-            <div className="text-2xl font-bold text-orange-600">
-              ${summaryData.minCost.toFixed(2)} - ${summaryData.maxCost.toFixed(2)}
-            </div>
             <div className="text-sm text-gray-600">Price Range</div>
+            <div className="text-2xl font-bold text-orange-600">
+              ${summaryData.minCost.toFixed(2)} ({summaryData.minModel}){" "}
+              <p>|</p>
+              {summaryData.maxCost.toFixed(2)} ({summaryData.maxModel})
+            </div>
           </div>
         </div>
         <div className="mt-4 text-center">
           <Badge variant="secondary">
-            Comparing {summaryData.modelCount} models for {data.dataCount.toLocaleString()} {data.dataType} items
+            Comparing {summaryData.modelCount} models for{" "}
+            {data.dataCount.toLocaleString()} {data.dataType}
           </Badge>
         </div>
       </CardContent>
     </Card>
   );
 };
-
 export default ResultsSummary;
