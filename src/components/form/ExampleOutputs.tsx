@@ -1,21 +1,29 @@
+
 import { Plus, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Textarea } from "../ui/textarea";
+import { useFormContext } from "react-hook-form";
 
-interface ExampleOutputsProps {
-  examples: string[];
-  addExample: () => void;
-  removeExample: (index: number) => void;
-  updateExample: (index: number, value: string) => void;
-}
+const ExampleOutputs = () => {
+  const { watch, setValue } = useFormContext();
+  const examples = watch("examples") || [""];
 
-const ExampleOutputs: React.FC<ExampleOutputsProps> = ({
-  examples,
-  addExample,
-  removeExample,
-  updateExample,
-}) => {
+  const addExample = () => {
+    setValue("examples", [...examples, ""]);
+  };
+
+  const removeExample = (index: number) => {
+    const newExamples = examples.filter((_: string, i: number) => i !== index);
+    setValue("examples", newExamples);
+  };
+
+  const updateExample = (index: number, value: string) => {
+    const newExamples = [...examples];
+    newExamples[index] = value;
+    setValue("examples", newExamples);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -32,7 +40,7 @@ const ExampleOutputs: React.FC<ExampleOutputsProps> = ({
         </Button>
       </div>
 
-      {examples.map((example, index) => (
+      {examples.map((example: string, index: number) => (
         <div key={index} className="flex gap-2">
           <Textarea
             placeholder={`Example output ${index + 1}...`}
