@@ -1,4 +1,3 @@
-
 export type Provider = "claude" | "mistral" | "openai";
 
 export type Model = {
@@ -14,3 +13,13 @@ export type Model = {
   tier: "small" | "medium" | "big";
   tag: string[];
 };
+
+export interface FormData {
+  dataCount: number;
+  dataType: string;
+  prompt: string;
+  example: string;
+  imageSize?: { width: number; height: number };
+  modelSize: "small" | "medium" | "big";
+  modelCapabilities: string[];
+}

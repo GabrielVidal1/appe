@@ -1,18 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormData } from "@/lib/types";
 import { FormProvider, useForm } from "react-hook-form";
 import ExampleOutputs from "./form/ExampleOutputs";
 import PromptInput from "./form/PromptInput";
 import SentenceInput from "./form/SentenceInput";
 import TokenEstimator from "./TokenEstimator";
-
-interface FormData {
-  dataCount: number;
-  dataType: string;
-  prompt: string;
-  example: string;
-  imageSize?: { width: number; height: number };
-}
 
 interface EstimatorFormProps {
   onSubmit: (data: {
@@ -21,6 +14,8 @@ interface EstimatorFormProps {
     prompt: string;
     example: string;
     imageSize?: { width: number; height: number };
+    modelSize: "small" | "medium" | "big";
+    modelCapabilities: string[];
   }) => void;
 }
 
@@ -32,6 +27,8 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
       prompt: "",
       example: "",
       imageSize: { width: 512, height: 512 },
+      modelSize: "medium",
+      modelCapabilities: [],
     },
   });
 
@@ -49,6 +46,8 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
       prompt: data.prompt,
       example: data.example.trim(),
       imageSize: dataType === "images" ? data.imageSize : undefined,
+      modelSize: data.modelSize,
+      modelCapabilities: data.modelCapabilities,
     });
   };
 
