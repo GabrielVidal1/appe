@@ -3,8 +3,18 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -18,10 +28,10 @@ import {
   calculatePricing,
   estimateTokens,
   findBestValue,
-  groupModelsByProvider,
 } from "@/lib/computations";
-import { ArrowUpDown, Search, Settings, Filter, Brain, Zap, Bot } from "lucide-react";
+import { ArrowUpDown, Bot, Filter, Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
+import MistralIcon from "./icons/MistralIcons";
 
 interface ResultsTableFilteredProps {
   data: {
@@ -41,17 +51,33 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [showSize, setShowSize] = useState(false);
   const [showInputOutput, setShowInputOutput] = useState(false);
-  const [selectedTiers, setSelectedTiers] = useState<string[]>(["small", "medium", "big"]);
-  const [excludedTags, setExcludedTags] = useState<string[]>(["embedded"]);
+  const [selectedTiers, setSelectedTiers] = useState<string[]>([
+    "small",
+    "medium",
+    "big",
+  ]);
+  const [tags, setTags] = useState<string[] | null>(null);
 
   const getProviderIcon = (provider: string) => {
     switch (provider.toLowerCase()) {
       case "openai":
-        return <Bot className="h-4 w-4" />;
-      case "claude":
-        return <Brain className="h-4 w-4" />;
+        return (
+          <img
+            src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/openai.svg"
+            alt="OpenAI"
+            className="h-4 w-4"
+          />
+        );
+      case "claude": // https://cdn.jsdelivr.net/gh/selfhst/icons/svg/claude.svg
+        return (
+          <img
+            src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/claude.svg"
+            alt="Claude"
+            className="h-4 w-4"
+          />
+        );
       case "mistral":
-        return <Zap className="h-4 w-4" />;
+        return <MistralIcon className="h-4 w-4" />;
       default:
         return <Bot className="h-4 w-4" />;
     }
@@ -75,20 +101,29 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   }, [data]);
 
   const { filteredResults, providers, allTags } = useMemo(() => {
-    if (!pricingResults) return { filteredResults: [], providers: [], allTags: [] };
+    if (!pricingResults)
+      return { filteredResults: [], providers: [], allTags: [] };
 
-    let filtered = pricingResults.results.filter((result) => {
-      const matchesSearch = result.model.model.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesProvider = selectedProvider === "all" || result.model.provider === selectedProvider;
+    const filtered = pricingResults.results.filter((result) => {
+      const matchesSearch = result.model.model
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
+      const matchesProvider =
+        selectedProvider === "all" ||
+        result.model.provider === selectedProvider;
       const matchesTier = selectedTiers.includes(result.model.tier);
-      const matchesTags = !result.model.tag?.some(tag => excludedTags.includes(tag));
-      
+      const matchesTags = result.model.tag?.some(
+        (tag) => tags?.includes(tag) ?? true
+      );
+
       return matchesSearch && matchesProvider && matchesTier && matchesTags;
     });
 
     // Sort by cost
     filtered.sort((a, b) => {
-      return sortOrder === "asc" ? a.totalCost - b.totalCost : b.totalCost - a.totalCost;
+      return sortOrder === "asc"
+        ? a.totalCost - b.totalCost
+        : b.totalCost - a.totalCost;
     });
 
     // Group by provider
@@ -101,18 +136,33 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
     });
 
     // Get unique providers and tags for filter dropdowns
-    const uniqueProviders = Array.from(new Set(pricingResults.results.map(r => r.model.provider)));
-    const uniqueTags = Array.from(new Set(pricingResults.results.flatMap(r => r.model.tag || [])));
+    const uniqueProviders = Array.from(
+      new Set(pricingResults.results.map((r) => r.model.provider))
+    );
+    const uniqueTags = Array.from(
+      new Set(pricingResults.results.flatMap((r) => r.model.tag || []))
+    );
 
-    return { filteredResults: grouped, providers: uniqueProviders, allTags: uniqueTags };
-  }, [pricingResults, searchTerm, selectedProvider, sortOrder, selectedTiers, excludedTags]);
+    return {
+      filteredResults: grouped,
+      providers: uniqueProviders,
+      allTags: uniqueTags,
+    };
+  }, [
+    pricingResults,
+    searchTerm,
+    selectedProvider,
+    sortOrder,
+    selectedTiers,
+    tags,
+  ]);
 
   if (!pricingResults) return null;
 
   const { bestValue } = pricingResults;
 
   const toggleSort = () => {
-    setSortOrder(current => current === "asc" ? "desc" : "asc");
+    setSortOrder((current) => (current === "asc" ? "desc" : "asc"));
   };
 
   const renderTierDots = (tier: string) => {
@@ -132,19 +182,16 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   };
 
   const handleTierChange = (tier: string, checked: boolean) => {
-    setSelectedTiers(prev => 
-      checked 
-        ? [...prev, tier]
-        : prev.filter(t => t !== tier)
+    setSelectedTiers((prev) =>
+      checked ? [...prev, tier] : prev.filter((t) => t !== tier)
     );
   };
 
   const handleTagToggle = (tag: string, exclude: boolean) => {
-    setExcludedTags(prev => 
-      exclude 
-        ? [...prev, tag]
-        : prev.filter(t => t !== tag)
-    );
+    setTags((prev) => {
+      const tags = prev ?? [];
+      return exclude ? [...tags, tag] : tags.filter((t) => t !== tag);
+    });
   };
 
   return (
@@ -160,7 +207,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
             className="pl-10"
           />
         </div>
-        
+
         <Select value={selectedProvider} onValueChange={setSelectedProvider}>
           <SelectTrigger className="w-full sm:w-48">
             <SelectValue placeholder="Filter by provider" />
@@ -191,7 +238,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                   onCheckedChange={setShowSize}
                 />
                 <Label htmlFor="show-size" className="text-sm">
-                  Show Size
+                  Size
                 </Label>
               </div>
               <div className="flex items-center space-x-2">
@@ -201,7 +248,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                   onCheckedChange={setShowInputOutput}
                 />
                 <Label htmlFor="show-input-output" className="text-sm">
-                  Show Input/Output
+                  Input/Output prices
                 </Label>
               </div>
             </div>
@@ -232,13 +279,21 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                       <div className="space-y-3">
                         <h4 className="font-medium text-sm">Filter by Tier</h4>
                         {["small", "medium", "big"].map((tier) => (
-                          <div key={tier} className="flex items-center space-x-2">
+                          <div
+                            key={tier}
+                            className="flex items-center space-x-2"
+                          >
                             <Checkbox
                               id={`tier-${tier}`}
                               checked={selectedTiers.includes(tier)}
-                              onCheckedChange={(checked) => handleTierChange(tier, !!checked)}
+                              onCheckedChange={(checked) =>
+                                handleTierChange(tier, !!checked)
+                              }
                             />
-                            <Label htmlFor={`tier-${tier}`} className="text-sm capitalize">
+                            <Label
+                              htmlFor={`tier-${tier}`}
+                              className="text-sm capitalize"
+                            >
                               {tier}
                             </Label>
                           </div>
@@ -261,11 +316,16 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                       <div className="space-y-3">
                         <h4 className="font-medium text-sm">Exclude Tags</h4>
                         {allTags.map((tag) => (
-                          <div key={tag} className="flex items-center space-x-2">
+                          <div
+                            key={tag}
+                            className="flex items-center space-x-2"
+                          >
                             <Checkbox
                               id={`tag-${tag}`}
-                              checked={excludedTags.includes(tag)}
-                              onCheckedChange={(checked) => handleTagToggle(tag, !!checked)}
+                              checked={tags === null || tags?.includes(tag)}
+                              onCheckedChange={(checked) =>
+                                handleTagToggle(tag, !!checked)
+                              }
                             />
                             <Label htmlFor={`tag-${tag}`} className="text-sm">
                               {tag}
@@ -288,7 +348,11 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                 </>
               )}
               <TableHead className="font-semibold text-right">
-                <Button variant="ghost" onClick={toggleSort} className="p-0 h-auto">
+                <Button
+                  variant="ghost"
+                  onClick={toggleSort}
+                  className="p-0 h-auto"
+                >
                   Total Cost
                   <ArrowUpDown className="ml-1 h-3 w-3" />
                 </Button>
@@ -337,13 +401,15 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                           : "N/A"}
                       </TableCell>
                     )}
-                    <TableCell>
-                      {renderTierDots(result.model.tier)}
-                    </TableCell>
+                    <TableCell>{renderTierDots(result.model.tier)}</TableCell>
                     <TableCell>
                       <div className="flex flex-wrap gap-1">
                         {result.model.tag?.map((tag) => (
-                          <Badge key={tag} variant="outline" className="text-xs">
+                          <Badge
+                            key={tag}
+                            variant="outline"
+                            className="text-xs"
+                          >
                             {tag}
                           </Badge>
                         )) || "—"}
