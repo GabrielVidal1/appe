@@ -1,5 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -14,7 +17,8 @@ import {
   findBestValue,
   groupModelsByProvider,
 } from "@/lib/computations";
-import { useMemo } from "react";
+import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
 
 interface ResultsTableProps {
   data: {
@@ -27,6 +31,10 @@ interface ResultsTableProps {
 }
 
 const ResultsTable = ({ data }: ResultsTableProps) => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showSize, setShowSize] = useState(false);
+  const [showInputOutput, setShowInputOutput] = useState(false);
+
   const pricingResults = useMemo(() => {
     if (!data) return null;
 
@@ -48,10 +56,43 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
     return { results, groupedResults, bestValue, tokenEstimates };
   }, [data]);
 
+  const filteredAndGroupedResults = useMemo(() => {
+    if (!pricingResults) return {};
+
+    const filtered = pricingResults.results.filter((result) =>
+      result.model.model.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
+    const grouped: { [provider: string]: typeof filtered } = {};
+    filtered.forEach((result) => {
+      if (!grouped[result.model.provider]) {
+        grouped[result.model.provider] = [];
+      }
+      grouped[result.model.provider].push(result);
+    });
+
+    // Sort each provider group by price ascending and sort providers by their cheapest model
+    Object.keys(grouped).forEach((provider) => {
+      grouped[provider].sort((a, b) => a.totalCost - b.totalCost);
+    });
+
+    const sortedProviders = Object.keys(grouped).sort((a, b) => {
+      const cheapestA = grouped[a][0]?.totalCost || Infinity;
+      const cheapestB = grouped[b][0]?.totalCost || Infinity;
+      return cheapestA - cheapestB;
+    });
+
+    const sortedGrouped: { [provider: string]: typeof filtered } = {};
+    sortedProviders.forEach((provider) => {
+      sortedGrouped[provider] = grouped[provider];
+    });
+
+    return sortedGrouped;
+  }, [pricingResults, searchTerm]);
+
   if (!data || !pricingResults) return null;
 
-  const { results, groupedResults, bestValue, tokenEstimates } = pricingResults;
-  const providers = Object.keys(groupedResults);
+  const { bestValue, tokenEstimates } = pricingResults;
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
@@ -80,60 +121,122 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
           </div>
         </CardHeader>
         <CardContent>
+          {/* Search and Column Controls */}
+          <div className="flex flex-col sm:flex-row gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Search models..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <div className="flex items-center gap-6">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="show-size"
+                  checked={showSize}
+                  onCheckedChange={setShowSize}
+                />
+                <Label htmlFor="show-size" className="text-sm">
+                  Show Size
+                </Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="show-input-output"
+                  checked={showInputOutput}
+                  onCheckedChange={setShowInputOutput}
+                />
+                <Label htmlFor="show-input-output" className="text-sm">
+                  Show Input/Output
+                </Label>
+              </div>
+            </div>
+          </div>
+
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-semibold">Model</TableHead>
                   <TableHead className="font-semibold">Provider</TableHead>
-                  <TableHead className="font-semibold">Size</TableHead>
-                  <TableHead className="font-semibold text-right">
-                    Input Cost
-                  </TableHead>
-                  <TableHead className="font-semibold text-right">
-                    Output Cost
-                  </TableHead>
+                  <TableHead className="font-semibold">Model</TableHead>
+                  {showSize && (
+                    <TableHead className="font-semibold">Size</TableHead>
+                  )}
+                  {showInputOutput && (
+                    <>
+                      <TableHead className="font-semibold text-right">
+                        Input Cost
+                      </TableHead>
+                      <TableHead className="font-semibold text-right">
+                        Output Cost
+                      </TableHead>
+                    </>
+                  )}
                   <TableHead className="font-semibold text-right">
                     Total Cost
                   </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {results
-                  .sort((a, b) => a.totalCost - b.totalCost)
-                  .map((result, index) => {
-                    const isBest = result.model.model === bestValue.model.model;
-                    return (
-                      <TableRow
-                        key={index}
-                        className={isBest ? "bg-green-50" : ""}
-                      >
-                        <TableCell className="font-medium">
-                          {result.model.model}
-                          {isBest && (
-                            <Badge variant="secondary" className="ml-2 text-xs">
-                              Best Value
-                            </Badge>
+                {Object.entries(filteredAndGroupedResults).map(
+                  ([provider, results]) =>
+                    results.map((result, index) => {
+                      const isBest = result.model.model === bestValue.model.model;
+                      const isCheapestInProvider = index === 0;
+                      return (
+                        <TableRow
+                          key={`${provider}-${result.model.model}`}
+                          className={
+                            isBest
+                              ? "bg-green-50 border-green-200"
+                              : isCheapestInProvider
+                              ? "bg-blue-50"
+                              : ""
+                          }
+                        >
+                          <TableCell className="font-medium">
+                            {provider}
+                            {isCheapestInProvider && (
+                              <Badge variant="outline" className="ml-2 text-xs">
+                                Cheapest
+                              </Badge>
+                            )}
+                          </TableCell>
+                          <TableCell>
+                            {result.model.model}
+                            {isBest && (
+                              <Badge variant="secondary" className="ml-2 text-xs">
+                                Best Value
+                              </Badge>
+                            )}
+                          </TableCell>
+                          {showSize && (
+                            <TableCell>
+                              {result.model.model_size
+                                ? `${result.model.model_size}B`
+                                : "N/A"}
+                            </TableCell>
                           )}
-                        </TableCell>
-                        <TableCell>{result.model.provider}</TableCell>
-                        <TableCell>
-                          {result.model.model_size
-                            ? `${result.model.model_size}B`
-                            : "N/A"}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          ${result.inputCost.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          ${result.outputCost.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-right font-semibold">
-                          ${result.totalCost.toFixed(2)}
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
+                          {showInputOutput && (
+                            <>
+                              <TableCell className="text-right">
+                                ${result.inputCost.toFixed(2)}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                ${result.outputCost.toFixed(2)}
+                              </TableCell>
+                            </>
+                          )}
+                          <TableCell className="text-right font-semibold">
+                            ${result.totalCost.toFixed(2)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                )}
               </TableBody>
             </Table>
           </div>
@@ -183,12 +286,8 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {providers.map((provider) => {
-                const providerModels = groupedResults[provider];
-                const cheapestInProvider = providerModels.reduce(
-                  (min, current) =>
-                    current.totalCost < min.totalCost ? current : min
-                );
+              {Object.entries(filteredAndGroupedResults).map(([provider, providerModels]) => {
+                const cheapestInProvider = providerModels[0];
 
                 return (
                   <div key={provider} className="p-4 border rounded-lg">
