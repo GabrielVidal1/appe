@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -22,7 +21,7 @@ const DataCountSelector = () => {
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="font-medium underline cursor-pointer p-0 h-auto"
+          className="font-medium text-xl underline cursor-pointer p-0 h-auto"
         >
           {dataCount?.toLocaleString() || "1000"}
         </Button>

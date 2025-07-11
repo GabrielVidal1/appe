@@ -1,9 +1,8 @@
-
 import { Plus, X } from "lucide-react";
+import { useFormContext } from "react-hook-form";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { TextareaWithCounts } from "../ui/textarea-with-counts";
-import { useFormContext } from "react-hook-form";
 
 const ExampleOutputs = () => {
   const { watch, setValue } = useFormContext();
