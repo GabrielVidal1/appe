@@ -1,4 +1,5 @@
-type Model = {
+
+export type Model = {
   provider: string;
   model: string;
   version: string;
