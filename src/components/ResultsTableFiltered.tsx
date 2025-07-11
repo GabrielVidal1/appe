@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -21,7 +20,7 @@ import {
   findBestValue,
   groupModelsByProvider,
 } from "@/lib/computations";
-import { ArrowUpDown, Search, Settings, Filter } from "lucide-react";
+import { ArrowUpDown, Search, Settings, Filter, Brain, Zap, Bot } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface ResultsTableFilteredProps {
@@ -44,6 +43,19 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   const [showInputOutput, setShowInputOutput] = useState(false);
   const [selectedTiers, setSelectedTiers] = useState<string[]>(["small", "medium", "big"]);
   const [excludedTags, setExcludedTags] = useState<string[]>(["embedded"]);
+
+  const getProviderIcon = (provider: string) => {
+    switch (provider.toLowerCase()) {
+      case "openai":
+        return <Bot className="h-4 w-4" />;
+      case "claude":
+        return <Brain className="h-4 w-4" />;
+      case "mistral":
+        return <Zap className="h-4 w-4" />;
+      default:
+        return <Bot className="h-4 w-4" />;
+    }
+  };
 
   const pricingResults = useMemo(() => {
     const tokenEstimates = estimateTokens(
@@ -300,12 +312,15 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                     }
                   >
                     <TableCell className="font-medium">
-                      {provider}
-                      {isCheapestInProvider && (
-                        <Badge variant="outline" className="ml-2 text-xs">
-                          Cheapest
-                        </Badge>
-                      )}
+                      <div className="flex items-center gap-2">
+                        {getProviderIcon(provider)}
+                        {provider}
+                        {isCheapestInProvider && (
+                          <Badge variant="outline" className="ml-2 text-xs">
+                            Cheapest
+                          </Badge>
+                        )}
+                      </div>
                     </TableCell>
                     <TableCell>
                       {result.model.model}
