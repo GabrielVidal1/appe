@@ -1,6 +1,9 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { calculatePricing, estimateTokens, groupModelsByProvider, findBestValue, type PricingResult } from "@/lib/computations";
+import { useMemo } from "react";
 
 interface ResultsTableProps {
   data: {
@@ -12,120 +15,145 @@ interface ResultsTableProps {
 }
 
 const ResultsTable = ({ data }: ResultsTableProps) => {
-  if (!data) return null;
+  const pricingResults = useMemo(() => {
+    if (!data) return null;
 
-  // Placeholder pricing data - you mentioned you'll provide the algorithm later
-  const providers = ["OpenAI", "Anthropic", "Mistral"];
-  const modelSizes = ["Small", "Medium", "Large"];
-
-  // Mock pricing calculation (replace with your algorithm)
-  const calculatePrice = (provider: string, size: string) => {
-    const baseRates = {
-      "OpenAI": { "Small": 0.001, "Medium": 0.003, "Large": 0.006 },
-      "Anthropic": { "Small": 0.0008, "Medium": 0.0025, "Large": 0.005 },
-      "Mistral": { "Small": 0.0006, "Medium": 0.002, "Large": 0.004 }
-    };
-    
-    const rate = baseRates[provider as keyof typeof baseRates][size as keyof typeof baseRates.OpenAI];
-    return (rate * data.dataCount).toFixed(2);
-  };
-
-  const getBestValue = () => {
-    let minPrice = Infinity;
-    let bestOption = "";
-    
-    providers.forEach(provider => {
-      modelSizes.forEach(size => {
-        const price = parseFloat(calculatePrice(provider, size));
-        if (price < minPrice) {
-          minPrice = price;
-          bestOption = `${provider} ${size}`;
-        }
-      });
+    const tokenEstimates = estimateTokens(data.dataType, data.prompt, data.examples);
+    const results = calculatePricing({
+      dataCount: data.dataCount,
+      inputTokensPerItem: tokenEstimates.input,
+      outputTokensPerItem: tokenEstimates.output
     });
-    
-    return bestOption;
-  };
 
-  const bestValue = getBestValue();
+    const groupedResults = groupModelsByProvider(results);
+    const bestValue = findBestValue(results);
+
+    return { results, groupedResults, bestValue, tokenEstimates };
+  }, [data]);
+
+  if (!data || !pricingResults) return null;
+
+  const { results, groupedResults, bestValue, tokenEstimates } = pricingResults;
+  const providers = Object.keys(groupedResults);
 
   return (
-    <div className="w-full max-w-6xl mx-auto space-y-6">
+    <div className="w-full max-w-7xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-center">Cost Comparison Results</CardTitle>
+          <CardTitle className="text-2xl text-center">AI Model Cost Comparison</CardTitle>
           <div className="text-center text-gray-600">
             <p>Processing {data.dataCount.toLocaleString()} {data.dataType} items</p>
-            <Badge variant="secondary" className="mt-2">Best Value: {bestValue}</Badge>
+            <p className="text-sm">Estimated ~{tokenEstimates.input} input + ~{tokenEstimates.output} output tokens per item</p>
+            <Badge variant="secondary" className="mt-2">
+              Best Value: {bestValue.model.model} (${bestValue.totalCost.toFixed(2)})
+            </Badge>
           </div>
         </CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b-2 border-gray-200">
-                  <th className="text-left p-4 font-semibold text-gray-700">Model Size</th>
-                  {providers.map(provider => (
-                    <th key={provider} className="text-center p-4 font-semibold text-gray-700">
-                      {provider}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {modelSizes.map(size => (
-                  <tr key={size} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                    <td className="p-4 font-medium text-gray-800">{size}</td>
-                    {providers.map(provider => {
-                      const price = calculatePrice(provider, size);
-                      const isBest = `${provider} ${size}` === bestValue;
-                      return (
-                        <td key={provider} className="p-4 text-center">
-                          <div className={`inline-block px-3 py-2 rounded-lg ${
-                            isBest 
-                              ? 'bg-green-100 text-green-800 font-semibold border-2 border-green-300' 
-                              : 'bg-gray-100 text-gray-800'
-                          }`}>
-                            ${price}
-                          </div>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="font-semibold">Model</TableHead>
+                  <TableHead className="font-semibold">Provider</TableHead>
+                  <TableHead className="font-semibold">Size</TableHead>
+                  <TableHead className="font-semibold text-right">Input Cost</TableHead>
+                  <TableHead className="font-semibold text-right">Output Cost</TableHead>
+                  <TableHead className="font-semibold text-right">Total Cost</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {results
+                  .sort((a, b) => a.totalCost - b.totalCost)
+                  .map((result, index) => {
+                    const isBest = result.model.model === bestValue.model.model;
+                    return (
+                      <TableRow key={index} className={isBest ? "bg-green-50" : ""}>
+                        <TableCell className="font-medium">
+                          {result.model.model}
+                          {isBest && <Badge variant="secondary" className="ml-2 text-xs">Best Value</Badge>}
+                        </TableCell>
+                        <TableCell>{result.model.provider}</TableCell>
+                        <TableCell>
+                          {result.model.model_size ? `${result.model.model_size}B` : 'N/A'}
+                        </TableCell>
+                        <TableCell className="text-right">${result.inputCost.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">${result.outputCost.toFixed(2)}</TableCell>
+                        <TableCell className="text-right font-semibold">
+                          ${result.totalCost.toFixed(2)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
           </div>
         </CardContent>
       </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Your Configuration</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="font-semibold text-gray-700">Data Type:</h4>
-            <p className="text-gray-600 capitalize">{data.dataType}</p>
-          </div>
-          <div>
-            <h4 className="font-semibold text-gray-700">Processing Prompt:</h4>
-            <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{data.prompt}</p>
-          </div>
-          {data.examples.length > 0 && (
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Your Configuration</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div>
-              <h4 className="font-semibold text-gray-700">Example Outputs:</h4>
-              <ul className="space-y-2">
-                {data.examples.map((example, index) => (
-                  <li key={index} className="text-gray-600 bg-gray-50 p-2 rounded">
-                    {example}
-                  </li>
-                ))}
-              </ul>
+              <h4 className="font-semibold text-gray-700">Data Type:</h4>
+              <p className="text-gray-600 capitalize">{data.dataType}</p>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div>
+              <h4 className="font-semibold text-gray-700">Processing Prompt:</h4>
+              <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{data.prompt}</p>
+            </div>
+            {data.examples.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-700">Example Outputs:</h4>
+                <ul className="space-y-2">
+                  {data.examples.map((example, index) => (
+                    <li key={index} className="text-gray-600 bg-gray-50 p-2 rounded">
+                      {example}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Cost Breakdown by Provider</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {providers.map(provider => {
+                const providerModels = groupedResults[provider];
+                const cheapestInProvider = providerModels.reduce((min, current) => 
+                  current.totalCost < min.totalCost ? current : min
+                );
+                
+                return (
+                  <div key={provider} className="p-4 border rounded-lg">
+                    <h4 className="font-semibold text-lg mb-2">{provider}</h4>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {providerModels.length} models available
+                    </p>
+                    <div className="flex justify-between items-center">
+                      <span className="text-sm">Best option:</span>
+                      <div className="text-right">
+                        <div className="font-medium">{cheapestInProvider.model.model}</div>
+                        <div className="text-green-600 font-semibold">
+                          ${cheapestInProvider.totalCost.toFixed(2)}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
