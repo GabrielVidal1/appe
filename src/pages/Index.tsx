@@ -1,3 +1,4 @@
+
 import EstimatorForm from "@/components/EstimatorForm";
 import LeftSideContent from "@/components/LeftHero";
 import ResultsTable from "@/components/ResultsTable";
@@ -7,7 +8,7 @@ interface EstimationData {
   dataCount: number;
   dataType: string;
   prompt: string;
-  examples: string[];
+  example: string;
   imageSize?: { width: number; height: number };
 }
 
