@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
@@ -19,6 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Plus, X } from "lucide-react";
 import { useState } from "react";
 import ImageSizeSelector from "./ImageSizeSelector";
+import ExampleTemplates from "./ExampleTemplates";
 
 interface EstimatorFormProps {
   onSubmit: (data: {
@@ -55,6 +55,18 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
     setImageSize({ width, height });
   };
 
+  const handleExampleSelect = (examplePrompt: string, exampleOutput: string) => {
+    setPrompt(examplePrompt);
+    // Replace the first example or add it if no examples exist
+    if (examples.length === 0) {
+      setExamples([exampleOutput]);
+    } else {
+      const newExamples = [...examples];
+      newExamples[0] = exampleOutput;
+      setExamples(newExamples);
+    }
+  };
+
   const handleSubmit = () => {
     onSubmit({
       dataCount: dataCount[0],
@@ -66,15 +78,21 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
   };
 
   const renderPromptSection = () => (
-    <div className="space-y-2">
-      <Label htmlFor="prompt">Processing Prompt</Label>
-      <Textarea
-        id="prompt"
-        placeholder="example"
-        value={prompt}
-        onChange={(e) => setPrompt(e.target.value)}
-        rows={4}
-        className="resize-none"
+    <div className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="prompt">Processing Prompt</Label>
+        <Textarea
+          id="prompt"
+          placeholder="example"
+          value={prompt}
+          onChange={(e) => setPrompt(e.target.value)}
+          rows={4}
+          className="resize-none"
+        />
+      </div>
+      <ExampleTemplates 
+        dataType={dataType} 
+        onSelectExample={handleExampleSelect}
       />
     </div>
   );
