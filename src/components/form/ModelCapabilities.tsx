@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import models from "@/data/models.json";
+import { ALL_TAGS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useState } from "react";
@@ -29,15 +29,6 @@ const ModelCapabilities = () => {
   const [open, setOpen] = useState(false);
   const { watch, setValue } = useFormContext();
   const selectedCapabilities = watch("modelCapabilities") || [];
-
-  // Extract all unique tags from models
-  const allTags = Array.from(
-    new Set(
-      models
-        .flatMap((model) => model.tag)
-        .filter((tag) => tag && tag.trim() !== "")
-    )
-  ).sort();
 
   const handleSelect = (currentValue: string) => {
     const newCapabilities = selectedCapabilities.includes(currentValue)
@@ -75,7 +66,7 @@ const ModelCapabilities = () => {
           <CommandList>
             <CommandEmpty>No capability found.</CommandEmpty>
             <CommandGroup>
-              {allTags.map((tag) => (
+              {ALL_TAGS.map((tag) => (
                 <CommandItem
                   key={tag}
                   value={tag}

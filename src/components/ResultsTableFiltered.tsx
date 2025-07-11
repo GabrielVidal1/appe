@@ -24,23 +24,21 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { FormDataContext } from "@/contexts/form/type";
+import { useFormState } from "@/hooks/useFormState";
 import {
+  ALL_MODELS,
   calculatePricing,
   estimateTokens,
   findBestValue,
 } from "@/lib/computations";
-import { ArrowUpDown, Bot, Filter, Search, Settings } from "lucide-react";
+import { ALL_PROVIDERS, ALL_TAGS, ALL_TIERS } from "@/lib/constants";
+import { ArrowUpDown, Filter, Search, Settings } from "lucide-react";
 import { useMemo, useState } from "react";
-import MistralIcon from "./icons/MistralIcons";
+import { getProviderIcon } from "./ProviderIcons";
 
 interface ResultsTableFilteredProps {
-  data: {
-    dataCount: number;
-    dataType: string;
-    prompt: string;
-    example: string;
-    imageSize?: { width: number; height: number };
-  };
+  data: FormDataContext;
 }
 
 type SortOrder = "asc" | "desc";
@@ -49,39 +47,10 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [showSize, setShowSize] = useState(false);
-  const [showInputOutput, setShowInputOutput] = useState(false);
-  const [selectedTiers, setSelectedTiers] = useState<string[]>([
-    "small",
-    "medium",
-    "big",
-  ]);
-  const [tags, setTags] = useState<string[] | null>(null);
 
-  const getProviderIcon = (provider: string) => {
-    switch (provider.toLowerCase()) {
-      case "openai":
-        return (
-          <img
-            src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/openai.svg"
-            alt="OpenAI"
-            className="h-4 w-4"
-          />
-        );
-      case "claude": // https://cdn.jsdelivr.net/gh/selfhst/icons/svg/claude.svg
-        return (
-          <img
-            src="https://cdn.jsdelivr.net/gh/selfhst/icons/svg/claude.svg"
-            alt="Claude"
-            className="h-4 w-4"
-          />
-        );
-      case "mistral":
-        return <MistralIcon className="h-4 w-4" />;
-      default:
-        return <Bot className="h-4 w-4" />;
-    }
-  };
+  const [showColumns, setShowColumns] = useFormState("showColumns");
+  const [selectedTiers, setSelectedTiers] = useFormState("selectedTiers");
+  const [tags, setTags] = useFormState("modelCapabilities");
 
   const pricingResults = useMemo(() => {
     const tokenEstimates = estimateTokens(
@@ -90,7 +59,17 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
       data.example,
       data.imageSize
     );
-    const results = calculatePricing({
+
+    const models = ALL_MODELS.filter((model) => {
+      return (
+        model.model.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        (selectedProvider === "all" || model.provider === selectedProvider) &&
+        (selectedTiers.length === 0 || selectedTiers.includes(model.tier)) &&
+        (tags.length === 0 || model.tags?.some((tag) => tags.includes(tag)))
+      );
+    });
+
+    const results = calculatePricing(models, {
       dataCount: data.dataCount,
       inputTokensPerItem: tokenEstimates.input,
       outputTokensPerItem: tokenEstimates.output,
@@ -100,9 +79,8 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
     return { results, bestValue };
   }, [data]);
 
-  const { filteredResults, providers, allTags } = useMemo(() => {
-    if (!pricingResults)
-      return { filteredResults: [], providers: [], allTags: [] };
+  const { filteredResults } = useMemo(() => {
+    if (!pricingResults) return { filteredResults: [] };
 
     const filtered = pricingResults.results.filter((result) => {
       const matchesSearch = result.model.model
@@ -112,8 +90,8 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
         selectedProvider === "all" ||
         result.model.provider === selectedProvider;
       const matchesTier = selectedTiers.includes(result.model.tier);
-      const matchesTags = result.model.tag?.some(
-        (tag) => tags?.includes(tag) ?? true
+      const matchesTags = result.model.tags?.some((tag) =>
+        tags.length ? tags.includes(tag) : true
       );
 
       return matchesSearch && matchesProvider && matchesTier && matchesTags;
@@ -135,18 +113,8 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
       grouped[result.model.provider].push(result);
     });
 
-    // Get unique providers and tags for filter dropdowns
-    const uniqueProviders = Array.from(
-      new Set(pricingResults.results.map((r) => r.model.provider))
-    );
-    const uniqueTags = Array.from(
-      new Set(pricingResults.results.flatMap((r) => r.model.tag || []))
-    );
-
     return {
       filteredResults: grouped,
-      providers: uniqueProviders,
-      allTags: uniqueTags,
     };
   }, [
     pricingResults,
@@ -181,7 +149,10 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
     );
   };
 
-  const handleTierChange = (tier: string, checked: boolean) => {
+  const handleTierChange = (
+    tier: FormDataContext["modelSize"],
+    checked: boolean
+  ) => {
     setSelectedTiers((prev) =>
       checked ? [...prev, tier] : prev.filter((t) => t !== tier)
     );
@@ -214,7 +185,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Providers</SelectItem>
-            {providers.map((provider) => (
+            {ALL_PROVIDERS.map((provider) => (
               <SelectItem key={provider} value={provider}>
                 {provider}
               </SelectItem>
@@ -234,8 +205,10 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
               <div className="flex items-center space-x-2">
                 <Switch
                   id="show-size"
-                  checked={showSize}
-                  onCheckedChange={setShowSize}
+                  checked={showColumns.size}
+                  onCheckedChange={(value) =>
+                    setShowColumns((prev) => ({ ...prev, size: value }))
+                  }
                 />
                 <Label htmlFor="show-size" className="text-sm">
                   Size
@@ -244,8 +217,10 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
               <div className="flex items-center space-x-2">
                 <Switch
                   id="show-input-output"
-                  checked={showInputOutput}
-                  onCheckedChange={setShowInputOutput}
+                  checked={showColumns.inputOutput}
+                  onCheckedChange={(value) =>
+                    setShowColumns((prev) => ({ ...prev, inputOutput: value }))
+                  }
                 />
                 <Label htmlFor="show-input-output" className="text-sm">
                   Input/Output prices
@@ -263,7 +238,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
             <TableRow>
               <TableHead className="font-semibold">Provider</TableHead>
               <TableHead className="font-semibold">Model</TableHead>
-              {showSize && (
+              {showColumns.size && (
                 <TableHead className="font-semibold">Size</TableHead>
               )}
               <TableHead className="font-semibold">
@@ -278,7 +253,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                     <PopoverContent className="w-48">
                       <div className="space-y-3">
                         <h4 className="font-medium text-sm">Filter by Tier</h4>
-                        {["small", "medium", "big"].map((tier) => (
+                        {ALL_TIERS.map((tier) => (
                           <div
                             key={tier}
                             className="flex items-center space-x-2"
@@ -314,8 +289,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                     </PopoverTrigger>
                     <PopoverContent className="w-48">
                       <div className="space-y-3">
-                        <h4 className="font-medium text-sm">Exclude Tags</h4>
-                        {allTags.map((tag) => (
+                        {ALL_TAGS.map((tag) => (
                           <div
                             key={tag}
                             className="flex items-center space-x-2"
@@ -337,7 +311,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                   </Popover>
                 </div>
               </TableHead>
-              {showInputOutput && (
+              {showColumns.inputOutput && (
                 <>
                   <TableHead className="font-semibold text-right">
                     Input Cost
@@ -379,23 +353,11 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                       <div className="flex items-center gap-2">
                         {getProviderIcon(provider)}
                         {provider}
-                        {isCheapestInProvider && (
-                          <Badge variant="outline" className="ml-2 text-xs">
-                            Cheapest
-                          </Badge>
-                        )}
                       </div>
                     </TableCell>
-                    <TableCell>
-                      {result.model.model}
-                      {isBest && (
-                        <Badge variant="secondary" className="ml-2 text-xs">
-                          Best Value
-                        </Badge>
-                      )}
-                    </TableCell>
-                    {showSize && (
-                      <TableCell>
+                    <TableCell>{result.model.model}</TableCell>
+                    {showColumns.size && (
+                      <TableCell className="text-nowrap">
                         {result.model.model_size
                           ? `${result.model.model_size}B`
                           : "N/A"}
@@ -415,7 +377,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                         )) || "—"}
                       </div>
                     </TableCell>
-                    {showInputOutput && (
+                    {showColumns.inputOutput && (
                       <>
                         <TableCell className="text-right">
                           ${result.inputCost.toFixed(2)}

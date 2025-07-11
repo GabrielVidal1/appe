@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
 const ModelSizeSelector = () => {
@@ -14,6 +15,11 @@ const ModelSizeSelector = () => {
   const handleValueChange = (value: string) => {
     setValue("modelSize", value);
   };
+
+  useEffect(() => {
+    setValue("selectedTiers", [modelSize]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [modelSize]);
 
   return (
     <Select value={modelSize} onValueChange={handleValueChange}>

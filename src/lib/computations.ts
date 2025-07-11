@@ -3,7 +3,7 @@ import { computeImagePrice } from "./imageCost";
 import { Model } from "./types";
 
 // Type assertion to ensure data matches our Model type
-const models: Model[] = modelsData as Model[];
+export const ALL_MODELS: Model[] = modelsData as Model[];
 
 export interface PricingResult {
   model: Model;
@@ -51,6 +51,7 @@ export const estimateTokens = (
 };
 
 export const calculatePricing = (
+  models: Model[],
   params: ComputationParams
 ): PricingResult[] => {
   return models.map((model) => {

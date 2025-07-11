@@ -1,30 +1,40 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormDataContext } from "@/contexts/form/type";
+import { ALL_MODELS } from "@/lib/computations";
+import { useFormContext } from "react-hook-form";
 import ResultsSummary from "./ResultsSummary";
 import ResultsTableFiltered from "./ResultsTableFiltered";
 
 interface ResultsTableProps {
-  data: {
-    dataCount: number;
-    dataType: string;
-    prompt: string;
-    example: string;
-    imageSize?: { width: number; height: number };
-  } | null;
+  data: FormDataContext | null;
 }
 
 const ResultsTable = ({ data }: ResultsTableProps) => {
+  const { watch } = useFormContext();
+  const modelSize = watch("modelSize");
+  const modelCapabilities: string[] = watch("modelCapabilities");
+
   if (!data) return null;
+
+  const models = ALL_MODELS.filter((model) => {
+    return (
+      model.tier === modelSize &&
+      model.tags.some((tag) =>
+        modelCapabilities.length ? modelCapabilities.includes(tag) : true
+      )
+    );
+  });
 
   return (
     <div className="w-full mx-auto space-y-6">
       <Card>
         <CardHeader>
           <CardTitle className="text-2xl text-center">
-            AI Model Cost Comparison
+            {/* AI Model Cost Comparison */}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <ResultsSummary data={data} />
+          <ResultsSummary data={data} models={models} />
           <ResultsTableFiltered data={data} />
         </CardContent>
       </Card>

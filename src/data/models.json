@@ -10,7 +10,7 @@
     "cache_cost": 0,
     "max_token": 128000,
     "tier": "small",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "Mistral",
@@ -23,7 +23,7 @@
     "cache_cost": 0,
     "max_token": 128000,
     "tier": "big",
-    "tag": ["multilingual"]
+    "tags": ["multilingual"]
   },
   {
     "provider": "Mistral",
@@ -36,7 +36,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "medium",
-    "tag": ["reasoning", "code", "vision"]
+    "tags": ["reasoning", "code", "vision"]
   },
   {
     "provider": "Mistral",
@@ -49,7 +49,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "small",
-    "tag": ["vision"]
+    "tags": ["vision"]
   },
   {
     "provider": "Mistral",
@@ -62,7 +62,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "small",
-    "tag": ["multilingual", "code"]
+    "tags": ["multilingual", "code"]
   },
   {
     "provider": "Mistral",
@@ -75,7 +75,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "small",
-    "tag": ["reasoning", "code"]
+    "tags": ["reasoning", "code"]
   },
   {
     "provider": "Mistral",
@@ -88,7 +88,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "medium",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "Mistral",
@@ -101,7 +101,7 @@
     "cache_cost": 0,
     "max_token": null,
     "tier": "big",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "OpenAI",
@@ -114,7 +114,7 @@
     "cache_cost": 0.5,
     "max_token": 1000000,
     "tier": "big",
-    "tag": ["vision"]
+    "tags": ["vision"]
   },
   {
     "provider": "OpenAI",
@@ -127,7 +127,7 @@
     "cache_cost": 0.1,
     "max_token": 1000000,
     "tier": "small",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "OpenAI",
@@ -140,7 +140,7 @@
     "cache_cost": 0.025,
     "max_token": 1000000,
     "tier": "small",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "OpenAI",
@@ -153,7 +153,7 @@
     "cache_cost": 0.5,
     "max_token": null,
     "tier": "big",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "OpenAI",
@@ -166,7 +166,7 @@
     "cache_cost": 0.275,
     "max_token": null,
     "tier": "medium",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "OpenAI",
@@ -179,7 +179,7 @@
     "cache_cost": 2.5,
     "max_token": 128000,
     "tier": "big",
-    "tag": ["vision"]
+    "tags": ["vision"]
   },
   {
     "provider": "OpenAI",
@@ -192,7 +192,7 @@
     "cache_cost": 0.3,
     "max_token": 128000,
     "tier": "small",
-    "tag": ["vision"]
+    "tags": ["vision"]
   },
   {
     "provider": "OpenAI",
@@ -205,7 +205,7 @@
     "cache_cost": 1.25,
     "max_token": null,
     "tier": "big",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "Claude",
@@ -218,7 +218,7 @@
     "cache_cost": null,
     "max_token": 100000,
     "tier": "small",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "Claude",
@@ -231,7 +231,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "big",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "Claude",
@@ -244,7 +244,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "small",
-    "tag": []
+    "tags": []
   },
   {
     "provider": "Claude",
@@ -257,7 +257,7 @@
     "cache_cost": null,
     "max_token": 200000,
     "tier": "medium",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "Claude",
@@ -270,7 +270,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "big",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "Claude",
@@ -283,7 +283,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "medium",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   },
   {
     "provider": "Claude",
@@ -296,6 +296,6 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "big",
-    "tag": ["reasoning"]
+    "tags": ["reasoning"]
   }
 ]
