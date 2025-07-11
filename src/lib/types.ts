@@ -1,3 +1,4 @@
+
 export type Provider = "claude" | "mistral" | "openai";
 
 export type Model = {
@@ -10,4 +11,6 @@ export type Model = {
   output_cost: number;
   cache_cost: number | null;
   max_token: number | null;
+  tier: "small" | "medium" | "big";
+  tag: string[];
 };
