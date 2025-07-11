@@ -1,8 +1,19 @@
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { calculatePricing, estimateTokens, groupModelsByProvider, findBestValue, type PricingResult } from "@/lib/computations";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  calculatePricing,
+  estimateTokens,
+  findBestValue,
+  groupModelsByProvider,
+} from "@/lib/computations";
 import { useMemo } from "react";
 
 interface ResultsTableProps {
@@ -10,7 +21,7 @@ interface ResultsTableProps {
     dataCount: number;
     dataType: string;
     prompt: string;
-    examples: string[];
+    example: string;
     imageSize?: { width: number; height: number };
   } | null;
 }
@@ -20,15 +31,15 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
     if (!data) return null;
 
     const tokenEstimates = estimateTokens(
-      data.dataType, 
-      data.prompt, 
-      data.examples,
+      data.dataType,
+      data.prompt,
+      data.example,
       data.imageSize
     );
     const results = calculatePricing({
       dataCount: data.dataCount,
       inputTokensPerItem: tokenEstimates.input,
-      outputTokensPerItem: tokenEstimates.output
+      outputTokensPerItem: tokenEstimates.output,
     });
 
     const groupedResults = groupModelsByProvider(results);
@@ -46,15 +57,25 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
     <div className="w-full max-w-7xl mx-auto space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl text-center">AI Model Cost Comparison</CardTitle>
+          <CardTitle className="text-2xl text-center">
+            AI Model Cost Comparison
+          </CardTitle>
           <div className="text-center text-gray-600">
-            <p>Processing {data.dataCount.toLocaleString()} {data.dataType} items</p>
+            <p>
+              Processing {data.dataCount.toLocaleString()} {data.dataType} items
+            </p>
             {data.imageSize && (
-              <p className="text-sm">Image size: {data.imageSize.width}×{data.imageSize.height}</p>
+              <p className="text-sm">
+                Image size: {data.imageSize.width}×{data.imageSize.height}
+              </p>
             )}
-            <p className="text-sm">Estimated ~{tokenEstimates.input} input + ~{tokenEstimates.output} output tokens per item</p>
+            <p className="text-sm">
+              Estimated ~{tokenEstimates.input} input + ~{tokenEstimates.output}{" "}
+              output tokens per item
+            </p>
             <Badge variant="secondary" className="mt-2">
-              Best Value: {bestValue.model.model} (${bestValue.totalCost.toFixed(2)})
+              Best Value: {bestValue.model.model} ($
+              {bestValue.totalCost.toFixed(2)})
             </Badge>
           </div>
         </CardHeader>
@@ -66,9 +87,15 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
                   <TableHead className="font-semibold">Model</TableHead>
                   <TableHead className="font-semibold">Provider</TableHead>
                   <TableHead className="font-semibold">Size</TableHead>
-                  <TableHead className="font-semibold text-right">Input Cost</TableHead>
-                  <TableHead className="font-semibold text-right">Output Cost</TableHead>
-                  <TableHead className="font-semibold text-right">Total Cost</TableHead>
+                  <TableHead className="font-semibold text-right">
+                    Input Cost
+                  </TableHead>
+                  <TableHead className="font-semibold text-right">
+                    Output Cost
+                  </TableHead>
+                  <TableHead className="font-semibold text-right">
+                    Total Cost
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -77,17 +104,30 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
                   .map((result, index) => {
                     const isBest = result.model.model === bestValue.model.model;
                     return (
-                      <TableRow key={index} className={isBest ? "bg-green-50" : ""}>
+                      <TableRow
+                        key={index}
+                        className={isBest ? "bg-green-50" : ""}
+                      >
                         <TableCell className="font-medium">
                           {result.model.model}
-                          {isBest && <Badge variant="secondary" className="ml-2 text-xs">Best Value</Badge>}
+                          {isBest && (
+                            <Badge variant="secondary" className="ml-2 text-xs">
+                              Best Value
+                            </Badge>
+                          )}
                         </TableCell>
                         <TableCell>{result.model.provider}</TableCell>
                         <TableCell>
-                          {result.model.model_size ? `${result.model.model_size}B` : 'N/A'}
+                          {result.model.model_size
+                            ? `${result.model.model_size}B`
+                            : "N/A"}
                         </TableCell>
-                        <TableCell className="text-right">${result.inputCost.toFixed(2)}</TableCell>
-                        <TableCell className="text-right">${result.outputCost.toFixed(2)}</TableCell>
+                        <TableCell className="text-right">
+                          ${result.inputCost.toFixed(2)}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          ${result.outputCost.toFixed(2)}
+                        </TableCell>
                         <TableCell className="text-right font-semibold">
                           ${result.totalCost.toFixed(2)}
                         </TableCell>
@@ -113,25 +153,27 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
             {data.imageSize && (
               <div>
                 <h4 className="font-semibold text-gray-700">Image Size:</h4>
-                <p className="text-gray-600">{data.imageSize.width}×{data.imageSize.height}</p>
+                <p className="text-gray-600">
+                  {data.imageSize.width}×{data.imageSize.height}
+                </p>
               </div>
             )}
             <div>
-              <h4 className="font-semibold text-gray-700">Processing Prompt:</h4>
-              <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">{data.prompt}</p>
+              <h4 className="font-semibold text-gray-700">
+                Processing Prompt:
+              </h4>
+              <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">
+                {data.prompt}
+              </p>
             </div>
-            {data.examples.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-gray-700">Example Outputs:</h4>
-                <ul className="space-y-2">
-                  {data.examples.map((example, index) => (
-                    <li key={index} className="text-gray-600 bg-gray-50 p-2 rounded">
-                      {example}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
+            <div>
+              <h4 className="font-semibold text-gray-700">Example Output:</h4>
+              <ul className="space-y-2">
+                <li className="text-gray-600 bg-gray-50 p-2 rounded">
+                  {data.example}
+                </li>
+              </ul>
+            </div>
           </CardContent>
         </Card>
 
@@ -141,12 +183,13 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {providers.map(provider => {
+              {providers.map((provider) => {
                 const providerModels = groupedResults[provider];
-                const cheapestInProvider = providerModels.reduce((min, current) => 
-                  current.totalCost < min.totalCost ? current : min
+                const cheapestInProvider = providerModels.reduce(
+                  (min, current) =>
+                    current.totalCost < min.totalCost ? current : min
                 );
-                
+
                 return (
                   <div key={provider} className="p-4 border rounded-lg">
                     <h4 className="font-semibold text-lg mb-2">{provider}</h4>
@@ -156,7 +199,9 @@ const ResultsTable = ({ data }: ResultsTableProps) => {
                     <div className="flex justify-between items-center">
                       <span className="text-sm">Best option:</span>
                       <div className="text-right">
-                        <div className="font-medium">{cheapestInProvider.model.model}</div>
+                        <div className="font-medium">
+                          {cheapestInProvider.model.model}
+                        </div>
                         <div className="text-green-600 font-semibold">
                           ${cheapestInProvider.totalCost.toFixed(2)}
                         </div>

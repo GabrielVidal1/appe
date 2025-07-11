@@ -1,6 +1,6 @@
 import modelsData from "../data/models.json";
-import { Model } from "./types";
 import { computeImagePrice } from "./imageCost";
+import { Model } from "./types";
 
 // Type assertion to ensure data matches our Model type
 const models: Model[] = modelsData as Model[];
@@ -22,42 +22,31 @@ export interface ComputationParams {
 export const estimateTokens = (
   dataType: string,
   prompt: string,
-  examples: string[],
+  output: string,
   imageSize?: { width: number; height: number }
 ): { input: number; output: number } => {
-  // Base tokens for different data types
-  const dataTypeTokens = {
-    images: 300, // Images typically require more tokens for vision processing
-    files: 150, // Text files
-    pdfs: 200, // PDFs might have mixed content
-  };
-
   // Estimate input tokens: prompt + data type processing
   const promptTokens = Math.ceil(prompt.length / 4); // Rough estimation: ~4 chars per token
-  let baseDataTokens = dataTypeTokens[dataType as keyof typeof dataTypeTokens] || 150;
+
+  let inputTokensPerItem = promptTokens;
 
   // For images, add the image tokens based on size
   if (dataType === "images" && imageSize) {
     // Calculate average image tokens across providers (using Claude as baseline)
-    const imageTokens = computeImagePrice("claude", imageSize.width, imageSize.height).tokens;
-    baseDataTokens += Math.ceil(imageTokens);
+    const imageTokens = computeImagePrice(
+      "claude",
+      imageSize.width,
+      imageSize.height
+    ).tokens;
+    inputTokensPerItem += Math.ceil(imageTokens);
   }
 
-  const inputTokensPerItem = promptTokens + baseDataTokens;
-
   // Estimate output tokens based on examples
-  const exampleTokens = examples.map((ex) => Math.ceil(ex.length / 4));
-  const avgExampleTokens =
-    exampleTokens.length > 0
-      ? exampleTokens.reduce((sum, tokens) => sum + tokens, 0) /
-        exampleTokens.length
-      : 100; // Default if no examples
-
-  const outputTokensPerItem = Math.max(50, avgExampleTokens); // Minimum 50 tokens output
+  const outputTokens = Math.ceil(output.length / 4);
 
   return {
     input: inputTokensPerItem,
-    output: outputTokensPerItem,
+    output: outputTokens,
   };
 };
 
