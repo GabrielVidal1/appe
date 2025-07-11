@@ -1,6 +1,7 @@
+export type Provider = "claude" | "mistral" | "openai";
 
 export type Model = {
-  provider: string;
+  provider: Provider;
   model: string;
   version: string;
   description: string;
