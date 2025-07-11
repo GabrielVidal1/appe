@@ -1,6 +1,9 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { ChevronDown } from "lucide-react";
 import { estimateTokens } from "@/lib/computations";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 interface TokenEstimatorProps {
   dataType: string;
@@ -17,6 +20,8 @@ const TokenEstimator = ({
   imageSize,
   dataCount,
 }: TokenEstimatorProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const tokenStats = useMemo(() => {
     if (!prompt?.trim()) return null;
 
@@ -47,63 +52,80 @@ const TokenEstimator = ({
 
   return (
     <Card className="bg-muted/50">
-      <CardHeader className="pb-3">
-        <CardTitle className="text-base font-medium text-center">
-          Token Summary
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="pt-0">
-        <div className="grid grid-cols-2 gap-4 text-sm">
-          <div>
-            <div className="font-medium text-muted-foreground">Single Item</div>
-            <div className="mt-1 space-y-1">
-              <div className="flex justify-between">
-                <span>Input:</span>
-                <span className="font-mono">
-                  {tokenStats.singleItemInput.toLocaleString()}
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger asChild>
+          <CardHeader className="pb-3 cursor-pointer hover:bg-muted/30 transition-colors">
+            <CardTitle className="text-base font-medium flex items-center justify-between">
+              <span>Token Summary</span>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-sm">
+                  {tokenStats.totalTokens.toLocaleString()} tokens
                 </span>
+                <ChevronDown 
+                  className={`h-4 w-4 transition-transform duration-200 ${
+                    isOpen ? 'rotate-180' : ''
+                  }`} 
+                />
               </div>
-              <div className="flex justify-between">
-                <span>Output:</span>
-                <span className="font-mono">
-                  {tokenStats.singleItemOutput.toLocaleString()}
-                </span>
+            </CardTitle>
+          </CardHeader>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <CardContent className="pt-0">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div>
+                <div className="font-medium text-muted-foreground">Single Item</div>
+                <div className="mt-1 space-y-1">
+                  <div className="flex justify-between">
+                    <span>Input:</span>
+                    <span className="font-mono">
+                      {tokenStats.singleItemInput.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Output:</span>
+                    <span className="font-mono">
+                      {tokenStats.singleItemOutput.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-medium">
+                    <span>Total:</span>
+                    <span className="font-mono">
+                      {tokenStats.singleItemTotal.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </div>
-              <div className="flex justify-between font-medium">
-                <span>Total:</span>
-                <span className="font-mono">
-                  {tokenStats.singleItemTotal.toLocaleString()}
-                </span>
+              <div>
+                <div className="font-medium text-muted-foreground">
+                  All Items ({dataCount.toLocaleString()})
+                </div>
+                <div className="mt-1 space-y-1">
+                  <div className="flex justify-between">
+                    <span>Input:</span>
+                    <span className="font-mono">
+                      {tokenStats.totalInput.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Output:</span>
+                    <span className="font-mono">
+                      {tokenStats.totalOutput.toLocaleString()}
+                    </span>
+                  </div>
+                  <div className="flex justify-between font-medium">
+                    <span>Total:</span>
+                    <span className="font-mono">
+                      {tokenStats.totalTokens.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
-          <div>
-            <div className="font-medium text-muted-foreground">
-              All Items ({dataCount.toLocaleString()})
-            </div>
-            <div className="mt-1 space-y-1">
-              <div className="flex justify-between">
-                <span>Input:</span>
-                <span className="font-mono">
-                  {tokenStats.totalInput.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span>Output:</span>
-                <span className="font-mono">
-                  {tokenStats.totalOutput.toLocaleString()}
-                </span>
-              </div>
-              <div className="flex justify-between font-medium">
-                <span>Total:</span>
-                <span className="font-mono">
-                  {tokenStats.totalTokens.toLocaleString()}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </CardContent>
+          </CardContent>
+        </CollapsibleContent>
+      </Collapsible>
     </Card>
   );
 };
