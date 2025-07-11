@@ -1,13 +1,22 @@
-
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Textarea } from "@/components/ui/textarea";
 import { Plus, X } from "lucide-react";
+import { useState } from "react";
 
 interface EstimatorFormProps {
   onSubmit: (data: {
@@ -43,7 +52,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
       dataCount: dataCount[0],
       dataType,
       prompt,
-      examples: examples.filter(ex => ex.trim() !== "")
+      examples: examples.filter((ex) => ex.trim() !== ""),
     });
   };
 
@@ -67,11 +76,11 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
         <CardTitle className="text-2xl text-center">Cost Estimator</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-2 text-lg">
+        <div className="flex items-center gap-2 text-lg font-medium">
           <span>I have</span>
           <Popover>
             <PopoverTrigger asChild>
-              <button className="text-blue-600 hover:text-blue-800 font-medium underline cursor-pointer">
+              <button className="font-medium underline cursor-pointer">
                 {dataCount[0].toLocaleString()}
               </button>
             </PopoverTrigger>
@@ -96,11 +105,13 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
             </PopoverContent>
           </Popover>
           <Select value={dataType} onValueChange={setDataType}>
-            <SelectTrigger className="w-auto border-none shadow-none p-0 h-auto">
+            <SelectTrigger className="underline text-lg w-auto border-none shadow-none p-0 h-auto">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="prompt">prompts</SelectItem>
+              <SelectItem value="prompt" className="">
+                prompts
+              </SelectItem>
             </SelectContent>
           </Select>
           <span>to process</span>
@@ -122,7 +133,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
               Add Example
             </Button>
           </div>
-          
+
           {examples.map((example, index) => (
             <div key={index} className="flex gap-2">
               <Textarea
@@ -147,8 +158,8 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
           ))}
         </div>
 
-        <Button 
-          onClick={handleSubmit} 
+        <Button
+          onClick={handleSubmit}
           className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 text-lg"
           disabled={!dataType || !prompt.trim()}
         >

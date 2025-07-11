@@ -1,0 +1,32 @@
+[
+  {
+    "model": "Mistral Small 3.2",
+    "max_resolution": "1540x1540",
+    "token_formula": "(ResolutionX * ResolutionY) / 784",
+    "max_tokens": 3025
+  },
+  {
+    "model": "Mistral Medium 3",
+    "max_resolution": "1540x1540",
+    "token_formula": "(ResolutionX * ResolutionY) / 784",
+    "max_tokens": 3025
+  },
+  {
+    "model": "Mistral Small 3.1",
+    "max_resolution": "1540x1540",
+    "token_formula": "(ResolutionX * ResolutionY) / 784",
+    "max_tokens": 3025
+  },
+  {
+    "model": "Pixtral Large",
+    "max_resolution": "1024x1024",
+    "token_formula": "(ResolutionX * ResolutionY) / 256",
+    "max_tokens": 4096
+  },
+  {
+    "model": "Pixtral 12B",
+    "max_resolution": "1024x1024",
+    "token_formula": "(ResolutionX * ResolutionY) / 256",
+    "max_tokens": 4096
+  }
+]

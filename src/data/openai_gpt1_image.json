@@ -1,0 +1,33 @@
+{
+  "provider": "OpenAI",
+  "image_token_pricing": {
+    "input_cost_per_million": 10.0,
+    "output_cost_per_million": 40.0
+  },
+  "image_generation_pricing": [
+    {
+      "quality": "Low",
+      "resolutions": {
+        "1024x1024": 0.011,
+        "1024x1536": 0.016,
+        "1536x1024": 0.016
+      }
+    },
+    {
+      "quality": "Medium",
+      "resolutions": {
+        "1024x1024": 0.042,
+        "1024x1536": 0.063,
+        "1536x1024": 0.063
+      }
+    },
+    {
+      "quality": "High",
+      "resolutions": {
+        "1024x1024": 0.167,
+        "1024x1536": 0.25,
+        "1536x1024": 0.25
+      }
+    }
+  ]
+}
