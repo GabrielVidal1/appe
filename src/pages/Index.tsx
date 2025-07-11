@@ -1,17 +1,26 @@
+
 import EstimatorForm from "@/components/EstimatorForm";
 import LeftSideContent from "@/components/LeftHero";
 import ResultsTable from "@/components/ResultsTable";
 import FormContextProvider from "@/contexts/form/FormContextProvider";
 import { FormDataContext } from "@/contexts/form/type";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 const Index = () => {
   const [estimationData, setEstimationData] = useState<FormDataContext | null>(
     null
   );
+  const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleFormSubmit = (data: FormDataContext) => {
     setEstimationData(data);
+    // Scroll to results after a short delay to ensure the component is rendered
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }, 100);
   };
 
   return (
@@ -26,7 +35,11 @@ const Index = () => {
         <div className="w-full lg:w-2/3 bg-white">
           <div className="h-full p-6 overflow-y-auto flex flex-col gap-4">
             <EstimatorForm onSubmit={handleFormSubmit} />
-            {estimationData && <ResultsTable data={estimationData} />}
+            {estimationData && (
+              <div ref={resultsRef}>
+                <ResultsTable data={estimationData} />
+              </div>
+            )}
           </div>
         </div>
       </div>
