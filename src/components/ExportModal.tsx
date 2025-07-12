@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dialog";
 import { FormDataContext } from "@/contexts/form/type";
 import { estimateTokens } from "@/lib/computations";
-import { Copy, Download } from "lucide-react";
+import { Copy, Download, FileText } from "lucide-react";
 import { useMemo, useRef } from "react";
 
 interface ExportModalProps {
@@ -51,8 +51,58 @@ const ExportModal = ({
     };
   }, [data]);
 
-  const handleCopyToClipboard = async () => {
-    // For now, just copy the text summary
+  const convertToImage = async (): Promise<Blob> => {
+    if (!exportRef.current) {
+      throw new Error('Export reference not found');
+    }
+
+    // Use html2canvas to convert the div to canvas
+    const { default: html2canvas } = await import('html2canvas');
+    const canvas = await html2canvas(exportRef.current, {
+      backgroundColor: '#ffffff',
+      scale: 2, // Higher resolution
+      useCORS: true,
+    });
+
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        if (blob) {
+          resolve(blob);
+        }
+      }, 'image/png');
+    });
+  };
+
+  const handleCopyImage = async () => {
+    try {
+      const blob = await convertToImage();
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          'image/png': blob,
+        }),
+      ]);
+    } catch (err) {
+      console.error('Failed to copy image to clipboard:', err);
+    }
+  };
+
+  const handleDownloadImage = async () => {
+    try {
+      const blob = await convertToImage();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'ai-cost-estimation.png';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Failed to download image:', err);
+    }
+  };
+
+  const handleCopyText = async () => {
     const text = `AI Model Cost Estimation
 Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
 Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
@@ -65,30 +115,8 @@ Most Expensive: ${maxModel}`;
     try {
       await navigator.clipboard.writeText(text);
     } catch (err) {
-      console.error('Failed to copy to clipboard:', err);
+      console.error('Failed to copy text to clipboard:', err);
     }
-  };
-
-  const handleDownload = () => {
-    // For now, download as text file
-    const text = `AI Model Cost Estimation
-Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
-Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
-Input Tokens: ${tokenStats.totalInput.toLocaleString()}
-Output Tokens: ${tokenStats.totalOutput.toLocaleString()}
-Price Range: $${minCost.toFixed(2)} - $${maxCost.toFixed(2)}
-Cheapest: ${minModel}
-Most Expensive: ${maxModel}`;
-
-    const blob = new Blob([text], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'ai-cost-estimation.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
   };
 
   return (
@@ -168,18 +196,26 @@ Most Expensive: ${maxModel}`;
             <Button
               variant="outline"
               size="icon"
-              onClick={handleCopyToClipboard}
-              title="Copy to clipboard"
+              onClick={handleCopyImage}
+              title="Copy image to clipboard"
             >
               <Copy className="h-4 w-4" />
             </Button>
             <Button
               variant="outline"
               size="icon"
-              onClick={handleDownload}
-              title="Download"
+              onClick={handleDownloadImage}
+              title="Download image"
             >
               <Download className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleCopyText}
+              title="Copy as text"
+            >
+              <FileText className="h-4 w-4" />
             </Button>
           </div>
         </div>
