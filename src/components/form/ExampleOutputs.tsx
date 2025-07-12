@@ -23,13 +23,22 @@ const ExampleOutput = ({ className }: ExampleOutputProps) => {
   }, [example]);
 
   return (
-    <div className={`space-y-4 ${className}`}>
+    <div className={className}>
       <TextareaWithCounts
-        placeholder={`Example output`}
+        placeholder="Enter your example output here..."
         value={formattedExample}
         onChange={(e) => updateExample(e.target.value)}
         className="flex-1 resize-none font-mono pr-10 text-xs"
-        rows={4}
+        rows={Math.max(
+          2,
+          Math.min(
+            15,
+            Math.max(
+              formattedExample.split("\n").length,
+              formattedExample.length / 80
+            )
+          )
+        )}
       />
     </div>
   );

@@ -9,20 +9,21 @@ import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 
 const Index = () => {
-  const [estimationData, setEstimationData] = useState<FormDataContext | null>(
-    null
-  );
+  const [currentEstimationData, setEstimationData] =
+    useState<FormDataContext | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
 
   const handleFormSubmit = (data: FormDataContext) => {
     setEstimationData(data);
     // Scroll to results after a short delay to ensure the component is rendered
-    setTimeout(() => {
-      resultsRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "start",
-      });
-    }, 100);
+    if (!currentEstimationData) {
+      setTimeout(() => {
+        resultsRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
+    }
   };
 
   return (
@@ -43,11 +44,14 @@ const Index = () => {
           {/* Right Side */}
           <div className="w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
             <div className="min-h-full h-fit flex flex-col">
-              <div className="p-6 h-fit flex flex-col gap-20 flex-1 my-20">
-                <EstimatorForm onSubmit={handleFormSubmit} />
-                {estimationData && (
+              <div className="p-6 h-fit flex flex-col gap-20 flex-1 mb-20">
+                <EstimatorForm
+                  onSubmit={handleFormSubmit}
+                  updatePrices={!!currentEstimationData}
+                />
+                {currentEstimationData && (
                   <div ref={resultsRef}>
-                    <ResultsTable data={estimationData} />
+                    <ResultsTable data={currentEstimationData} />
                   </div>
                 )}
               </div>

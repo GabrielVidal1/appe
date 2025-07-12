@@ -36,13 +36,19 @@ const ExampleTemplates = ({
   };
 
   return (
-    <div className={cn(className, "space-y-2 overflow-x-scroll")}>
-      <div className="flex gap-2 flex-nowrap justify-end">
+    <div
+      className={cn(
+        className,
+        "space-y-2 overflow-x-scroll pointer-events-none"
+      )}
+    >
+      <div className="flex gap-2 flex-nowrap justify-end ">
         {EXAMPLES.map((example) => (
           <Badge
             key={example.name}
             variant="outline"
             className={cn(
+              "pointer-events-auto",
               "cursor-pointer hover:bg-gray-100 transition-colors bg-white dark:bg-gray-800 text-nowrap",
               {
                 "bg-blue-50 text-blue-800 dark:bg-blue-900 dark:text-blue-200":
