@@ -2,7 +2,11 @@ import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 import { TextareaWithCounts } from "../ui/textarea-with-counts";
 
-const ExampleOutput = () => {
+interface ExampleOutputProps {
+  className?: string;
+}
+
+const ExampleOutput = ({ className }: ExampleOutputProps) => {
   const { watch, setValue } = useFormContext();
   const example = watch("example") || "";
 
@@ -19,7 +23,7 @@ const ExampleOutput = () => {
   }, [example]);
 
   return (
-    <div className="space-y-4">
+    <div className={`space-y-4 ${className}`}>
       <TextareaWithCounts
         placeholder={`Example output`}
         value={formattedExample}

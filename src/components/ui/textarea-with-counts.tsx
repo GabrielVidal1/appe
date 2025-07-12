@@ -36,13 +36,15 @@ const TextareaWithCounts = React.forwardRef<
           onMouseLeave={() => setHoverCounts(false)}
         >
           {hoverCounts ? (
-            <div className="bg-white p-1 rounded-lg">
+            <div className="bg-white p-1 rounded-lg dark:bg-gray-800">
               <div>Words: {wordCount}</div>
               <div>Chars: {charCount}</div>
               <div>Tokens: ~{tokenCount}</div>
             </div>
           ) : (
-            <div className="bg-white p-1 rounded-lg">{tokenCount} tokens</div>
+            <div className="bg-white p-1 rounded-lg dark:bg-gray-800">
+              {tokenCount} tokens
+            </div>
           )}
         </div>
       )}

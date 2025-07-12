@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { FormDataContext } from "@/contexts/form/type";
 import {
   ALL_MODELS,
@@ -61,9 +61,8 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
 
   return (
     <Card>
-      <CardHeader></CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
           <div className="text-center">
             <div className="text-sm text-gray-600">Total Tokens</div>
             <div className="text-2xl font-bold text-purple-600">

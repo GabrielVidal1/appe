@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { getProviderIcon } from "../ProviderIcons";
@@ -22,9 +21,9 @@ const ResultsTableRow = ({
     <TableRow
       className={
         isBest
-          ? "bg-green-50 border-green-200"
+          ? "bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-700"
           : isCheapestInProvider
-          ? "bg-blue-50"
+          ? "bg-blue-50 dark:bg-blue-900"
           : ""
       }
     >
@@ -37,9 +36,7 @@ const ResultsTableRow = ({
       <TableCell>{result.model.model}</TableCell>
       {showColumns.size && (
         <TableCell className="text-nowrap">
-          {result.model.model_size
-            ? `${result.model.model_size}B`
-            : "N/A"}
+          {result.model.model_size ? `${result.model.model_size}B` : "N/A"}
         </TableCell>
       )}
       <TableCell>{renderTierDots(result.model.tier)}</TableCell>
@@ -47,11 +44,7 @@ const ResultsTableRow = ({
         <TableCell>
           <div className="flex flex-wrap gap-1">
             {result.model.tags?.map((tag: string) => (
-              <Badge
-                key={tag}
-                variant="outline"
-                className="text-xs"
-              >
+              <Badge key={tag} variant="outline" className="text-xs">
                 {tag}
               </Badge>
             )) || "—"}

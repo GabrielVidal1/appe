@@ -1,11 +1,11 @@
-
 import EstimatorForm from "@/components/EstimatorForm";
-import LeftSideContent from "@/components/LeftHero";
-import ResultsTable from "@/components/ResultsTable";
-import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import LeftSideContent from "@/components/LeftHero";
+import Navbar from "@/components/Navbar";
+import ResultsTable from "@/components/ResultsTable";
 import FormContextProvider from "@/contexts/form/FormContextProvider";
 import { FormDataContext } from "@/contexts/form/type";
+import { cn } from "@/lib/utils";
 import { useRef, useState } from "react";
 
 const Index = () => {
@@ -18,38 +18,41 @@ const Index = () => {
     setEstimationData(data);
     // Scroll to results after a short delay to ensure the component is rendered
     setTimeout(() => {
-      resultsRef.current?.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       });
     }, 100);
   };
 
   return (
     <FormContextProvider>
-      <div className="min-h-screen flex flex-col">
-        <Navbar />
-        
-        <div className="flex-1 flex bg-white overflow-hidden">
+      <div className="h-screen flex flex-col bg-white dark:bg-gray-900">
+        <Navbar className="sticky top-0 z-50" />
+
+        <div className="flex-1 flex overflow-hidden bg-white dark:bg-gray-900">
           {/* Left Side */}
-          <div className="w-1/3 bg-gradient-to-br from-blue-50 to-indigo-100 hidden lg:block">
+          <div
+            className={cn(
+              "w-1/3 bg-gradient-to-br from-blue-50 to-indigo-100 hidden lg:block dark:from-gray-800 dark:to-gray-900"
+            )}
+          >
             <LeftSideContent />
           </div>
 
           {/* Right Side */}
-          <div className="w-full lg:w-2/3 bg-white">
-            <div className="h-full p-6 overflow-y-auto flex flex-col gap-4">
+          <div className="w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
+            <div className="min-h-full p-6 overflow-y-auto flex flex-col gap-20">
               <EstimatorForm onSubmit={handleFormSubmit} />
               {estimationData && (
                 <div ref={resultsRef}>
                   <ResultsTable data={estimationData} />
                 </div>
               )}
+              <Footer />
             </div>
           </div>
         </div>
-
-        <Footer />
       </div>
     </FormContextProvider>
   );

@@ -42,3 +42,10 @@ export type Model = {
    */
   tags: string[];
 };
+
+export interface ExampleTemplate {
+  name: string;
+  type: "prompts" | "images";
+  prompt: string;
+  output: string;
+}
