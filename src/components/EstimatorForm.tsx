@@ -1,14 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormDataContext } from "@/contexts/form/type";
-import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
-import { cn } from "@/lib/utils";
+
 import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-import ExampleTemplates from "./ExampleTemplates";
-import ExampleOutput from "./form/ExampleOutputs";
-import PromptInput from "./form/PromptInput";
-import SentenceInput from "./form/SentenceInput";
-import SubmitButton from "./form/SubmitButton";
+import { FormDataContext } from "@/contexts/form/type";
+import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
+import ExampleTemplateBanner from "./ExampleTemplateBanner";
+import FormCard from "./FormCard";
 
 interface EstimatorFormProps {
   onSubmit: (data: FormDataContext) => void;
@@ -17,9 +13,7 @@ interface EstimatorFormProps {
 
 const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   const [showExamples, setShowExamples] = useState(true);
-  const { handleSubmit, watch } = useFormContext();
-  const dataType = watch("dataType");
-  const prompt = watch("prompt");
+  const { handleSubmit } = useFormContext();
   const { isConfigFromUrl } = useConfigFromUrl();
 
   const onFormSubmit = useCallback((data: FormDataContext) => {
@@ -28,7 +22,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
       dataType: data.dataType,
       prompt: data.prompt,
       example: data.example.trim(),
-      imageSize: dataType === "images" ? data.imageSize : undefined,
+      imageSize: data.dataType === "images" ? data.imageSize : undefined,
       modelSize: data.modelSize,
       modelCapabilities: data.modelCapabilities,
     });
@@ -44,55 +38,16 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
 
   return (
     <div className="">
-      <div className="relative w-full mb-6 ">
+      <div className="relative w-full mb-6">
         <div className="w-full z-100 mt-20">
-          <Card className="w-full max-w-4xl">
-            <CardHeader>
-              <CardTitle className="text-xl text-center">
-                <SentenceInput />
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6 flex flex-col gap-4 items-center">
-              <div className="w-full">
-                <PromptInput />
-              </div>
-
-              <ExampleOutput className="w-full" />
-
-              {!isConfigFromUrl && (
-                <SubmitButton
-                  onClick={handleSubmit(onFormSubmit)}
-                  className="group/submit"
-                  disabled={!dataType || !prompt?.trim()}
-                  update={updatePrices}
-                />
-              )}
-            </CardContent>
-          </Card>
+          <FormCard onSubmit={onSubmit} updatePrices={updatePrices} />
         </div>
-        {!isConfigFromUrl && showExamples && (
-          <div
-            className={cn(
-              "absolute inset-0 flex items-center",
-              "z-0 transition-transform duration-300 ease-in-out",
-              "group-hover:-translate-y-1/2 -translate-y-[120%] opacity-0 group-hover:opacity-100",
-              "pointer-events-none"
-            )}
-          >
-            <div className="relative w-full h-[75px]">
-              <Card className="absolute w-full shadow-lg pt-6 bottom-[60%] -top-[60%]">
-                <CardContent className="flex justify-between items-center">
-                  Try these examples:{" "}
-                  <ExampleTemplates
-                    onExampleSelect={(example) => {
-                      setShowExamples(false);
-                    }}
-                  />
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        )}
+        
+        <ExampleTemplateBanner
+          showExamples={showExamples}
+          onExampleSelect={() => setShowExamples(false)}
+          isConfigFromUrl={isConfigFromUrl}
+        />
       </div>
     </div>
   );
