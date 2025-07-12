@@ -1,3 +1,4 @@
+import { DataType } from "@/contexts/form/type";
 import modelsData from "../data/models.json";
 import { computeImagePrice } from "./imageCost";
 import { Model } from "./types";
@@ -20,18 +21,25 @@ export interface ComputationParams {
 
 // Estimate tokens based on data type and prompt
 export const estimateTokens = (
-  dataType: string,
+  dataType: DataType,
   prompt: string,
   output: string,
-  imageSize?: { width: number; height: number }
+  imageSize?: { width: number; height: number },
+  pdfData?: { pages: number; tokenPerPage: number }
 ): { input: number; output: number } => {
   // Estimate input tokens: prompt + data type processing
   const promptTokens = Math.ceil(prompt.length / 4); // Rough estimation: ~4 chars per token
 
   let inputTokensPerItem = promptTokens;
 
+  // For PDFs, add tokens based on pages and tokens per page
+  if (dataType === "pdfs" && pdfData) {
+    const { pages, tokenPerPage } = pdfData;
+    inputTokensPerItem += pages * tokenPerPage;
+  }
+
   // For images, add the image tokens based on size
-  if (dataType === "images" && imageSize) {
+  else if (dataType === "images" && imageSize) {
     // Calculate average image tokens across providers (using Claude as baseline)
     const imageTokens = computeImagePrice(
       "claude",

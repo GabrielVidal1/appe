@@ -9,6 +9,7 @@ const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
       prompt: "",
       example: "",
       imageSize: { width: 512, height: 512 },
+      pdfData: { pages: 10, tokenPerPage: 500 },
       modelSize: "medium",
       modelCapabilities: [],
       selectedTiers: ["small", "medium", "big"],

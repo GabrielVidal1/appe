@@ -1,10 +1,15 @@
+export type ModelSize = "small" | "medium" | "big";
+
+export type DataType = "prompts" | "images" | "pdfs";
+
 export interface FormDataContext {
   dataCount: number;
-  dataType: string;
+  dataType: DataType;
   prompt: string;
   example: string;
   imageSize?: { width: number; height: number };
-  modelSize: "small" | "medium" | "big";
+  pdfData?: { pages: number; tokenPerPage: number };
+  modelSize: ModelSize;
   modelCapabilities: string[];
 
   showColumns?: {

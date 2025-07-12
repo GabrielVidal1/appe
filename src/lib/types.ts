@@ -1,3 +1,5 @@
+import { FormDataContext } from "@/contexts/form/type";
+
 export type Provider = "claude" | "mistral" | "openai";
 
 export type Model = {
@@ -43,9 +45,6 @@ export type Model = {
   tags: string[];
 };
 
-export interface ExampleTemplate {
+export type ExampleTemplate = Partial<FormDataContext> & {
   name: string;
-  type: "prompts" | "images";
-  prompt: string;
-  output: string;
-}
+};

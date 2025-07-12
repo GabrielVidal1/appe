@@ -16,6 +16,13 @@ const DataCountSelector = () => {
     setValue("dataCount", value[0]);
   };
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = Number(e.target.value.replace(/,/g, ""));
+    if (!isNaN(val)) {
+      setValue("dataCount", Math.max(0, val));
+    }
+  };
+
   return (
     <Popover>
       <PopoverTrigger asChild>
@@ -28,14 +35,22 @@ const DataCountSelector = () => {
       </PopoverTrigger>
       <PopoverContent className="w-80">
         <div className="space-y-4">
-          <Label className="text-sm font-medium">
-            Number of items: {dataCount?.toLocaleString() || "1000"}
+          <Label className="text-sm font-medium flex items-center gap-2">
+            Number of items:
+            <input
+              type="number"
+              step={100}
+              min={100}
+              value={dataCount || 1000}
+              onChange={handleInputChange}
+              className="border rounded px-2 py-1 w-24 text-right"
+            />
           </Label>
           <Slider
             value={[dataCount || 1000]}
             onValueChange={handleValueChange}
             max={10000}
-            min={200}
+            min={100}
             step={100}
             className="w-full"
           />

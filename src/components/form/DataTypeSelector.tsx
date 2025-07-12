@@ -38,6 +38,7 @@ const DataTypeSelector = () => {
       <SelectContent>
         <SelectItem value="prompts">prompts</SelectItem>
         <SelectItem value="images">images</SelectItem>
+        <SelectItem value="pdfs">pdfs</SelectItem>
       </SelectContent>
     </Select>
   );
