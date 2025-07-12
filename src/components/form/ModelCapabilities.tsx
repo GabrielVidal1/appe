@@ -15,7 +15,7 @@ import {
 import { ALL_TAGS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 const capabilityFromTag = {
@@ -29,6 +29,8 @@ const ModelCapabilities = () => {
   const [open, setOpen] = useState(false);
   const { watch, setValue } = useFormContext();
   const selectedCapabilities = watch("modelCapabilities") || [];
+
+  const showColumns = watch("showColumns");
 
   const handleSelect = (currentValue: string) => {
     const newCapabilities = selectedCapabilities.includes(currentValue)
@@ -46,6 +48,14 @@ const ModelCapabilities = () => {
           .map((capability) => capabilityFromTag[capability] || capability)
           .join(", ")
       : "do anything";
+
+  useEffect(() => {
+    setValue("showColumns", {
+      ...showColumns,
+      tags: selectedCapabilities.length > 0,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCapabilities, showColumns]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

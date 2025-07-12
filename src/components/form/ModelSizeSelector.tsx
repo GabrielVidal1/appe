@@ -8,6 +8,8 @@ import {
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
+const TIERS_IN_ORDER = ["small", "medium", "big"];
+
 const ModelSizeSelector = () => {
   const { watch, setValue } = useFormContext();
   const modelSize = watch("modelSize");
@@ -17,7 +19,12 @@ const ModelSizeSelector = () => {
   };
 
   useEffect(() => {
-    setValue("selectedTiers", [modelSize]);
+    const newSelectedTiers = TIERS_IN_ORDER.filter(
+      (tier) =>
+        TIERS_IN_ORDER.indexOf(tier) >= TIERS_IN_ORDER.indexOf(modelSize)
+    );
+    setValue("selectedTiers", newSelectedTiers);
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [modelSize]);
 

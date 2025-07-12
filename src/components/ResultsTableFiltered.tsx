@@ -202,30 +202,25 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
           <PopoverContent className="w-64">
             <div className="space-y-4">
               <h4 className="font-medium">Column Visibility</h4>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="show-size"
-                  checked={showColumns.size}
-                  onCheckedChange={(value) =>
-                    setShowColumns((prev) => ({ ...prev, size: value }))
-                  }
-                />
-                <Label htmlFor="show-size" className="text-sm">
-                  Size
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Switch
-                  id="show-input-output"
-                  checked={showColumns.inputOutput}
-                  onCheckedChange={(value) =>
-                    setShowColumns((prev) => ({ ...prev, inputOutput: value }))
-                  }
-                />
-                <Label htmlFor="show-input-output" className="text-sm">
-                  Input/Output prices
-                </Label>
-              </div>
+              {Object.entries(showColumns).map(([key, value]) => (
+                <div key={key} className="flex items-center space-x-2">
+                  <Switch
+                    id={`show-${key}`}
+                    checked={value}
+                    onCheckedChange={(checked) =>
+                      setShowColumns((prev) => ({
+                        ...prev,
+                        [key]: checked,
+                      }))
+                    }
+                  />
+                  <Label htmlFor={`show-${key}`} className="text-sm">
+                    {key
+                      .replace(/([A-Z])/g, " $1")
+                      .replace(/^./, (str) => str.toUpperCase())}
+                  </Label>
+                </div>
+              ))}
             </div>
           </PopoverContent>
         </Popover>
@@ -278,39 +273,41 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                   </Popover>
                 </div>
               </TableHead>
-              <TableHead className="font-semibold">
-                <div className="flex items-center gap-2">
-                  Tags
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Filter className="h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48">
-                      <div className="space-y-3">
-                        {ALL_TAGS.map((tag) => (
-                          <div
-                            key={tag}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={`tag-${tag}`}
-                              checked={tags === null || tags?.includes(tag)}
-                              onCheckedChange={(checked) =>
-                                handleTagToggle(tag, !!checked)
-                              }
-                            />
-                            <Label htmlFor={`tag-${tag}`} className="text-sm">
-                              {tag}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-              </TableHead>
+              {showColumns.tags && (
+                <TableHead className="font-semibold">
+                  <div className="flex items-center gap-2">
+                    Tags
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="ghost" size="icon" className="h-6 w-6">
+                          <Filter className="h-3 w-3" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-48">
+                        <div className="space-y-3">
+                          {ALL_TAGS.map((tag) => (
+                            <div
+                              key={tag}
+                              className="flex items-center space-x-2"
+                            >
+                              <Checkbox
+                                id={`tag-${tag}`}
+                                checked={tags === null || tags?.includes(tag)}
+                                onCheckedChange={(checked) =>
+                                  handleTagToggle(tag, !!checked)
+                                }
+                              />
+                              <Label htmlFor={`tag-${tag}`} className="text-sm">
+                                {tag}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                </TableHead>
+              )}
               {showColumns.inputOutput && (
                 <>
                   <TableHead className="font-semibold text-right">
@@ -364,19 +361,21 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                       </TableCell>
                     )}
                     <TableCell>{renderTierDots(result.model.tier)}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {result.model.tag?.map((tag) => (
-                          <Badge
-                            key={tag}
-                            variant="outline"
-                            className="text-xs"
-                          >
-                            {tag}
-                          </Badge>
-                        )) || "—"}
-                      </div>
-                    </TableCell>
+                    {showColumns.tags && (
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {result.model.tags?.map((tag) => (
+                            <Badge
+                              key={tag}
+                              variant="outline"
+                              className="text-xs"
+                            >
+                              {tag}
+                            </Badge>
+                          )) || "—"}
+                        </div>
+                      </TableCell>
+                    )}
                     {showColumns.inputOutput && (
                       <>
                         <TableCell className="text-right">

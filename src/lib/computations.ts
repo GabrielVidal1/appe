@@ -92,7 +92,8 @@ export const groupModelsByProvider = (results: PricingResult[]) => {
 
 // Find the best value option
 export const findBestValue = (results: PricingResult[]): PricingResult => {
-  return results.reduce((best, current) =>
-    current.totalCost < best.totalCost ? current : best
+  return results.reduce(
+    (best, current) => (current.totalCost < best.totalCost ? current : best),
+    results[0]
   );
 };

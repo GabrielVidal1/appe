@@ -16,6 +16,7 @@ const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
       showColumns: {
         size: false,
         inputOutput: false,
+        tags: true,
       },
     },
   });

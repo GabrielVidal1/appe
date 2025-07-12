@@ -1,10 +1,15 @@
 import { FormDataContext } from "@/contexts/form/type";
 import { useFormContext } from "react-hook-form";
 
-export const useFormState = <Key extends keyof FormDataContext>(key: Key) => {
+export const useFormState = <
+  Key extends keyof FormDataContext,
+  Value extends FormDataContext[Key] = FormDataContext[Key]
+>(
+  key: Key
+) => {
   const { watch, setValue } = useFormContext();
 
-  const value = watch(key);
+  const value: Value = watch(key);
 
   const setFormValue = (
     newValue:

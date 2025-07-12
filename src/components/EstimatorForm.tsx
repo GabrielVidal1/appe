@@ -1,13 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormData } from "@/lib/types";
+import { FormDataContext } from "@/contexts/form/type";
 import { useFormContext } from "react-hook-form";
-import ExampleOutputs from "./form/ExampleOutputs";
+import ExampleOutput from "./form/ExampleOutputs";
 import PromptInput from "./form/PromptInput";
 import SentenceInput from "./form/SentenceInput";
 import { Button } from "./ui/button";
 
 interface EstimatorFormProps {
-  onSubmit: (data: FormData) => void;
+  onSubmit: (data: FormDataContext) => void;
 }
 
 const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
@@ -18,7 +18,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
   const example = watch("example");
   const imageSize = watch("imageSize");
 
-  const onFormSubmit = (data: FormData) => {
+  const onFormSubmit = (data: FormDataContext) => {
     onSubmit({
       dataCount: data.dataCount,
       dataType: data.dataType,
@@ -42,7 +42,7 @@ const EstimatorForm = ({ onSubmit }: EstimatorFormProps) => {
           <PromptInput />
         </div>
 
-        <ExampleOutputs />
+        <ExampleOutput />
 
         {/* <TokenEstimator
           dataCount={dataCount}
