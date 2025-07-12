@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,9 +6,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { FormDataContext } from "@/contexts/form/type";
+import { useToast } from "@/hooks/use-toast";
 import { estimateTokens } from "@/lib/computations";
 import { Copy, Download, FileText } from "lucide-react";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 
 interface ExportModalProps {
   open: boolean;
@@ -31,7 +31,12 @@ const ExportModal = ({
   maxModel,
 }: ExportModalProps) => {
   const exportRef = useRef<HTMLDivElement>(null);
+  const [loading, setLoading] = useState({
+    copyImage: false,
+    downloadImage: false,
+  });
 
+  const { toast } = useToast();
   const tokenStats = useMemo(() => {
     const tokenEstimates = estimateTokens(
       data.dataType,
@@ -53,13 +58,13 @@ const ExportModal = ({
 
   const convertToImage = async (): Promise<Blob> => {
     if (!exportRef.current) {
-      throw new Error('Export reference not found');
+      throw new Error("Export reference not found");
     }
 
     // Use html2canvas to convert the div to canvas
-    const { default: html2canvas } = await import('html2canvas');
+    const { default: html2canvas } = await import("html2canvas");
     const canvas = await html2canvas(exportRef.current, {
-      backgroundColor: '#ffffff',
+      backgroundColor: "#ffffff",
       scale: 2, // Higher resolution
       useCORS: true,
     });
@@ -69,36 +74,45 @@ const ExportModal = ({
         if (blob) {
           resolve(blob);
         }
-      }, 'image/png');
+      }, "image/png");
     });
   };
 
   const handleCopyImage = async () => {
     try {
+      setLoading((prev) => ({ ...prev, copyImage: true }));
       const blob = await convertToImage();
       await navigator.clipboard.write([
         new ClipboardItem({
-          'image/png': blob,
+          "image/png": blob,
         }),
       ]);
+      toast({
+        title: "Image copied to clipboard",
+      });
     } catch (err) {
-      console.error('Failed to copy image to clipboard:', err);
+      console.error("Failed to copy image to clipboard:", err);
+    } finally {
+      setLoading((prev) => ({ ...prev, copyImage: false }));
     }
   };
 
   const handleDownloadImage = async () => {
     try {
+      setLoading((prev) => ({ ...prev, downloadImage: true }));
       const blob = await convertToImage();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const a = document.createElement("a");
       a.href = url;
-      a.download = 'ai-cost-estimation.png';
+      a.download = "ai-cost-estimation.png";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
     } catch (err) {
-      console.error('Failed to download image:', err);
+      console.error("Failed to download image:", err);
+    } finally {
+      setLoading((prev) => ({ ...prev, downloadImage: false }));
     }
   };
 
@@ -114,8 +128,11 @@ Most Expensive: ${maxModel}`;
 
     try {
       await navigator.clipboard.writeText(text);
+      toast({
+        title: "Text copied to clipboard",
+      });
     } catch (err) {
-      console.error('Failed to copy text to clipboard:', err);
+      console.error("Failed to copy text to clipboard:", err);
     }
   };
 
@@ -134,7 +151,9 @@ Most Expensive: ${maxModel}`;
           >
             {/* Sentence Summary */}
             <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold mb-4">AI Model Cost Estimation</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                AI Model Cost Estimation
+              </h2>
               <p className="text-lg text-muted-foreground">
                 Processing {data.dataCount.toLocaleString()} {data.dataType}
               </p>
@@ -148,19 +167,25 @@ Most Expensive: ${maxModel}`;
                   <div className="text-2xl font-bold text-blue-600">
                     {tokenStats.totalInput.toLocaleString()}
                   </div>
-                  <div className="text-sm text-muted-foreground">Input Tokens</div>
+                  <div className="text-sm text-muted-foreground">
+                    Input Tokens
+                  </div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-green-600">
                     {tokenStats.totalOutput.toLocaleString()}
                   </div>
-                  <div className="text-sm text-muted-foreground">Output Tokens</div>
+                  <div className="text-sm text-muted-foreground">
+                    Output Tokens
+                  </div>
                 </div>
                 <div>
                   <div className="text-2xl font-bold text-purple-600">
                     {tokenStats.totalTokens.toLocaleString()}
                   </div>
-                  <div className="text-sm text-muted-foreground">Total Tokens</div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Tokens
+                  </div>
                 </div>
               </div>
             </div>
@@ -170,21 +195,29 @@ Most Expensive: ${maxModel}`;
               <h3 className="text-lg font-semibold mb-4">Price Range</h3>
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Cheapest:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Cheapest:
+                  </span>
                   <div className="text-right">
                     <div className="text-xl font-bold text-green-600">
                       ${minCost.toFixed(2)}
                     </div>
-                    <div className="text-sm text-muted-foreground">{minModel}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {minModel}
+                    </div>
                   </div>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">Most Expensive:</span>
+                  <span className="text-sm text-muted-foreground">
+                    Most Expensive:
+                  </span>
                   <div className="text-right">
                     <div className="text-xl font-bold text-red-600">
                       ${maxCost.toFixed(2)}
                     </div>
-                    <div className="text-sm text-muted-foreground">{maxModel}</div>
+                    <div className="text-sm text-muted-foreground">
+                      {maxModel}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -194,6 +227,7 @@ Most Expensive: ${maxModel}`;
           {/* Action Buttons */}
           <div className="flex justify-center gap-4">
             <Button
+              loading={loading.copyImage}
               variant="outline"
               size="icon"
               onClick={handleCopyImage}
@@ -202,6 +236,7 @@ Most Expensive: ${maxModel}`;
               <Copy className="h-4 w-4" />
             </Button>
             <Button
+              loading={loading.downloadImage}
               variant="outline"
               size="icon"
               onClick={handleDownloadImage}
