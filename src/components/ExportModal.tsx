@@ -1,0 +1,191 @@
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { FormDataContext } from "@/contexts/form/type";
+import { estimateTokens } from "@/lib/computations";
+import { Copy, Download } from "lucide-react";
+import { useMemo, useRef } from "react";
+
+interface ExportModalProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  data: FormDataContext;
+  minCost: number;
+  maxCost: number;
+  minModel: string;
+  maxModel: string;
+}
+
+const ExportModal = ({
+  open,
+  onOpenChange,
+  data,
+  minCost,
+  maxCost,
+  minModel,
+  maxModel,
+}: ExportModalProps) => {
+  const exportRef = useRef<HTMLDivElement>(null);
+
+  const tokenStats = useMemo(() => {
+    const tokenEstimates = estimateTokens(
+      data.dataType,
+      data.prompt,
+      data.example,
+      data.imageSize
+    );
+
+    const totalInputTokens = data.dataCount * tokenEstimates.input;
+    const totalOutputTokens = data.dataCount * tokenEstimates.output;
+    const totalTokens = totalInputTokens + totalOutputTokens;
+
+    return {
+      totalInput: totalInputTokens,
+      totalOutput: totalOutputTokens,
+      totalTokens,
+    };
+  }, [data]);
+
+  const handleCopyToClipboard = async () => {
+    // For now, just copy the text summary
+    const text = `AI Model Cost Estimation
+Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
+Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
+Input Tokens: ${tokenStats.totalInput.toLocaleString()}
+Output Tokens: ${tokenStats.totalOutput.toLocaleString()}
+Price Range: $${minCost.toFixed(2)} - $${maxCost.toFixed(2)}
+Cheapest: ${minModel}
+Most Expensive: ${maxModel}`;
+
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch (err) {
+      console.error('Failed to copy to clipboard:', err);
+    }
+  };
+
+  const handleDownload = () => {
+    // For now, download as text file
+    const text = `AI Model Cost Estimation
+Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
+Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
+Input Tokens: ${tokenStats.totalInput.toLocaleString()}
+Output Tokens: ${tokenStats.totalOutput.toLocaleString()}
+Price Range: $${minCost.toFixed(2)} - $${maxCost.toFixed(2)}
+Cheapest: ${minModel}
+Most Expensive: ${maxModel}`;
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'ai-cost-estimation.txt';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Export Results</DialogTitle>
+        </DialogHeader>
+
+        <div className="space-y-6">
+          {/* Export Preview */}
+          <div
+            ref={exportRef}
+            className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-900 p-8 rounded-lg border"
+          >
+            {/* Sentence Summary */}
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold mb-4">AI Model Cost Estimation</h2>
+              <p className="text-lg text-muted-foreground">
+                Processing {data.dataCount.toLocaleString()} {data.dataType}
+              </p>
+            </div>
+
+            {/* Token Summary */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
+              <h3 className="text-lg font-semibold mb-4">Token Summary</h3>
+              <div className="grid grid-cols-3 gap-4 text-center">
+                <div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {tokenStats.totalInput.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Input Tokens</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {tokenStats.totalOutput.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Output Tokens</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-purple-600">
+                    {tokenStats.totalTokens.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">Total Tokens</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-4">Price Range</h3>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Cheapest:</span>
+                  <div className="text-right">
+                    <div className="text-xl font-bold text-green-600">
+                      ${minCost.toFixed(2)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{minModel}</div>
+                  </div>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Most Expensive:</span>
+                  <div className="text-right">
+                    <div className="text-xl font-bold text-red-600">
+                      ${maxCost.toFixed(2)}
+                    </div>
+                    <div className="text-sm text-muted-foreground">{maxModel}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex justify-center gap-4">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleCopyToClipboard}
+              title="Copy to clipboard"
+            >
+              <Copy className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={handleDownload}
+              title="Download"
+            >
+              <Download className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default ExportModal;
