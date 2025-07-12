@@ -26,17 +26,17 @@ const Navbar = ({ className }: NavbarProps) => {
             className="flex items-center gap-2 font-semibold text-lg"
           >
             <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold">
-              P
+              <div className="grid grid-cols-2 grid-rows-2 gap-0 w-full h-full text-xs font-bold p-1">
+                <span className="flex items-center justify-center">A</span>
+                <span className="flex items-center justify-center">P</span>
+                <span className="flex items-center justify-center">P</span>
+                <span className="flex items-center justify-center">E</span>
+              </div>
             </div>
-            <span className="hidden sm:block">Prompt Price Predictor</span>
+            <span className="hidden sm:block">
+              AI Processing Price Estimator
+            </span>
           </Link>
-
-          {/* <Link
-            to="/"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Home
-          </Link> */}
         </div>
 
         {/* Right side - GitHub and Theme toggle */}

@@ -43,7 +43,7 @@ const Index = () => {
           {/* Right Side */}
           <div className="w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
             <div className="min-h-full h-fit flex flex-col">
-              <div className="p-6 h-fit flex flex-col gap-20 flex-1 mb-20">
+              <div className="p-6 h-fit flex flex-col gap-20 flex-1 my-20">
                 <EstimatorForm onSubmit={handleFormSubmit} />
                 {estimationData && (
                   <div ref={resultsRef}>
