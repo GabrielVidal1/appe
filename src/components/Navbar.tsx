@@ -1,9 +1,16 @@
 
 import { Button } from "@/components/ui/button";
-import { Github, Moon } from "lucide-react";
+import { Github, Moon, Sun } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useTheme } from "./ThemeProvider";
 
 const Navbar = () => {
+  const { theme, setTheme } = useTheme();
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
+
   return (
     <nav className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
@@ -38,8 +45,12 @@ const Navbar = () => {
             </a>
           </Button>
           
-          <Button variant="ghost" size="sm">
-            <Moon className="h-4 w-4" />
+          <Button variant="ghost" size="sm" onClick={toggleTheme}>
+            {theme === "light" ? (
+              <Moon className="h-4 w-4" />
+            ) : (
+              <Sun className="h-4 w-4" />
+            )}
             <span className="sr-only">Toggle theme</span>
           </Button>
         </div>
