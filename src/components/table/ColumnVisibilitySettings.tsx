@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -9,9 +8,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Settings } from "lucide-react";
 
+const COLUMNS_HIDEABLE = ["size", "inputOutput", "tags"] as const;
+
+type ColumnKey = (typeof COLUMNS_HIDEABLE)[number];
+
 interface ColumnVisibilitySettingsProps {
-  showColumns: Record<string, boolean>;
-  setShowColumns: (updater: (prev: Record<string, boolean>) => Record<string, boolean>) => void;
+  showColumns: Record<ColumnKey, boolean>;
+  setShowColumns: (
+    updater: (prev: Record<ColumnKey, boolean>) => Record<ColumnKey, boolean>
+  ) => void;
 }
 
 const ColumnVisibilitySettings = ({
