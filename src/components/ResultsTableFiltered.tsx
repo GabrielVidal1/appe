@@ -1,25 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -32,10 +14,13 @@ import {
   estimateTokens,
   findBestValue,
 } from "@/lib/computations";
-import { ALL_PROVIDERS, ALL_TAGS, ALL_TIERS } from "@/lib/constants";
-import { ArrowUpDown, Filter, Search, Settings } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
-import { getProviderIcon } from "./ProviderIcons";
+import ColumnVisibilitySettings from "./table/ColumnVisibilitySettings";
+import FilterControls from "./table/FilterControls";
+import ResultsTableRow from "./table/ResultsTableRow";
+import TagFilter from "./table/TagFilter";
+import TierFilter from "./table/TierFilter";
 
 interface ResultsTableFilteredProps {
   data: FormDataContext;
@@ -149,81 +134,21 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
     );
   };
 
-  const handleTierChange = (
-    tier: FormDataContext["modelSize"],
-    checked: boolean
-  ) => {
-    setSelectedTiers((prev) =>
-      checked ? [...prev, tier] : prev.filter((t) => t !== tier)
-    );
-  };
-
-  const handleTagToggle = (tag: string, exclude: boolean) => {
-    setTags((prev) => {
-      const tags = prev ?? [];
-      return exclude ? [...tags, tag] : tags.filter((t) => t !== tag);
-    });
-  };
-
   return (
     <div className="space-y-4">
       {/* Filters and Controls */}
       <div className="flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search models..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <Select value={selectedProvider} onValueChange={setSelectedProvider}>
-          <SelectTrigger className="w-full sm:w-48">
-            <SelectValue placeholder="Filter by provider" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Providers</SelectItem>
-            {ALL_PROVIDERS.map((provider) => (
-              <SelectItem key={provider} value={provider}>
-                {provider}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="icon">
-              <Settings className="h-4 w-4" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-64">
-            <div className="space-y-4">
-              <h4 className="font-medium">Column Visibility</h4>
-              {Object.entries(showColumns).map(([key, value]) => (
-                <div key={key} className="flex items-center space-x-2">
-                  <Switch
-                    id={`show-${key}`}
-                    checked={value}
-                    onCheckedChange={(checked) =>
-                      setShowColumns((prev) => ({
-                        ...prev,
-                        [key]: checked,
-                      }))
-                    }
-                  />
-                  <Label htmlFor={`show-${key}`} className="text-sm">
-                    {key
-                      .replace(/([A-Z])/g, " $1")
-                      .replace(/^./, (str) => str.toUpperCase())}
-                  </Label>
-                </div>
-              ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+        <FilterControls
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          selectedProvider={selectedProvider}
+          setSelectedProvider={setSelectedProvider}
+        />
+        
+        <ColumnVisibilitySettings
+          showColumns={showColumns}
+          setShowColumns={setShowColumns}
+        />
       </div>
 
       {/* Results Table */}
@@ -239,72 +164,17 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
               <TableHead className="font-semibold">
                 <div className="flex items-center gap-2">
                   Tier
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-6 w-6">
-                        <Filter className="h-3 w-3" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-48">
-                      <div className="space-y-3">
-                        <h4 className="font-medium text-sm">Filter by Tier</h4>
-                        {ALL_TIERS.map((tier) => (
-                          <div
-                            key={tier}
-                            className="flex items-center space-x-2"
-                          >
-                            <Checkbox
-                              id={`tier-${tier}`}
-                              checked={selectedTiers.includes(tier)}
-                              onCheckedChange={(checked) =>
-                                handleTierChange(tier, !!checked)
-                              }
-                            />
-                            <Label
-                              htmlFor={`tier-${tier}`}
-                              className="text-sm capitalize"
-                            >
-                              {tier}
-                            </Label>
-                          </div>
-                        ))}
-                      </div>
-                    </PopoverContent>
-                  </Popover>
+                  <TierFilter
+                    selectedTiers={selectedTiers}
+                    setSelectedTiers={setSelectedTiers}
+                  />
                 </div>
               </TableHead>
               {showColumns.tags && (
                 <TableHead className="font-semibold">
                   <div className="flex items-center gap-2">
                     Tags
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <Button variant="ghost" size="icon" className="h-6 w-6">
-                          <Filter className="h-3 w-3" />
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-48">
-                        <div className="space-y-3">
-                          {ALL_TAGS.map((tag) => (
-                            <div
-                              key={tag}
-                              className="flex items-center space-x-2"
-                            >
-                              <Checkbox
-                                id={`tag-${tag}`}
-                                checked={tags === null || tags?.includes(tag)}
-                                onCheckedChange={(checked) =>
-                                  handleTagToggle(tag, !!checked)
-                                }
-                              />
-                              <Label htmlFor={`tag-${tag}`} className="text-sm">
-                                {tag}
-                              </Label>
-                            </div>
-                          ))}
-                        </div>
-                      </PopoverContent>
-                    </Popover>
+                    <TagFilter tags={tags} setTags={setTags} />
                   </div>
                 </TableHead>
               )}
@@ -336,60 +206,14 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                 const isBest = result.model.model === bestValue.model.model;
                 const isCheapestInProvider = index === 0;
                 return (
-                  <TableRow
+                  <ResultsTableRow
                     key={`${provider}-${result.model.model}`}
-                    className={
-                      isBest
-                        ? "bg-green-50 border-green-200"
-                        : isCheapestInProvider
-                        ? "bg-blue-50"
-                        : ""
-                    }
-                  >
-                    <TableCell className="font-medium">
-                      <div className="flex items-center gap-2">
-                        {getProviderIcon(provider)}
-                        {provider}
-                      </div>
-                    </TableCell>
-                    <TableCell>{result.model.model}</TableCell>
-                    {showColumns.size && (
-                      <TableCell className="text-nowrap">
-                        {result.model.model_size
-                          ? `${result.model.model_size}B`
-                          : "N/A"}
-                      </TableCell>
-                    )}
-                    <TableCell>{renderTierDots(result.model.tier)}</TableCell>
-                    {showColumns.tags && (
-                      <TableCell>
-                        <div className="flex flex-wrap gap-1">
-                          {result.model.tags?.map((tag) => (
-                            <Badge
-                              key={tag}
-                              variant="outline"
-                              className="text-xs"
-                            >
-                              {tag}
-                            </Badge>
-                          )) || "—"}
-                        </div>
-                      </TableCell>
-                    )}
-                    {showColumns.inputOutput && (
-                      <>
-                        <TableCell className="text-right">
-                          ${result.inputCost.toFixed(2)}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          ${result.outputCost.toFixed(2)}
-                        </TableCell>
-                      </>
-                    )}
-                    <TableCell className="text-right font-semibold">
-                      ${result.totalCost.toFixed(2)}
-                    </TableCell>
-                  </TableRow>
+                    result={result}
+                    isBest={isBest}
+                    isCheapestInProvider={isCheapestInProvider}
+                    showColumns={showColumns}
+                    renderTierDots={renderTierDots}
+                  />
                 );
               })
             )}
