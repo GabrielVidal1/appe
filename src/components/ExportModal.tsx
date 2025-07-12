@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -10,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { estimateTokens } from "@/lib/computations";
 import { Copy, Download, FileText } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
+import PriceRangeWidget from "./PriceRangeWidget";
 
 interface ExportModalProps {
   open: boolean;
@@ -190,38 +192,8 @@ Most Expensive: ${maxModel}`;
               </div>
             </div>
 
-            {/* Price Range */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg p-6">
-              <h3 className="text-lg font-semibold mb-4">Price Range</h3>
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    Cheapest:
-                  </span>
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-green-600">
-                      ${minCost.toFixed(2)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {minModel}
-                    </div>
-                  </div>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">
-                    Most Expensive:
-                  </span>
-                  <div className="text-right">
-                    <div className="text-xl font-bold text-red-600">
-                      ${maxCost.toFixed(2)}
-                    </div>
-                    <div className="text-sm text-muted-foreground">
-                      {maxModel}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Price Range Widget */}
+            <PriceRangeWidget data={data} />
           </div>
 
           {/* Action Buttons */}
