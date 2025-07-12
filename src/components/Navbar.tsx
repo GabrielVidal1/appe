@@ -31,12 +31,12 @@ const Navbar = ({ className }: NavbarProps) => {
             <span className="hidden sm:block">Prompt Price Predictor</span>
           </Link>
 
-          <Link
+          {/* <Link
             to="/"
             className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
           >
             Home
-          </Link>
+          </Link> */}
         </div>
 
         {/* Right side - GitHub and Theme toggle */}

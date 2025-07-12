@@ -42,13 +42,15 @@ const Index = () => {
 
           {/* Right Side */}
           <div className="w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
-            <div className="min-h-full p-6 overflow-y-auto flex flex-col gap-20 mt-9">
-              <EstimatorForm onSubmit={handleFormSubmit} />
-              {estimationData && (
-                <div ref={resultsRef}>
-                  <ResultsTable data={estimationData} />
-                </div>
-              )}
+            <div className="min-h-full h-fit flex flex-col">
+              <div className="p-6 h-fit flex flex-col gap-20 flex-1 mb-20">
+                <EstimatorForm onSubmit={handleFormSubmit} />
+                {estimationData && (
+                  <div ref={resultsRef}>
+                    <ResultsTable data={estimationData} />
+                  </div>
+                )}
+              </div>
               <Footer />
             </div>
           </div>
