@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +11,7 @@ import { FormDataContext } from "@/contexts/form/type";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens } from "@/lib/computations";
 import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
-import { Copy, Download, FileText, Link, Share2 } from "lucide-react";
+import { Copy, Download, FileText, Share2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import PriceRangeWidget from "./PriceRangeWidget";
 import { ShareConfigButton } from "./ShareConfigButton";
@@ -117,7 +116,9 @@ const ExportModal = ({
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = configName ? `${configName}-estimation.png` : "ai-cost-estimation.png";
+      a.download = configName
+        ? `${configName}-estimation.png`
+        : "ai-cost-estimation.png";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -137,7 +138,9 @@ const ExportModal = ({
   };
 
   const handleCopyText = async () => {
-    const text = `AI Model Cost Estimation${configName ? ` - ${configName}` : ''}
+    const text = `AI Model Cost Estimation${
+      configName ? ` - ${configName}` : ""
+    }
 Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
 Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
 Input Tokens: ${tokenStats.totalInput.toLocaleString()}
@@ -163,20 +166,26 @@ Most Expensive: ${maxModel}`;
   const handleDownloadCsv = async () => {
     try {
       setLoading((prev) => ({ ...prev, downloadCsv: true }));
-      
-      const csvContent = `Configuration Name,Data Count,Data Type,Total Tokens,Input Tokens,Output Tokens,Min Cost,Max Cost,Cheapest Model,Most Expensive Model
-"${configName || 'Untitled'}",${data.dataCount},"${data.dataType}",${tokenStats.totalTokens},${tokenStats.totalInput},${tokenStats.totalOutput},${minCost.toFixed(2)},${maxCost.toFixed(2)},"${minModel}","${maxModel}"`;
 
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const csvContent = `Configuration Name,Data Count,Data Type,Total Tokens,Input Tokens,Output Tokens,Min Cost,Max Cost,Cheapest Model,Most Expensive Model
+"${configName || "Untitled"}",${data.dataCount},"${data.dataType}",${
+        tokenStats.totalTokens
+      },${tokenStats.totalInput},${tokenStats.totalOutput},${minCost.toFixed(
+        2
+      )},${maxCost.toFixed(2)},"${minModel}","${maxModel}"`;
+
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = configName ? `${configName}-estimation.csv` : "ai-cost-estimation.csv";
+      a.download = configName
+        ? `${configName}-estimation.csv`
+        : "ai-cost-estimation.csv";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      
+
       toast({
         title: "CSV downloaded",
       });
@@ -278,10 +287,12 @@ Most Expensive: ${maxModel}`;
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold mb-4">Export Options</h3>
-              
+
               {/* Configuration Name */}
               <div className="space-y-2 mb-6">
-                <Label htmlFor="config-name">Configuration Name (Optional)</Label>
+                <Label htmlFor="config-name">
+                  Configuration Name (Optional)
+                </Label>
                 <Input
                   id="config-name"
                   value={configName}
@@ -310,7 +321,9 @@ Most Expensive: ${maxModel}`;
                     className="flex-1"
                   >
                     <Download className="h-4 w-4 mr-2" />
-                    {loading.downloadImage ? "Downloading..." : "Download Image"}
+                    {loading.downloadImage
+                      ? "Downloading..."
+                      : "Download Image"}
                   </Button>
                 </div>
               </div>
@@ -342,9 +355,10 @@ Most Expensive: ${maxModel}`;
               {/* Share */}
               <div className="space-y-3">
                 <h4 className="font-medium">Share</h4>
-                <ShareConfigButton 
+                <ShareConfigButton
                   icon={<Share2 className="h-4 w-4 mr-2" />}
                   className="w-full justify-center"
+                  copyOnClick
                 />
               </div>
             </div>

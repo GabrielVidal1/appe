@@ -45,6 +45,25 @@ export type Model = {
   tags: string[];
 };
 
+export const DEFAULT_FORM_VALUES: FormDataContext = {
+  dataCount: 1000,
+  dataType: "prompts",
+  prompt: "",
+  example: "",
+  imageSize: { width: 512, height: 512 },
+  pdfData: { pages: 10, tokenPerPage: 500 },
+  modelSize: "medium",
+  modelCapabilities: [],
+  configName: "", // Default empty config name
+  selectedTiers: ["small", "medium", "big"],
+  selectedProviders: ["claude", "mistral", "openai"],
+  showColumns: {
+    size: false,
+    inputOutput: false,
+    tags: true,
+  },
+};
+
 export type ExampleTemplate = Partial<FormDataContext> & {
   name: string;
 };

@@ -311,7 +311,10 @@ export function createShareableUrl(
     : formData;
 
   const compressed = compressFormData(dataWithName);
-  const jsonString = JSON.stringify(compressed);
+  const jsonString = new URLSearchParams(
+    Object.entries(compressed).map(([key, value]) => [key, `${value}`])
+  ).toString();
+  console.log("JSON String to URL:", jsonString);
   const encrypted = simpleEncrypt(jsonString);
   const configString = encodeURIComponent(encrypted);
 
@@ -332,11 +335,17 @@ export function parseConfigFromUrl(
 
     const decoded = decodeURIComponent(configParam);
     const decrypted = simpleDecrypt(decoded);
-    const compressed = JSON.parse(decrypted);
+    const asParams = new URLSearchParams(decrypted);
+    const compressed: Record<string, unknown> = {};
+    console.log("Decrypted config:", compressed.toString());
+    asParams.forEach((value, key) => {
+      compressed[key] = value;
+    });
 
     return decompressFormData(compressed);
   } catch (error) {
     console.error("Failed to parse config from URL:", error);
+    clearConfigFromUrl();
     return null;
   }
 }

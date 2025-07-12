@@ -14,7 +14,7 @@ const Index = () => {
   const [currentEstimationData, setEstimationData] =
     useState<FormDataContext | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
-  const { isConfigFromUrl } = useConfigFromUrl();
+  const { isConfigFromUrl, config } = useConfigFromUrl();
 
   const handleFormSubmit = (data: FormDataContext) => {
     setEstimationData(data);
@@ -71,7 +71,10 @@ const Index = () => {
                 </div>
                 {(currentEstimationData || isConfigFromUrl) && (
                   <div ref={resultsRef}>
-                    <ResultsTable data={currentEstimationData} />
+                    <ResultsTable
+                      data={currentEstimationData}
+                      configFromUrl={config}
+                    />
                   </div>
                 )}
               </div>

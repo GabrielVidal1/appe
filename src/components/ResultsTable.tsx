@@ -8,11 +8,14 @@ import ResultsTableFiltered from "./ResultsTableFiltered";
 
 interface ResultsTableProps {
   data: FormDataContext | null;
+  configFromUrl?: FormDataContext | null;
 }
 
-const ResultsTable = ({ data: propData }: ResultsTableProps) => {
-  const [data, setData] = useState<FormDataContext | null>(propData);
+const ResultsTable = ({ data: propData, configFromUrl }: ResultsTableProps) => {
   const { watch, subscribe, getValues } = useFormContext<FormDataContext>();
+  const [data, setData] = useState<FormDataContext | null>(
+    configFromUrl || propData
+  );
   const selectedTiers: FormDataContext["selectedTiers"] =
     watch("selectedTiers");
   const modelCapabilities: string[] = watch("modelCapabilities");

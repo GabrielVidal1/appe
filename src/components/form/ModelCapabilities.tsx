@@ -48,7 +48,7 @@ const ModelCapabilities = () => {
       tags: selectedCapabilities.length > 0,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedCapabilities, showColumns]);
+  }, [selectedCapabilities]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>

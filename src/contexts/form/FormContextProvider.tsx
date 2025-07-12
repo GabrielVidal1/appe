@@ -1,3 +1,4 @@
+import { DEFAULT_FORM_VALUES } from "@/lib/types";
 import { parseConfigFromUrl } from "@/lib/urlConfig";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -7,29 +8,11 @@ const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
   // Parse URL config if present
   const urlConfig = useMemo(() => parseConfigFromUrl(), []);
 
-  // Merge URL config with default values
-  const defaultValues: FormDataContext = {
-    dataCount: 1000,
-    dataType: "prompts",
-    prompt: "",
-    example: "",
-    imageSize: { width: 512, height: 512 },
-    pdfData: { pages: 10, tokenPerPage: 500 },
-    modelSize: "medium",
-    modelCapabilities: [],
-    configName: "", // Default empty config name
-    selectedTiers: ["small", "medium", "big"],
-    selectedProviders: ["claude", "mistral", "openai"],
-    showColumns: {
-      size: false,
-      inputOutput: false,
-      tags: true,
-    },
-    ...urlConfig, // Override with URL config if present
-  };
-
   const methods = useForm<FormDataContext>({
-    defaultValues,
+    defaultValues: {
+      ...DEFAULT_FORM_VALUES,
+      ...urlConfig, // Override with URL config if present
+    },
   });
 
   const { setValue } = methods;

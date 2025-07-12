@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { FormDataContext } from "@/contexts/form/type";
+import { useToast } from "@/hooks/use-toast";
 import { useFormState } from "@/hooks/useFormState";
 import { createShareableUrl } from "@/lib/urlConfig";
 import { cn } from "@/lib/utils";
@@ -20,12 +21,15 @@ import { useFormContext } from "react-hook-form";
 interface ShareConfigButtonProps {
   icon?: React.ReactNode;
   className?: string;
+  copyOnClick?: boolean;
 }
 
 export const ShareConfigButton = ({
   className,
   icon,
+  copyOnClick = false,
 }: ShareConfigButtonProps) => {
+  const { toast } = useToast();
   const { getValues } = useFormContext<FormDataContext>();
   const [shareUrl, setShareUrl] = useState<string>("");
   const [configName, setConfigName] = useFormState("configName");
@@ -45,15 +49,38 @@ export const ShareConfigButton = ({
     setShareUrl(url);
   };
 
-  const copyToClipboard = async () => {
+  const copyToClipboard = async (url?: string) => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      await navigator.clipboard.writeText(url ?? shareUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       console.error("Failed to copy: ", err);
     }
   };
+  const generateAndCopyUrl = () => {
+    const formData = getValues();
+    const url = createShareableUrl(formData, configName);
+    copyToClipboard(url);
+    setShareUrl(url);
+    toast({
+      title: "Configuration URL copied!",
+    });
+  };
+
+  if (copyOnClick) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={generateAndCopyUrl}
+        className={cn("gap-2 aspect-square", className)}
+        title="Share Link"
+      >
+        {icon ?? <Share2 className="h-4 w-4" />}
+      </Button>
+    );
+  }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -101,7 +128,11 @@ export const ShareConfigButton = ({
                 readOnly
                 className="flex-1"
               />
-              <Button size="sm" onClick={copyToClipboard} className="shrink-0">
+              <Button
+                size="sm"
+                onClick={() => copyToClipboard()}
+                className="shrink-0"
+              >
                 {copied ? (
                   <Check className="h-4 w-4" />
                 ) : (

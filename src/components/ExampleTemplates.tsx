@@ -7,19 +7,19 @@ import { useFormContext } from "react-hook-form";
 interface ExampleTemplatesProps {
   prompt?: string;
   className?: string;
+  onExampleSelect?: (example: ExampleTemplate) => void;
 }
 
 const ExampleTemplates = ({
   prompt,
   className = "",
+  onExampleSelect,
 }: ExampleTemplatesProps) => {
   const { setValue } = useFormContext();
 
-  const handleSelectExample = ({
-    dataType,
-    example,
-    prompt,
-  }: ExampleTemplate) => {
+  const handleSelectExample = (exampleTemplate: ExampleTemplate) => {
+    const { dataType, example, prompt } = exampleTemplate;
+    onExampleSelect?.(exampleTemplate);
     setValue("dataType", dataType);
     setValue("prompt", prompt);
     setValue("example", example);

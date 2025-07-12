@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { cn } from "@/lib/utils";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ExampleTemplates from "./ExampleTemplates";
 import ExampleOutput from "./form/ExampleOutputs";
@@ -16,6 +16,7 @@ interface EstimatorFormProps {
 }
 
 const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
+  const [showExamples, setShowExamples] = useState(true);
   const { handleSubmit, watch } = useFormContext();
   const dataType = watch("dataType");
   const prompt = watch("prompt");
@@ -58,16 +59,18 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
 
               <ExampleOutput className="w-full" />
 
-              <SubmitButton
-                onClick={handleSubmit(onFormSubmit)}
-                className="group/submit"
-                disabled={!dataType || !prompt?.trim()}
-                update={updatePrices}
-              />
+              {!isConfigFromUrl && (
+                <SubmitButton
+                  onClick={handleSubmit(onFormSubmit)}
+                  className="group/submit"
+                  disabled={!dataType || !prompt?.trim()}
+                  update={updatePrices}
+                />
+              )}
             </CardContent>
           </Card>
         </div>
-        {!isConfigFromUrl && (
+        {!isConfigFromUrl && showExamples && (
           <div
             className={cn(
               "absolute inset-0 flex items-center",
@@ -79,7 +82,12 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
             <div className="relative w-full h-[75px]">
               <Card className="absolute w-full shadow-lg pt-6 bottom-[60%] -top-[60%]">
                 <CardContent className="flex justify-between items-center">
-                  Try these examples: <ExampleTemplates />
+                  Try these examples:{" "}
+                  <ExampleTemplates
+                    onExampleSelect={(example) => {
+                      setShowExamples(false);
+                    }}
+                  />
                 </CardContent>
               </Card>
             </div>
