@@ -1,12 +1,11 @@
-
-import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useFormContext } from "react-hook-form";
-import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { FormDataContext } from "@/contexts/form/type";
-import SentenceInput from "./form/SentenceInput";
-import PromptInput from "./form/PromptInput";
+import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
+import { useState } from "react";
+import { useFormContext } from "react-hook-form";
 import ExampleOutput from "./form/ExampleOutputs";
+import PromptInput from "./form/PromptInput";
+import SentenceInput from "./form/SentenceInput";
 import SubmitButton from "./form/SubmitButton";
 import HelpButton from "./HelpButton";
 import HelpModal from "./HelpModal";
@@ -39,9 +38,13 @@ const FormCard = ({ onSubmit, updatePrices }: FormCardProps) => {
     <>
       <Card className="w-full max-w-4xl">
         <CardHeader>
-          <CardTitle className="text-xl text-center flex items-center justify-center gap-2">
-            <HelpButton onClick={() => setShowHelpModal(true)} />
+          <CardTitle className="text-xl text-center flex items-center justify-center gap-2 relative">
             <SentenceInput />
+            <HelpButton
+              className="absolute right-2 top-1/2 transform -translate-y-1/2"
+              onClick={() => setShowHelpModal(true)}
+              show={false}
+            />
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 flex flex-col gap-4 items-center">
@@ -62,10 +65,7 @@ const FormCard = ({ onSubmit, updatePrices }: FormCardProps) => {
         </CardContent>
       </Card>
 
-      <HelpModal 
-        open={showHelpModal} 
-        onOpenChange={setShowHelpModal} 
-      />
+      <HelpModal open={showHelpModal} onOpenChange={setShowHelpModal} />
     </>
   );
 };

@@ -1,8 +1,7 @@
-
-import { useCallback, useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
 import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
+import { memo, useCallback, useEffect, useState } from "react";
+import { useFormContext } from "react-hook-form";
 import ExampleTemplateBanner from "./ExampleTemplateBanner";
 import FormCard from "./FormCard";
 
@@ -42,7 +41,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
         <div className="w-full z-100 mt-20">
           <FormCard onSubmit={onSubmit} updatePrices={updatePrices} />
         </div>
-        
+
         <ExampleTemplateBanner
           showExamples={showExamples}
           onExampleSelect={() => setShowExamples(false)}
@@ -53,4 +52,4 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   );
 };
 
-export default EstimatorForm;
+export default memo(EstimatorForm);

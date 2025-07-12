@@ -8,7 +8,7 @@ import FormContextProvider from "@/contexts/form/FormContextProvider";
 import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { cn } from "@/lib/utils";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const Index = () => {
   const [currentEstimationData, setEstimationData] =
@@ -16,21 +16,23 @@ const Index = () => {
   const resultsRef = useRef<HTMLDivElement>(null);
   const { isConfigFromUrl, config } = useConfigFromUrl();
 
-  const handleFormSubmit = (data: FormDataContext) => {
-    setEstimationData(data);
-    // Scroll to results after a short delay to ensure the component is rendered
-    if (!currentEstimationData) {
-      setTimeout(() => {
-        resultsRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }, 100);
-    }
-  };
+  const handleFormSubmit = useCallback(
+    (data: FormDataContext) => {
+      setEstimationData(data);
+      // Scroll to results after a short delay to ensure the component is rendered
+      if (!currentEstimationData) {
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
+      }
+    },
+    [currentEstimationData]
+  );
 
   useEffect(() => {
-    console.log("Config from URL:", isConfigFromUrl);
     // If the form is pre-filled from URL, scroll to results
     if (isConfigFromUrl && resultsRef.current) {
       setTimeout(() => {

@@ -20,7 +20,6 @@ const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
   // Update form values if URL config is present
   useEffect(() => {
     if (urlConfig) {
-      console.log(`Setting value from URL config:`, urlConfig);
       Object.entries(urlConfig).forEach(([key, value]) => {
         if (value !== undefined) {
           setValue(
