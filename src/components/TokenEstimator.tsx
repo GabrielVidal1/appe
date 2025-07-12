@@ -4,12 +4,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { DataType } from "@/contexts/form/type";
 import { estimateTokens } from "@/lib/computations";
 import { ChevronDown } from "lucide-react";
 import { useMemo, useState } from "react";
 
 interface TokenEstimatorProps {
-  dataType: string;
+  dataType: DataType;
   prompt: string;
   example: string;
   imageSize?: { width: number; height: number };
