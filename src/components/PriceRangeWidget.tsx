@@ -1,8 +1,11 @@
-
-import { useMemo } from "react";
 import { FormDataContext } from "@/contexts/form/type";
-import { ALL_MODELS, calculatePricing, estimateTokens } from "@/lib/computations";
+import {
+  ALL_MODELS,
+  calculatePricing,
+  estimateTokens,
+} from "@/lib/computations";
 import { Model } from "@/lib/types";
+import { useMemo } from "react";
 import { getProviderIcon } from "./ProviderIcons";
 
 interface PriceRangeWidgetProps {
@@ -10,7 +13,10 @@ interface PriceRangeWidgetProps {
   models?: Model[];
 }
 
-const PriceRangeWidget = ({ data, models: modelsProp }: PriceRangeWidgetProps) => {
+const PriceRangeWidget = ({
+  data,
+  models: modelsProp,
+}: PriceRangeWidgetProps) => {
   const models = modelsProp || ALL_MODELS;
 
   const chartData = useMemo(() => {
@@ -29,7 +35,7 @@ const PriceRangeWidget = ({ data, models: modelsProp }: PriceRangeWidgetProps) =
 
     // Group by provider and select up to 1 model per provider, max 5 total
     const providerGroups: { [provider: string]: typeof results } = {};
-    
+
     results.forEach((result) => {
       if (!providerGroups[result.model.provider]) {
         providerGroups[result.model.provider] = [];
@@ -39,13 +45,13 @@ const PriceRangeWidget = ({ data, models: modelsProp }: PriceRangeWidgetProps) =
 
     // Get one model per provider (cheapest from each)
     const selectedResults = Object.values(providerGroups)
-      .map(group => group.sort((a, b) => a.totalCost - b.totalCost)[0])
+      .map((group) => group.sort((a, b) => a.totalCost - b.totalCost)[0])
       .sort((a, b) => a.totalCost - b.totalCost)
       .slice(0, 5); // Max 5 models
 
-    const maxCost = Math.max(...selectedResults.map(r => r.totalCost));
+    const maxCost = Math.max(...selectedResults.map((r) => r.totalCost));
 
-    return selectedResults.map(result => ({
+    return selectedResults.map((result) => ({
       ...result,
       widthPercentage: (result.totalCost / maxCost) * 100,
     }));
@@ -56,11 +62,18 @@ const PriceRangeWidget = ({ data, models: modelsProp }: PriceRangeWidgetProps) =
       <h3 className="text-lg font-semibold mb-4">Price Comparison</h3>
       <div className="space-y-3">
         {chartData.map((item, index) => (
-          <div key={`${item.model.provider}-${item.model.model}`} className="space-y-1">
+          <div
+            key={`${item.model.provider}-${item.model.model}`}
+            className="space-y-1"
+          >
             <div className="flex justify-between items-center text-sm">
-              <div className="flex items-center gap-2">
-                {getProviderIcon(item.model.provider)}
-                <span className="font-medium">{item.model.model}</span>
+              <div className="flex items-center gap-1.5">
+                <span className="inline-flex items-center h-5">
+                  {getProviderIcon(item.model.provider)}
+                </span>
+                <span className="font-medium leading-none">
+                  {item.model.model}
+                </span>
               </div>
               <span className="font-bold text-green-600">
                 ${item.totalCost.toFixed(2)}

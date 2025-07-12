@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,6 +8,7 @@ import {
 import { FormDataContext } from "@/contexts/form/type";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens } from "@/lib/computations";
+import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
 import { Copy, Download, FileText } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import PriceRangeWidget from "./PriceRangeWidget";
@@ -69,6 +69,7 @@ const ExportModal = ({
       backgroundColor: "#ffffff",
       scale: 2, // Higher resolution
       useCORS: true,
+      // foreignObjectRendering: true,
     });
 
     return new Promise((resolve) => {
@@ -157,7 +158,24 @@ Most Expensive: ${maxModel}`;
                 AI Model Cost Estimation
               </h2>
               <p className="text-lg text-muted-foreground">
-                Processing {data.dataCount.toLocaleString()} {data.dataType}
+                Processing
+                <span className="underline mx-1">
+                  {data.dataCount.toLocaleString()}
+                </span>
+                <span className="underline mx-1">{data.dataType}</span>
+                with a<span className="underline mx-1">{data.modelSize}</span>
+                model
+                {data.modelCapabilities.length > 0 && (
+                  <>
+                    {" "}
+                    that can
+                    <span className="underline ml-1">
+                      {data.modelCapabilities
+                        .map((cap) => CAPABILITIES_FROM_TAG[cap] || cap)
+                        .join(", ")}
+                    </span>
+                  </>
+                )}
               </p>
             </div>
 

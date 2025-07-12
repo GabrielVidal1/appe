@@ -12,18 +12,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TAGS } from "@/lib/constants";
+import { ALL_TAGS, CAPABILITIES_FROM_TAG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
-
-const capabilityFromTag = {
-  vision: "see",
-  code: "code",
-  multilingual: "speak multiple languages",
-  reasoning: "think",
-};
 
 const ModelCapabilities = () => {
   const [open, setOpen] = useState(false);
@@ -45,7 +38,7 @@ const ModelCapabilities = () => {
   const displayText =
     selectedCapabilities.length > 0
       ? selectedCapabilities
-          .map((capability) => capabilityFromTag[capability] || capability)
+          .map((capability) => CAPABILITIES_FROM_TAG[capability] || capability)
           .join(", ")
       : "do anything";
 

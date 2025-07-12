@@ -13,6 +13,13 @@ export const ALL_PROVIDERS = Array.from(
   new Set(ALL_MODELS.map((model) => model.provider))
 ).sort();
 
+export const CAPABILITIES_FROM_TAG = {
+  vision: "see",
+  code: "code",
+  multilingual: "speak multiple languages",
+  reasoning: "think",
+};
+
 export const EXAMPLES: ExampleTemplate[] = [
   {
     name: "Translation",
