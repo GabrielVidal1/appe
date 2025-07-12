@@ -11,6 +11,7 @@ export interface FormDataContext {
   pdfData?: { pages: number; tokenPerPage: number };
   modelSize: ModelSize;
   modelCapabilities: string[];
+  configName?: string; // Optional name for shared configurations
 
   showColumns?: {
     size: boolean;

@@ -27,9 +27,9 @@ const SubmitButton = ({
     >
       {update ? "Update prices" : "Show provider prices"}
       <div className="flex items-center gap-2 ml-2 ">
-        {getProviderIcon("openai", "group-hover:animate-spin")}
-        {getProviderIcon("claude", "group-hover:animate-spin")}
-        {getProviderIcon("mistral", "group-hover:animate-spin")}
+        {getProviderIcon("openai", "group-hover/submit:animate-spin")}
+        {getProviderIcon("claude", "group-hover/submit:animate-spin")}
+        {getProviderIcon("mistral", "group-hover/submit:animate-spin")}
       </div>
     </Button>
   );

@@ -8,7 +8,7 @@ import {
 } from "@/lib/computations";
 import { tokensToRealWorldText } from "@/lib/format";
 import { Model } from "@/lib/types";
-import { Download } from "lucide-react";
+import { Share2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import ExportModal from "./ExportModal";
 import { getProviderIcon } from "./ProviderIcons";
@@ -62,19 +62,21 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
       maxModel: maxResult?.model,
       modelCount: results.length,
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   return (
     <>
       <Card className="relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute top-4 right-4 z-10"
-          onClick={() => setExportModalOpen(true)}
-        >
-          <Download className="h-4 w-4" />
-        </Button>
+        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setExportModalOpen(true)}
+          >
+            <Share2 className="h-4 w-4" />
+          </Button>
+        </div>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
             <div className="text-center flex flex-col justify-between">
@@ -114,12 +116,6 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
               </div>
             </div>
           </div>
-          {/* <div className="mt-4 text-center">
-            <Badge variant="secondary">
-              Comparing {summaryData.modelCount} models for{" "}
-              {data.dataCount.toLocaleString()} {data.dataType}
-            </Badge>
-          </div> */}
         </CardContent>
       </Card>
 

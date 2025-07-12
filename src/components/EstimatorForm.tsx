@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FormDataContext } from "@/contexts/form/type";
+import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { cn } from "@/lib/utils";
 import { useCallback, useEffect } from "react";
 import { useFormContext } from "react-hook-form";
@@ -18,9 +19,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   const { handleSubmit, watch } = useFormContext();
   const dataType = watch("dataType");
   const prompt = watch("prompt");
-  const dataCount = watch("dataCount");
-  const example = watch("example");
-  const imageSize = watch("imageSize");
+  const { isConfigFromUrl } = useConfigFromUrl();
 
   const onFormSubmit = useCallback((data: FormDataContext) => {
     onSubmit({
@@ -43,7 +42,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   }, [updatePrices, handleSubmit, onFormSubmit]);
 
   return (
-    <div className="group">
+    <div className="">
       <div className="relative w-full mb-6 ">
         <div className="w-full z-100 mt-20">
           <Card className="w-full max-w-4xl">
@@ -61,29 +60,31 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
 
               <SubmitButton
                 onClick={handleSubmit(onFormSubmit)}
-                className=" group"
+                className="group/submit"
                 disabled={!dataType || !prompt?.trim()}
                 update={updatePrices}
               />
             </CardContent>
           </Card>
         </div>
-        <div
-          className={cn(
-            "absolute inset-0 flex items-center",
-            "z-0 transition-transform duration-300 ease-in-out",
-            "group-hover:-translate-y-1/2 -translate-y-[120%] opacity-0 group-hover:opacity-100",
-            "pointer-events-none"
-          )}
-        >
-          <div className="relative w-full h-[75px]">
-            <Card className="absolute w-full shadow-lg pt-6 bottom-[60%] -top-[60%]">
-              <CardContent className="flex justify-between items-center">
-                Try these examples: <ExampleTemplates />
-              </CardContent>
-            </Card>
+        {!isConfigFromUrl && (
+          <div
+            className={cn(
+              "absolute inset-0 flex items-center",
+              "z-0 transition-transform duration-300 ease-in-out",
+              "group-hover:-translate-y-1/2 -translate-y-[120%] opacity-0 group-hover:opacity-100",
+              "pointer-events-none"
+            )}
+          >
+            <div className="relative w-full h-[75px]">
+              <Card className="absolute w-full shadow-lg pt-6 bottom-[60%] -top-[60%]">
+                <CardContent className="flex justify-between items-center">
+                  Try these examples: <ExampleTemplates />
+                </CardContent>
+              </Card>
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

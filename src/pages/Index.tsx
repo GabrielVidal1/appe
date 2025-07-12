@@ -1,3 +1,4 @@
+import { ConfigNameDisplay } from "@/components/ConfigNameDisplay";
 import EstimatorForm from "@/components/EstimatorForm";
 import Footer from "@/components/Footer";
 import LeftSideContent from "@/components/LeftHero";
@@ -5,13 +6,15 @@ import Navbar from "@/components/Navbar";
 import ResultsTable from "@/components/ResultsTable";
 import FormContextProvider from "@/contexts/form/FormContextProvider";
 import { FormDataContext } from "@/contexts/form/type";
+import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { cn } from "@/lib/utils";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const Index = () => {
   const [currentEstimationData, setEstimationData] =
     useState<FormDataContext | null>(null);
   const resultsRef = useRef<HTMLDivElement>(null);
+  const { isConfigFromUrl } = useConfigFromUrl();
 
   const handleFormSubmit = (data: FormDataContext) => {
     setEstimationData(data);
@@ -25,6 +28,19 @@ const Index = () => {
       }, 100);
     }
   };
+
+  useEffect(() => {
+    console.log("Config from URL:", isConfigFromUrl);
+    // If the form is pre-filled from URL, scroll to results
+    if (isConfigFromUrl && resultsRef.current) {
+      setTimeout(() => {
+        resultsRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 1000);
+    }
+  }, [isConfigFromUrl]);
 
   return (
     <FormContextProvider>
@@ -42,14 +58,18 @@ const Index = () => {
           </div>
 
           {/* Right Side */}
-          <div className="w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
+          <div className="group w-full h-full overflow-y-scroll lg:w-2/3 bg-white dark:bg-gray-900 flex flex-col">
             <div className="min-h-full h-fit flex flex-col">
               <div className="p-6 h-fit flex flex-col gap-20 flex-1 mb-20">
-                <EstimatorForm
-                  onSubmit={handleFormSubmit}
-                  updatePrices={!!currentEstimationData}
-                />
-                {currentEstimationData && (
+                <div>
+                  {/* <SharedConfigNotification /> */}
+                  <ConfigNameDisplay />
+                  <EstimatorForm
+                    onSubmit={handleFormSubmit}
+                    updatePrices={!!currentEstimationData}
+                  />
+                </div>
+                {(currentEstimationData || isConfigFromUrl) && (
                   <div ref={resultsRef}>
                     <ResultsTable data={currentEstimationData} />
                   </div>

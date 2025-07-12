@@ -9,9 +9,10 @@ import { FormDataContext } from "@/contexts/form/type";
 import { useToast } from "@/hooks/use-toast";
 import { estimateTokens } from "@/lib/computations";
 import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
-import { Copy, Download, FileText } from "lucide-react";
+import { Copy, Download, FileText, Link } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import PriceRangeWidget from "./PriceRangeWidget";
+import { ShareConfigButton } from "./ShareConfigButton";
 
 interface ExportModalProps {
   open: boolean;
@@ -242,6 +243,7 @@ Most Expensive: ${maxModel}`;
             >
               <FileText className="h-4 w-4" />
             </Button>
+            <ShareConfigButton icon={<Link className="h-4 w-4" />} />
           </div>
         </div>
       </DialogContent>
