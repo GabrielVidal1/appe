@@ -12,7 +12,7 @@
     "cache_cost": 1.5,
     "max_token": 200000,
     "tier": "big",
-    "tags": ["multilingual", "vision", "extended thinking"],
+    "tags": ["multilingual", "vision", "reasoning"],
     "license": "commercial"
   },
   {
@@ -28,7 +28,7 @@
     "cache_cost": 0.3,
     "max_token": 200000,
     "tier": "big",
-    "tags": ["multilingual", "vision", "extended thinking"],
+    "tags": ["multilingual", "vision", "reasoning"],
     "license": "commercial"
   },
   {
@@ -44,7 +44,7 @@
     "cache_cost": 0.3,
     "max_token": 200000,
     "tier": "medium",
-    "tags": ["multilingual", "vision", "extended thinking"],
+    "tags": ["multilingual", "vision", "reasoning"],
     "license": "commercial"
   },
   {

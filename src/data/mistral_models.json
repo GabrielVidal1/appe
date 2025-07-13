@@ -12,7 +12,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "big",
-    "tags": ["multimodal", "reasoning"],
+    "tags": ["vision", "reasoning"],
     "license": "commercial"
   },
   {
@@ -44,7 +44,7 @@
     "cache_cost": null,
     "max_token": 256000,
     "tier": "medium",
-    "tags": ["coding", "low-latency", "high-frequency"],
+    "tags": ["coding"],
     "license": "commercial"
   },
   {
@@ -76,7 +76,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "medium",
-    "tags": ["OCR", "document AI"],
+    "tags": ["document AI"],
     "license": "commercial"
   },
   {
@@ -124,7 +124,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "big",
-    "tags": ["high-complexity tasks"],
+    "tags": [],
     "license": "Mistral Research License"
   },
   {
@@ -140,7 +140,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "big",
-    "tags": ["multimodal"],
+    "tags": ["vision"],
     "license": "Mistral Research License"
   },
   {
@@ -172,7 +172,7 @@
     "cache_cost": null,
     "max_token": 8000,
     "tier": "small",
-    "tags": ["semantic extraction"],
+    "tags": ["edge"],
     "license": "commercial"
   },
   {
@@ -188,7 +188,7 @@
     "cache_cost": null,
     "max_token": 8000,
     "tier": "small",
-    "tags": ["semantic extraction"],
+    "tags": ["edge"],
     "license": "commercial"
   },
   {
@@ -220,7 +220,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "small",
-    "tags": ["multimodal", "multilingual"],
+    "tags": ["vision", "multilingual"],
     "license": "Apache2"
   },
   {
@@ -268,7 +268,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "small",
-    "tags": ["multimodal", "image understanding"],
+    "tags": ["vision"],
     "license": "Apache2"
   },
   {
@@ -332,7 +332,7 @@
     "cache_cost": null,
     "max_token": 128000,
     "tier": "medium",
-    "tags": ["multimodal", "image understanding"],
+    "tags": ["vision"],
     "license": "Apache2"
   },
   {

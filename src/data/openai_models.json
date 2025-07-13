@@ -348,7 +348,7 @@
     "cache_cost": null,
     "max_token": null,
     "tier": "big",
-    "tags": ["computer use", "multilingual"],
+    "tags": ["multilingual"],
     "license": "commercial"
   },
   {

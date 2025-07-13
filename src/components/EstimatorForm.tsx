@@ -44,7 +44,8 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
 
         <ExampleTemplateBanner
           showExamples={showExamples}
-          onExampleSelect={() => setShowExamples(false)}
+          onExampleSelect={() => {}}
+          onClose={() => setShowExamples(false)}
           isConfigFromUrl={isConfigFromUrl}
         />
       </div>

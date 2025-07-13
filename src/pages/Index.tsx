@@ -16,21 +16,15 @@ const Index = () => {
   );
   const resultsRef = useRef<HTMLDivElement>(null);
   const { isConfigFromUrl, config } = useConfigFromUrl();
-  const handleFormSubmit = useCallback(
-    (data: AppData) => {
-      setEstimationData(data);
-      // Scroll to results after a short delay to ensure the component is rendered
-      if (!currentEstimationData) {
-        setTimeout(() => {
-          resultsRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }, 100);
-      }
-    },
-    [currentEstimationData]
-  );
+  const handleFormSubmit = useCallback((data: AppData) => {
+    setEstimationData(data);
+    setTimeout(() => {
+      resultsRef.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }, 100);
+  }, []);
 
   useEffect(() => {
     // If the form is pre-filled from URL, scroll to results

@@ -3,9 +3,13 @@ import { times } from "lodash";
 
 export const CAPABILITIES_FROM_TAG = {
   vision: "see",
-  code: "code",
+  coding: "code",
   multilingual: "speak multiple languages",
   reasoning: "think",
+  "document AI": "read documents",
+  math: "do math",
+  edge: "run on edge devices",
+  moderation: "moderate content",
 };
 
 export const LOREM_IPSUM = times(
