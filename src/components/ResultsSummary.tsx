@@ -5,7 +5,7 @@ import { computePrices, computeTokens } from "@/lib/computations";
 import { tokensToRealWorldText } from "@/lib/format";
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
-import { Share2, Info } from "lucide-react";
+import { Info, Share2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import ExportModal from "./ExportModal";
 import { getProviderIcon } from "./ProviderIcons";
@@ -31,9 +31,9 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
       };
     });
 
-    const totalInputTokens = tokenEstimates[0]?.totalTokens || 0;
-    const totalOutputTokens = tokenEstimates[0]?.outputTokens || 0;
-    const totalTokens = (totalInputTokens + totalOutputTokens) * data.dataCount;
+    const tokenEstimateNoModel = computeTokens(data);
+
+    const totalTokens = tokenEstimateNoModel.totalTokens * data.dataCount;
 
     const minResult = tokenEstimates.reduce(
       (min, res) => (res.totalCost < min.totalCost ? res : min),
@@ -45,9 +45,8 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
     );
 
     return {
+      tokenEstimateNoModel,
       tokenEstimates,
-      totalInputTokens,
-      totalOutputTokens,
       totalTokens,
       minCost: minResult?.totalCost,
       maxCost: maxResult?.totalCost,
@@ -72,7 +71,10 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
         </div>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
-            <TokenBreakdownPopover data={summaryData.tokenEstimates[0]}>
+            <TokenBreakdownPopover
+              data={data}
+              results={summaryData.tokenEstimateNoModel}
+            >
               <div className="text-center flex flex-col justify-between hover:bg-muted/50 rounded-lg p-2 transition-colors">
                 <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
                   Total Tokens

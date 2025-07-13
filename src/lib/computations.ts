@@ -20,46 +20,36 @@ export const computeTokens = (
   appData: AppData,
   model?: Model
 ): TokenResults => {
-  let textTokensPerItem = strToTokens(appData.prompt);
+  const inputTextTokens = strToTokens(appData.prompt);
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
 
   const { pdf } = PROVIDERS[model?.provider ?? "openai"];
 
-  switch (appData.dataType) {
-    case "prompts":
-      textTokensPerItem += strToTokens(appData.example);
-      break;
-    case "images":
-      if (appData.imageSize) {
-        inputImageTokens = +computeImagePrice(
-          model?.provider ?? "openai",
-          appData.imageSize.width,
-          appData.imageSize.height
-        ).tokens.toFixed(0);
-      }
-      break;
-    case "pdfs":
-      if (appData.pdfData) {
-        inputDocumentTokens +=
-          appData.pdfData.pages *
-          (pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage);
-      }
-      break;
+  if (appData.dataType === "images" && appData.imageSize) {
+    inputImageTokens = +computeImagePrice(
+      model?.provider ?? "openai",
+      appData.imageSize.width,
+      appData.imageSize.height
+    ).tokens.toFixed(0);
+  } else if (appData.dataType === "pdfs" && appData.pdfData) {
+    inputDocumentTokens +=
+      appData.pdfData.pages *
+      (pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage);
   }
   const outputTokens = strToTokens(appData.example);
 
   return {
     model,
     inputTokens: {
-      text: textTokensPerItem,
+      text: inputTextTokens,
       document: inputDocumentTokens,
       image: inputImageTokens,
-      total: textTokensPerItem + inputDocumentTokens + inputImageTokens,
+      total: inputTextTokens + inputDocumentTokens + inputImageTokens,
     },
     outputTokens: outputTokens,
     totalTokens:
-      textTokensPerItem + inputDocumentTokens + inputImageTokens + outputTokens,
+      inputTextTokens + inputDocumentTokens + inputImageTokens + outputTokens,
   };
 };
 
