@@ -3,8 +3,7 @@
     "name": "Mistral",
     "batchDiscount": 0.5,
     "pdf": {
-      "pricePerKPage": 1,
-      "tokenPerPage": 1000000
+      "pricePerKPage": 1
     }
   },
   "anthropic": {

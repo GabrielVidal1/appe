@@ -1,4 +1,3 @@
-
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
 import { PROVIDERS } from "@/types/provider";
@@ -25,7 +24,7 @@ export const computeTokens = (
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
 
-  const { pdf } = PROVIDERS[model?.provider ?? "openai"];
+  const { pdf } = PROVIDERS[model?.provider ?? "anthropic"];
 
   if (appData.dataType === "images" && appData.imageSize) {
     inputImageTokens = +computeImagePrice(
@@ -34,9 +33,9 @@ export const computeTokens = (
       appData.imageSize.height
     ).tokens.toFixed(0);
   } else if (appData.dataType === "pdfs" && appData.pdfData) {
-    inputDocumentTokens +=
-      appData.pdfData.pages *
-      (pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage);
+    const tokenPerPage = pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage;
+
+    inputDocumentTokens += appData.pdfData.pages * tokenPerPage;
   }
   const outputTokens = strToTokens(appData.example);
 
@@ -65,12 +64,18 @@ export const computePrices = (
 ): PricingResult => {
   const provider = PROVIDERS[model.provider];
   const { input_cost, output_cost, cache_cost } = model;
-  const batchDiscount = appData.batchEnabled ? (provider.batchDiscount || 1) : 1;
+  const batchDiscount = appData.batchEnabled ? provider.batchDiscount || 1 : 1;
 
   const outputCost =
-    tokenResults.outputTokens * (output_cost / 1000000) * appData.dataCount * batchDiscount;
-  let inputCost =
-    tokenResults.inputTokens.text * (input_cost / 1000000) * appData.dataCount * batchDiscount;
+    tokenResults.outputTokens *
+    (output_cost / 1000000) *
+    appData.dataCount *
+    batchDiscount;
+  const inputCost =
+    tokenResults.inputTokens.text *
+    (input_cost / 1000000) *
+    appData.dataCount *
+    batchDiscount;
   let cachedCost = 0;
   let inputDocumentCost = 0;
   let inputImageCost = 0;
@@ -79,26 +84,41 @@ export const computePrices = (
     cachedCost =
       (appData.dataCount - 1) *
       tokenResults.inputTokens.text *
-      (cache_cost / 1000000) * batchDiscount;
-    inputCost = tokenResults.inputTokens.text * (input_cost / 1000000) * batchDiscount;
+      (cache_cost / 1000000) *
+      batchDiscount;
+    // inputCost =
+    //   tokenResults.inputTokens.text * (input_cost / 1000000) * batchDiscount;
   }
 
-  if (
-    appData.dataType === "pdfs" &&
-    provider.pdf?.pricePerKPage &&
-    appData.pdfData
-  ) {
-    inputDocumentCost +=
-      appData.pdfData.pages * provider.pdf.pricePerKPage * appData.dataCount * batchDiscount;
+  if (appData.dataType === "pdfs" && appData.pdfData) {
+    if (provider.pdf?.pricePerKPage) {
+      inputDocumentCost +=
+        appData.pdfData.pages *
+        (provider.pdf.pricePerKPage / 1000) *
+        appData.dataCount *
+        batchDiscount;
+    } else {
+      inputDocumentCost +=
+        tokenResults.inputTokens.document *
+        (input_cost / 1000000) *
+        appData.dataCount *
+        batchDiscount;
+    }
   }
 
   if (appData.dataType === "images") {
-    inputImageCost +=
-      computeImagePrice(
-        model.provider,
-        appData.imageSize.width,
-        appData.imageSize.height
-      ).cost * appData.dataCount * batchDiscount;
+    const { tokens, cost } = computeImagePrice(
+      model.provider,
+      appData.imageSize.width,
+      appData.imageSize.height
+    );
+
+    inputImageCost += cost
+      ? cost * appData.dataCount * batchDiscount
+      : (model.input_cost / 1000000) *
+        tokens *
+        appData.dataCount *
+        batchDiscount;
   }
 
   return {

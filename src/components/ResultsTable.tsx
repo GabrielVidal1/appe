@@ -1,12 +1,12 @@
+
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 import { ALL_TEXT_MODELS } from "@/data";
 import { AppData } from "@/types/appData";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ResultsSummary from "./ResultsSummary";
 import ResultsTableFiltered from "./ResultsTableFiltered";
+import BatchPricingToggle from "./BatchPricingToggle";
 
 interface ResultsTableProps {
   data: AppData | null;
@@ -56,11 +56,7 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
         <CardContent className="space-y-6 mt-6">
           <div className="flex-col gap-4">
             <div className="flex justify-end items-center space-x-2 mb-4">
-              <Label htmlFor="batch-toggle" className="text-sm font-medium">
-                Batch Pricing
-              </Label>
-              <Switch
-                id="batch-toggle"
+              <BatchPricingToggle
                 checked={batchEnabled}
                 onCheckedChange={handleBatchToggle}
               />
