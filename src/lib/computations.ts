@@ -1,3 +1,4 @@
+
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
 import { PROVIDERS } from "@/types/provider";
@@ -64,11 +65,12 @@ export const computePrices = (
 ): PricingResult => {
   const provider = PROVIDERS[model.provider];
   const { input_cost, output_cost, cache_cost } = model;
+  const batchDiscount = appData.batchEnabled ? (provider.batchDiscount || 1) : 1;
 
   const outputCost =
-    tokenResults.outputTokens * (output_cost / 1000000) * appData.dataCount;
+    tokenResults.outputTokens * (output_cost / 1000000) * appData.dataCount * batchDiscount;
   let inputCost =
-    tokenResults.inputTokens.text * (input_cost / 1000000) * appData.dataCount;
+    tokenResults.inputTokens.text * (input_cost / 1000000) * appData.dataCount * batchDiscount;
   let cachedCost = 0;
   let inputDocumentCost = 0;
   let inputImageCost = 0;
@@ -77,8 +79,8 @@ export const computePrices = (
     cachedCost =
       (appData.dataCount - 1) *
       tokenResults.inputTokens.text *
-      (cache_cost / 1000000);
-    inputCost = tokenResults.inputTokens.text * (input_cost / 1000000);
+      (cache_cost / 1000000) * batchDiscount;
+    inputCost = tokenResults.inputTokens.text * (input_cost / 1000000) * batchDiscount;
   }
 
   if (
@@ -87,7 +89,7 @@ export const computePrices = (
     appData.pdfData
   ) {
     inputDocumentCost +=
-      appData.pdfData.pages * provider.pdf.pricePerKPage * appData.dataCount;
+      appData.pdfData.pages * provider.pdf.pricePerKPage * appData.dataCount * batchDiscount;
   }
 
   if (appData.dataType === "images") {
@@ -96,7 +98,7 @@ export const computePrices = (
         model.provider,
         appData.imageSize.width,
         appData.imageSize.height
-      ).cost * appData.dataCount;
+      ).cost * appData.dataCount * batchDiscount;
   }
 
   return {
