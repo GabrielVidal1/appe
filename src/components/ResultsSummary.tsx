@@ -5,7 +5,7 @@ import { computePrices, computeTokens } from "@/lib/computations";
 import { tokensToRealWorldText } from "@/lib/format";
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
-import { Share2 } from "lucide-react";
+import { Share2, Info } from "lucide-react";
 import { useMemo, useState } from "react";
 import ExportModal from "./ExportModal";
 import { getProviderIcon } from "./ProviderIcons";
@@ -72,19 +72,21 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
         </div>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
-            <div className="text-center flex flex-col justify-between">
-              <div className="text-sm text-gray-600 flex items-center justify-center gap-2">
-                Total Tokens
-                <TokenBreakdownPopover data={summaryData.tokenEstimates[0]} />
-              </div>
-              <div className="text-4xl font-bold text-purple-600">
-                {summaryData.totalTokens.toLocaleString()}
-              </div>
+            <TokenBreakdownPopover data={summaryData.tokenEstimates[0]}>
+              <div className="text-center flex flex-col justify-between hover:bg-muted/50 rounded-lg p-2 transition-colors">
+                <div className="text-sm text-gray-600 flex items-center justify-center gap-1">
+                  Total Tokens
+                  <Info className="h-3 w-3 opacity-60" />
+                </div>
+                <div className="text-4xl font-bold text-purple-600">
+                  {summaryData.totalTokens.toLocaleString()}
+                </div>
 
-              <div className="text-sm text-gray-600">
-                {tokensToRealWorldText(summaryData.totalTokens)}
+                <div className="text-sm text-gray-600">
+                  {tokensToRealWorldText(summaryData.totalTokens)}
+                </div>
               </div>
-            </div>
+            </TokenBreakdownPopover>
             <div className="text-center">
               <div className="text-sm text-gray-600 text-left">Price Range</div>
               <div className="text-2xl font-bold text-orange-600">

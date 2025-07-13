@@ -17,16 +17,17 @@ interface TokenBreakdownData {
 interface TokenBreakdownPopoverProps {
   data: TokenBreakdownData;
   className?: string;
+  children: React.ReactNode;
 }
 
 const COLORS = [
-  'hsl(var(--chart-1))',
-  'hsl(var(--chart-2))',
-  'hsl(var(--chart-3))',
-  'hsl(var(--chart-4))',
+  '#3b82f6', // Blue for Input Text
+  '#10b981', // Green for Document  
+  '#f59e0b', // Orange for Image
+  '#ef4444', // Red for Output
 ];
 
-const TokenBreakdownPopover: React.FC<TokenBreakdownPopoverProps> = ({ data, className }) => {
+const TokenBreakdownPopover: React.FC<TokenBreakdownPopoverProps> = ({ data, className, children }) => {
   const chartData = [
     {
       name: 'Input Text',
@@ -57,11 +58,14 @@ const TokenBreakdownPopover: React.FC<TokenBreakdownPopoverProps> = ({ data, cla
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="ghost" size="sm" className={cn("h-auto p-1", className)}>
-          <Info className="h-4 w-4" />
-        </Button>
+        <div className={cn("cursor-pointer", className)}>
+          {children}
+        </div>
       </PopoverTrigger>
-      <PopoverContent className="w-80" side="top">
+      <PopoverContent 
+        className="w-80 animate-in fade-in-0 zoom-in-95 duration-150" 
+        side="top"
+      >
         <div className="space-y-4">
           <div className="space-y-1">
             <h4 className="font-medium leading-none">Token Breakdown</h4>
