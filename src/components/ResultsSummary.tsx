@@ -9,6 +9,7 @@ import { Share2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import ExportModal from "./ExportModal";
 import { getProviderIcon } from "./ProviderIcons";
+import TokenBreakdownPopover from "./TokenBreakdownPopover";
 
 interface ResultsSummaryProps {
   models?: Model[];
@@ -72,7 +73,10 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
             <div className="text-center flex flex-col justify-between">
-              <div className="text-sm text-gray-600">Total Tokens</div>
+              <div className="text-sm text-gray-600 flex items-center justify-center gap-2">
+                Total Tokens
+                <TokenBreakdownPopover data={summaryData.tokenEstimates[0]} />
+              </div>
               <div className="text-4xl font-bold text-purple-600">
                 {summaryData.totalTokens.toLocaleString()}
               </div>
