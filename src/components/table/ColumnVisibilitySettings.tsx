@@ -8,12 +8,17 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Settings } from "lucide-react";
 
-const COLUMNS_HIDEABLE = ["size", "inputOutput", "tags"] as const;
+const COLUMNS_HIDEABLE = [
+  "size",
+  "inputOutput",
+  "tags",
+  "cachedTokens",
+] as const;
 
 type ColumnKey = (typeof COLUMNS_HIDEABLE)[number];
 
 interface ColumnVisibilitySettingsProps {
-  showColumns: Record<ColumnKey, boolean>;
+  showColumns: Partial<Record<ColumnKey, boolean>>;
   setShowColumns: (
     updater: (prev: Record<ColumnKey, boolean>) => Record<ColumnKey, boolean>
   ) => void;
@@ -33,11 +38,11 @@ const ColumnVisibilitySettings = ({
       <PopoverContent className="w-64">
         <div className="space-y-4">
           <h4 className="font-medium">Column Visibility</h4>
-          {Object.entries(showColumns).map(([key, value]) => (
+          {COLUMNS_HIDEABLE.map((key) => (
             <div key={key} className="flex items-center space-x-2">
               <Switch
                 id={`show-${key}`}
-                checked={value}
+                checked={showColumns[key]}
                 onCheckedChange={(checked) =>
                   setShowColumns((prev) => ({
                     ...prev,

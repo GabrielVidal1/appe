@@ -1,15 +1,12 @@
-import { FormDataContext } from "@/contexts/form/type";
-import {
-  ALL_MODELS,
-  calculatePricing,
-  estimateTokens,
-} from "@/lib/computations";
-import { Model } from "@/lib/types";
+import { ALL_TEXT_MODELS } from "@/data";
+import { computePrices, computeTokens } from "@/lib/computations";
+import { AppData } from "@/types/appData";
+import { Model } from "@/types/model";
 import { useMemo } from "react";
 import { getProviderIcon } from "./ProviderIcons";
 
 interface PriceRangeWidgetProps {
-  data: FormDataContext;
+  data: AppData;
   models?: Model[];
 }
 
@@ -17,20 +14,13 @@ const PriceRangeWidget = ({
   data,
   models: modelsProp,
 }: PriceRangeWidgetProps) => {
-  const models = modelsProp || ALL_MODELS;
+  const models = modelsProp || ALL_TEXT_MODELS;
 
   const chartData = useMemo(() => {
-    const tokenEstimates = estimateTokens(
-      data.dataType,
-      data.prompt,
-      data.example,
-      data.imageSize
-    );
-
-    const results = calculatePricing(models, {
-      dataCount: data.dataCount,
-      inputTokensPerItem: tokenEstimates.input,
-      outputTokensPerItem: tokenEstimates.output,
+    // Calculate pricing for all models
+    const results = models.map((model) => {
+      const tokenResults = computeTokens(data, model);
+      return computePrices(data, model, tokenResults);
     });
 
     // Group by provider and select up to 1 model per provider, max 5 total
@@ -63,7 +53,7 @@ const PriceRangeWidget = ({
       <div className="space-y-3">
         {chartData.map((item, index) => (
           <div
-            key={`${item.model.provider}-${item.model.model}`}
+            key={`${item.model.provider}-${item.model.name}`}
             className="space-y-1"
           >
             <div className="flex justify-between items-center text-sm">
@@ -72,7 +62,7 @@ const PriceRangeWidget = ({
                   {getProviderIcon(item.model.provider)}
                 </span>
                 <span className="font-medium leading-none">
-                  {item.model.model}
+                  {item.model.name}
                 </span>
               </div>
               <span className="font-bold text-green-600">

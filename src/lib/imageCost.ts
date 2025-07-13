@@ -1,4 +1,4 @@
-import { Provider } from "./types";
+import { Provider } from "@/types/model";
 
 function resizeOpenAI(width: number, height: number): [number, number] {
   if (width > 1024 || height > 1024) {
@@ -18,7 +18,7 @@ export function computeImagePrice(
   width: number,
   height: number
 ): { tokens: number; cost?: number } {
-  if (provider === "claude") {
+  if (provider === "anthropic") {
     const tokens = (width * height) / 750;
     const cost = (tokens / 1_000_000) * 3.0;
     return { tokens, cost };
@@ -39,5 +39,5 @@ export function computeImagePrice(
     return { tokens, cost };
   }
 
-  throw new Error("Unsupported provider");
+  throw new Error("Unsupported provider: " + provider);
 }

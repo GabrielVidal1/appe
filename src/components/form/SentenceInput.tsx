@@ -1,11 +1,11 @@
-import { DataType } from "@/contexts/form/type";
+import { DataType } from "@/types/appData";
 import { useFormContext } from "react-hook-form";
-import DataCountSelector from "./DataCountSelector";
-import DataPdfSelector from "./DataPdfSelector";
-import DataTypeSelector from "./DataTypeSelector";
-import ImageSizePopover from "./ImageSizePopover";
-import ModelCapabilities from "./ModelCapabilities";
-import ModelSizeSelector from "./ModelSizeSelector";
+import DataCountPopover from "./popovers/DataCountPopover";
+import DataPdfPopover from "./popovers/DataPdfPopover";
+import DataTypePopover from "./popovers/DataTypePopover";
+import ImageSizePopover from "./popovers/ImageSizePopover";
+import ModelSizePopover from "./popovers/ModelSizePopover";
+import ModelTagsPopover from "./popovers/ModelTagsPopover";
 
 const SentenceInput = () => {
   const { watch } = useFormContext();
@@ -15,8 +15,8 @@ const SentenceInput = () => {
     <div>
       <div className="flex items-center gap-2 font-medium flex-wrap justify-center">
         <span>I have</span>
-        <DataCountSelector />
-        <DataTypeSelector />
+        <DataCountPopover />
+        <DataTypePopover />
         <span>to process</span>
         {dataType === "images" && (
           <>
@@ -27,16 +27,16 @@ const SentenceInput = () => {
         {dataType === "pdfs" && (
           <>
             <span>of</span>
-            <DataPdfSelector />
+            <DataPdfPopover />
             <span>in average</span>
           </>
         )}
       </div>
       <div className="flex items-center gap-2 font-medium flex-wrap justify-center">
         <span>I need a </span>
-        <ModelSizeSelector />
+        <ModelSizePopover />
         <span>model that can </span>
-        <ModelCapabilities />
+        <ModelTagsPopover />
       </div>
     </div>
   );

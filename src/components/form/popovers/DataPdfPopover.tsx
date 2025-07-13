@@ -9,7 +9,7 @@ import {
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-const DataPdfSelector = () => {
+const DataPdfPopover = () => {
   const { watch, setValue } = useFormContext();
   const pdfData = watch("pdfData") || { pages: 10, tokenPerPage: 500 };
   const [isOpen, setIsOpen] = useState(false);
@@ -84,4 +84,4 @@ const DataPdfSelector = () => {
   );
 };
 
-export default DataPdfSelector;
+export default DataPdfPopover;

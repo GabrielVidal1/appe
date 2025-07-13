@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
+import { AppData } from "@/types/appData";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ExampleOutput from "./form/ExampleOutputs";
@@ -11,7 +11,7 @@ import HelpButton from "./HelpButton";
 import HelpModal from "./HelpModal";
 
 interface FormCardProps {
-  onSubmit: (data: FormDataContext) => void;
+  onSubmit: (data: AppData) => void;
   updatePrices?: boolean;
 }
 
@@ -22,7 +22,7 @@ const FormCard = ({ onSubmit, updatePrices }: FormCardProps) => {
   const prompt = watch("prompt");
   const { isConfigFromUrl } = useConfigFromUrl();
 
-  const onFormSubmit = (data: FormDataContext) => {
+  const onFormSubmit = (data: AppData) => {
     onSubmit({
       dataCount: data.dataCount,
       dataType: data.dataType,

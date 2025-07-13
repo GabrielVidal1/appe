@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -7,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TAGS } from "@/lib/constants";
+import { ALL_TAGS } from "@/data";
 import { Filter } from "lucide-react";
 
 interface TagFilterProps {
@@ -19,7 +18,9 @@ const TagFilter = ({ tags, setTags }: TagFilterProps) => {
   const handleTagToggle = (tag: string, exclude: boolean) => {
     setTags((prev) => {
       const currentTags = prev ?? [];
-      return exclude ? [...currentTags, tag] : currentTags.filter((t) => t !== tag);
+      return exclude
+        ? [...currentTags, tag]
+        : currentTags.filter((t) => t !== tag);
     });
   };
 
@@ -37,9 +38,7 @@ const TagFilter = ({ tags, setTags }: TagFilterProps) => {
               <Checkbox
                 id={`tag-${tag}`}
                 checked={tags === null || tags?.includes(tag)}
-                onCheckedChange={(checked) =>
-                  handleTagToggle(tag, !!checked)
-                }
+                onCheckedChange={(checked) => handleTagToggle(tag, !!checked)}
               />
               <Label htmlFor={`tag-${tag}`} className="text-sm">
                 {tag}

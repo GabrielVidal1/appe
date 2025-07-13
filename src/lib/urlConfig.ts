@@ -1,4 +1,4 @@
-import { FormDataContext } from "@/contexts/form/type";
+import { AppData } from "@/types/appData";
 import { LOREM_IPSUM } from "./constants";
 
 // Single letter identifiers for main parameters
@@ -15,12 +15,13 @@ const PARAM_MAP = {
   selectedProviders: "v",
   showColumns: "w",
   configName: "n",
+  batchEnabled: "b",
 } as const;
 
 // Reverse mapping for decoding
 const REVERSE_PARAM_MAP = Object.fromEntries(
   Object.entries(PARAM_MAP).map(([key, value]) => [value, key])
-) as Record<string, keyof FormDataContext>;
+) as Record<string, keyof AppData>;
 
 // String value mappings to reduce length
 const VALUE_MAPPINGS = {
@@ -98,12 +99,12 @@ function simpleDecrypt(encryptedText: string): string {
 }
 
 // Compress form data into a compact format
-function compressFormData(data: FormDataContext): Record<string, unknown> {
+function compressFormData(data: AppData): Record<string, unknown> {
   const compressed: Record<string, unknown> = {};
 
   // Map each field to its single letter identifier and compress values
   Object.entries(data).forEach(([key, value]) => {
-    const mappedKey = PARAM_MAP[key as keyof FormDataContext];
+    const mappedKey = PARAM_MAP[key as keyof AppData];
     if (!mappedKey) return;
 
     switch (key) {
@@ -165,10 +166,11 @@ function compressFormData(data: FormDataContext): Record<string, unknown> {
         break;
       case "showColumns":
         if (value && typeof value === "object") {
+          const bvalue = value as any;
           const flags = [
-            value.size ? "1" : "0",
-            value.inputOutput ? "1" : "0",
-            value.tags ? "1" : "0",
+            bvalue.size ? "1" : "0",
+            bvalue.inputOutput ? "1" : "0",
+            bvalue.tags ? "1" : "0",
           ].join("");
           compressed[mappedKey] = flags;
         }
@@ -201,8 +203,8 @@ function compressFormData(data: FormDataContext): Record<string, unknown> {
 // Decompress form data from compact format
 function decompressFormData(
   compressed: Record<string, unknown>
-): Partial<FormDataContext> {
-  const decompressed: Partial<FormDataContext> = {};
+): Partial<AppData> {
+  const decompressed: Partial<AppData> = {};
 
   Object.entries(compressed).forEach(([key, value]) => {
     const originalKey = REVERSE_PARAM_MAP[key];
@@ -212,12 +214,12 @@ function decompressFormData(
       case "dataType":
         decompressed[originalKey] = REVERSE_VALUE_MAPPINGS.dataType[
           value as keyof typeof REVERSE_VALUE_MAPPINGS.dataType
-        ] as FormDataContext["dataType"];
+        ] as AppData["dataType"];
         break;
       case "modelSize":
         decompressed[originalKey] = REVERSE_VALUE_MAPPINGS.modelSize[
           value as keyof typeof REVERSE_VALUE_MAPPINGS.modelSize
-        ] as FormDataContext["modelSize"];
+        ] as AppData["modelSize"];
         break;
       case "selectedTiers":
         if (typeof value === "string") {
@@ -229,7 +231,7 @@ function decompressFormData(
                   tier as keyof typeof REVERSE_VALUE_MAPPINGS.tierOptions
                 ]
             )
-            .filter(Boolean) as FormDataContext["selectedTiers"];
+            .filter(Boolean) as AppData["selectedTiers"];
         }
         break;
       case "selectedProviders":
@@ -242,7 +244,7 @@ function decompressFormData(
                   provider as keyof typeof REVERSE_VALUE_MAPPINGS.providerOptions
                 ]
             )
-            .filter(Boolean) as FormDataContext["selectedProviders"];
+            .filter(Boolean) as AppData["selectedProviders"];
         }
         break;
       case "imageSize":
@@ -301,7 +303,7 @@ function decompressFormData(
 
 // Export functions for URL sharing
 export function createShareableUrl(
-  formData: FormDataContext,
+  formData: AppData,
   configName?: string,
   baseUrl?: string
 ): string {
@@ -322,9 +324,7 @@ export function createShareableUrl(
   return `${url}?config=${configString}`;
 }
 
-export function parseConfigFromUrl(
-  url?: string
-): Partial<FormDataContext> | null {
+export function parseConfigFromUrl(url?: string): Partial<AppData> | null {
   try {
     const urlObj = new URL(url || window.location.href);
     const configParam = urlObj.searchParams.get("config");
@@ -350,7 +350,7 @@ export function parseConfigFromUrl(
   }
 }
 
-export function updateUrlWithConfig(formData: FormDataContext): void {
+export function updateUrlWithConfig(formData: AppData): void {
   const shareableUrl = createShareableUrl(formData);
   const url = new URL(shareableUrl);
   // Update the current URL without reloading the page

@@ -6,7 +6,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ALL_PROVIDERS } from "@/lib/constants";
+import { ALL_PROVIDERS } from "@/data";
 import { Search } from "lucide-react";
 
 interface FilterControlsProps {

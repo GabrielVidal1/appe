@@ -5,19 +5,19 @@ import LeftSideContent from "@/components/LeftHero";
 import Navbar from "@/components/Navbar";
 import ResultsTable from "@/components/ResultsTable";
 import FormContextProvider from "@/contexts/form/FormContextProvider";
-import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { cn } from "@/lib/utils";
+import { AppData } from "@/types/appData";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const Index = () => {
-  const [currentEstimationData, setEstimationData] =
-    useState<FormDataContext | null>(null);
+  const [currentEstimationData, setEstimationData] = useState<AppData | null>(
+    null
+  );
   const resultsRef = useRef<HTMLDivElement>(null);
   const { isConfigFromUrl, config } = useConfigFromUrl();
-
   const handleFormSubmit = useCallback(
-    (data: FormDataContext) => {
+    (data: AppData) => {
       setEstimationData(data);
       // Scroll to results after a short delay to ensure the component is rendered
       if (!currentEstimationData) {

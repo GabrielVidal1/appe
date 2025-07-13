@@ -12,13 +12,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TAGS, CAPABILITIES_FROM_TAG } from "@/lib/constants";
+import { ALL_TAGS } from "@/data";
+import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 
-const ModelCapabilities = () => {
+const ModelTagsPopover = () => {
   const [open, setOpen] = useState(false);
   const { watch, setValue } = useFormContext();
   const selectedCapabilities = watch("modelCapabilities") || [];
@@ -94,4 +95,4 @@ const ModelCapabilities = () => {
   );
 };
 
-export default ModelCapabilities;
+export default ModelTagsPopover;

@@ -1,23 +1,20 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { FormDataContext } from "@/contexts/form/type";
-import { ALL_MODELS } from "@/lib/computations";
+import { ALL_TEXT_MODELS } from "@/data";
+import { AppData } from "@/types/appData";
 import { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ResultsSummary from "./ResultsSummary";
 import ResultsTableFiltered from "./ResultsTableFiltered";
 
 interface ResultsTableProps {
-  data: FormDataContext | null;
-  configFromUrl?: FormDataContext | null;
+  data: AppData | null;
+  configFromUrl?: AppData | null;
 }
 
 const ResultsTable = ({ data: propData, configFromUrl }: ResultsTableProps) => {
-  const { watch, subscribe, getValues } = useFormContext<FormDataContext>();
-  const [data, setData] = useState<FormDataContext | null>(
-    configFromUrl || propData
-  );
-  const selectedTiers: FormDataContext["selectedTiers"] =
-    watch("selectedTiers");
+  const { watch, subscribe, getValues } = useFormContext<AppData>();
+  const [data, setData] = useState<AppData | null>(configFromUrl || propData);
+  const selectedTiers: AppData["selectedTiers"] = watch("selectedTiers");
   const modelCapabilities: string[] = watch("modelCapabilities");
 
   useEffect(() => {
@@ -32,7 +29,7 @@ const ResultsTable = ({ data: propData, configFromUrl }: ResultsTableProps) => {
 
   if (!data) return null;
 
-  const models = ALL_MODELS.filter((model) => {
+  const models = ALL_TEXT_MODELS.filter((model) => {
     return (
       (selectedTiers.length === 0 || selectedTiers.includes(model.tier)) &&
       model.tags.some((tag) =>

@@ -9,11 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormDataContext } from "@/contexts/form/type";
 import { useToast } from "@/hooks/use-toast";
 import { useFormState } from "@/hooks/useFormState";
 import { createShareableUrl } from "@/lib/urlConfig";
 import { cn } from "@/lib/utils";
+import { AppData } from "@/types/appData";
 import { Check, Copy, Share2 } from "lucide-react";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
@@ -30,7 +30,7 @@ export const ShareConfigButton = ({
   copyOnClick = false,
 }: ShareConfigButtonProps) => {
   const { toast } = useToast();
-  const { getValues } = useFormContext<FormDataContext>();
+  const { getValues } = useFormContext<AppData>();
   const [shareUrl, setShareUrl] = useState<string>("");
   const [configName, setConfigName] = useFormState("configName");
   const [copied, setCopied] = useState(false);

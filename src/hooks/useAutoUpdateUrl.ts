@@ -1,5 +1,5 @@
-import { FormDataContext } from "@/contexts/form/type";
 import { updateUrlWithConfig } from "@/lib/urlConfig";
+import { AppData } from "@/types/appData";
 import { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -10,7 +10,7 @@ interface UseAutoUpdateUrlOptions {
 
 export const useAutoUpdateUrl = (options: UseAutoUpdateUrlOptions = {}) => {
   const { enabled = false, debounceMs = 1000 } = options;
-  const { watch } = useFormContext<FormDataContext>();
+  const { watch } = useFormContext<AppData>();
   const timeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export const useAutoUpdateUrl = (options: UseAutoUpdateUrlOptions = {}) => {
 
       timeoutRef.current = setTimeout(() => {
         if (data) {
-          updateUrlWithConfig(data as FormDataContext);
+          updateUrlWithConfig(data as AppData);
         }
       }, debounceMs);
     });

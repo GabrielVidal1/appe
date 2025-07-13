@@ -1,16 +1,11 @@
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { FormDataContext } from "@/contexts/form/type";
 import { useToast } from "@/hooks/use-toast";
-import { estimateTokens } from "@/lib/computations";
+import { computeTokens } from "@/lib/computations";
 import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
+import { AppData } from "@/types/appData";
 import { Copy, Download, FileText, Share2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
 import PriceRangeWidget from "./PriceRangeWidget";
@@ -19,7 +14,7 @@ import { ShareConfigButton } from "./ShareConfigButton";
 interface ExportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  data: FormDataContext;
+  data: AppData;
   minCost: number;
   maxCost: number;
   minModel: string;
@@ -44,24 +39,7 @@ const ExportModal = ({
   });
 
   const { toast } = useToast();
-  const tokenStats = useMemo(() => {
-    const tokenEstimates = estimateTokens(
-      data.dataType,
-      data.prompt,
-      data.example,
-      data.imageSize
-    );
-
-    const totalInputTokens = data.dataCount * tokenEstimates.input;
-    const totalOutputTokens = data.dataCount * tokenEstimates.output;
-    const totalTokens = totalInputTokens + totalOutputTokens;
-
-    return {
-      totalInput: totalInputTokens,
-      totalOutput: totalOutputTokens,
-      totalTokens,
-    };
-  }, [data]);
+  const tokenStats = useMemo(() => computeTokens(data), [data]);
 
   const convertToImage = async (): Promise<Blob> => {
     if (!exportRef.current) {
@@ -143,8 +121,10 @@ const ExportModal = ({
     }
 Data Count: ${data.dataCount.toLocaleString()} ${data.dataType}
 Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
-Input Tokens: ${tokenStats.totalInput.toLocaleString()}
-Output Tokens: ${tokenStats.totalOutput.toLocaleString()}
+Input Tokens (Text): ${tokenStats.inputTokens.text.toLocaleString()}
+Input Tokens (Document): ${tokenStats.inputTokens.document.toLocaleString()}
+Input Tokens (Image): ${tokenStats.inputTokens.image.toLocaleString()}
+Output Tokens: ${tokenStats.outputTokens.toLocaleString()}
 Price Range: $${minCost.toFixed(2)} - $${maxCost.toFixed(2)}
 Cheapest: ${minModel}
 Most Expensive: ${maxModel}`;
@@ -170,9 +150,11 @@ Most Expensive: ${maxModel}`;
       const csvContent = `Configuration Name,Data Count,Data Type,Total Tokens,Input Tokens,Output Tokens,Min Cost,Max Cost,Cheapest Model,Most Expensive Model
 "${configName || "Untitled"}",${data.dataCount},"${data.dataType}",${
         tokenStats.totalTokens
-      },${tokenStats.totalInput},${tokenStats.totalOutput},${minCost.toFixed(
+      },${tokenStats.inputTokens.total},${
+        tokenStats.outputTokens
+      },${minCost.toFixed(2)},${maxCost.toFixed(
         2
-      )},${maxCost.toFixed(2)},"${minModel}","${maxModel}"`;
+      )},"${minModel}","${maxModel}"`;
 
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -203,9 +185,7 @@ Most Expensive: ${maxModel}`;
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-6xl">
-        <DialogHeader>
-          <DialogTitle>Export Results</DialogTitle>
-        </DialogHeader>
+        <DialogHeader></DialogHeader>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Left Panel - Preview */}
@@ -253,7 +233,7 @@ Most Expensive: ${maxModel}`;
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div>
                     <div className="text-2xl font-bold text-blue-600">
-                      {tokenStats.totalInput.toLocaleString()}
+                      {tokenStats.inputTokens.total.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Input Tokens
@@ -261,7 +241,7 @@ Most Expensive: ${maxModel}`;
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600">
-                      {tokenStats.totalOutput.toLocaleString()}
+                      {tokenStats.outputTokens.toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Output Tokens

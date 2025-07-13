@@ -1,13 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FormDataContext } from "@/contexts/form/type";
-import {
-  ALL_MODELS,
-  calculatePricing,
-  estimateTokens,
-} from "@/lib/computations";
+import { ALL_TEXT_MODELS } from "@/data";
+import { computePrices, computeTokens } from "@/lib/computations";
 import { tokensToRealWorldText } from "@/lib/format";
-import { Model } from "@/lib/types";
+import { AppData } from "@/types/appData";
+import { Model } from "@/types/model";
 import { Share2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import ExportModal from "./ExportModal";
@@ -15,40 +12,35 @@ import { getProviderIcon } from "./ProviderIcons";
 
 interface ResultsSummaryProps {
   models?: Model[];
-  data: FormDataContext;
+  data: AppData;
 }
 
 const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
-  const models = modelsProp || ALL_MODELS;
+  const models = modelsProp || ALL_TEXT_MODELS;
   const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const summaryData = useMemo(() => {
-    const tokenEstimates = estimateTokens(
-      data.dataType,
-      data.prompt,
-      data.example,
-      data.imageSize
-    );
-
-    const results = calculatePricing(models, {
-      dataCount: data.dataCount,
-      inputTokensPerItem: tokenEstimates.input,
-      outputTokensPerItem: tokenEstimates.output,
+    const tokenEstimates = models.map((model) => {
+      const tokens = computeTokens(data, model);
+      const prices = computePrices(data, model, tokens);
+      return {
+        model,
+        ...tokens,
+        ...prices,
+      };
     });
 
-    const totalInputTokens = tokenEstimates.input * data.dataCount;
-    const totalOutputTokens = tokenEstimates.output * data.dataCount;
-    const totalTokens = totalInputTokens + totalOutputTokens;
+    const totalInputTokens = tokenEstimates[0]?.totalTokens || 0;
+    const totalOutputTokens = tokenEstimates[0]?.outputTokens || 0;
+    const totalTokens = (totalInputTokens + totalOutputTokens) * data.dataCount;
 
-    const minResult = results.reduce(
-      (prev, curr) =>
-        prev ? (curr.totalCost < prev.totalCost ? curr : prev) : curr,
-      null
+    const minResult = tokenEstimates.reduce(
+      (min, res) => (res.totalCost < min.totalCost ? res : min),
+      tokenEstimates[0]
     );
-    const maxResult = results.reduce(
-      (prev, curr) =>
-        prev ? (curr.totalCost > prev.totalCost ? curr : prev) : curr,
-      null
+    const maxResult = tokenEstimates.reduce(
+      (max, res) => (res.totalCost > max.totalCost ? res : max),
+      tokenEstimates[0]
     );
 
     return {
@@ -60,7 +52,7 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
       maxCost: maxResult?.totalCost,
       minModel: minResult?.model,
       maxModel: maxResult?.model,
-      modelCount: results.length,
+      modelCount: models.length,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
@@ -98,7 +90,7 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
                   </p>
                   <p className="flex items-center gap-2 text-base text-gray-700">
                     {getProviderIcon(summaryData.minModel.provider)}{" "}
-                    {summaryData.minModel.model}
+                    {summaryData.minModel.name}
                   </p>
                 </span>
                 <p className="text-left bg-gradient-to-b from-green-500 to-red-500 w-[1px] h-8 mx-[7px]">
@@ -110,7 +102,7 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
                   </p>
                   <p className="flex items-center gap-2 text-base text-gray-700">
                     {getProviderIcon(summaryData.maxModel.provider)}{" "}
-                    {summaryData.maxModel.model}
+                    {summaryData.maxModel.name}
                   </p>
                 </span>
               </div>
@@ -125,8 +117,8 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
         data={data}
         minCost={summaryData.minCost}
         maxCost={summaryData.maxCost}
-        minModel={summaryData.minModel.model}
-        maxModel={summaryData.maxModel.model}
+        minModel={summaryData.minModel.name}
+        maxModel={summaryData.maxModel.name}
       />
     </>
   );

@@ -8,7 +8,7 @@ import {
 import { useEffect } from "react";
 import { useFormContext } from "react-hook-form";
 
-const DataTypeSelector = () => {
+const DataTypePopover = () => {
   const { watch, setValue } = useFormContext();
   const dataType = watch("dataType");
   const modelCapabilities: string[] = watch("modelCapabilities");
@@ -44,4 +44,4 @@ const DataTypeSelector = () => {
   );
 };
 
-export default DataTypeSelector;
+export default DataTypePopover;

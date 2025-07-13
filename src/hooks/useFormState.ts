@@ -1,9 +1,9 @@
-import { FormDataContext } from "@/contexts/form/type";
+import { AppData } from "@/types/appData";
 import { useFormContext } from "react-hook-form";
 
 export const useFormState = <
-  Key extends keyof FormDataContext,
-  Value extends FormDataContext[Key] = FormDataContext[Key]
+  Key extends keyof AppData,
+  Value extends AppData[Key] = AppData[Key]
 >(
   key: Key
 ) => {
@@ -12,9 +12,7 @@ export const useFormState = <
   const value: Value = watch(key);
 
   const setFormValue = (
-    newValue:
-      | FormDataContext[Key]
-      | ((prevValue: FormDataContext[Key]) => FormDataContext[Key])
+    newValue: AppData[Key] | ((prevValue: AppData[Key]) => AppData[Key])
   ) => {
     if (typeof newValue === "function") {
       newValue = newValue(value);

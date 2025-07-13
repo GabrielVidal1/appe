@@ -1,10 +1,10 @@
-import { FormDataContext } from "@/contexts/form/type";
 import { cn } from "@/lib/utils";
+import { AppData } from "@/types/appData";
 import { useFormContext } from "react-hook-form";
 import { ShareConfigButton } from "./ShareConfigButton";
 
 export const ConfigNameDisplay = () => {
-  const { watch } = useFormContext<FormDataContext>();
+  const { watch } = useFormContext<AppData>();
   const configName = watch("configName");
 
   if (!configName?.trim()) {

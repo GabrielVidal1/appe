@@ -1,8 +1,7 @@
-
 import ImageSizeSelector from "@/components/ImageSizeSelector";
 import { useFormContext } from "react-hook-form";
 
-const ImageSizePopover = () => {
+const ImageSizePopover: React.FC = () => {
   const { setValue } = useFormContext();
 
   const handleSizeChange = (width: number, height: number) => {

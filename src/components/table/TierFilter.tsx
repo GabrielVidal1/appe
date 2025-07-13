@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
@@ -7,20 +6,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { FormDataContext } from "@/contexts/form/type";
-import { ALL_TIERS } from "@/lib/constants";
+import { ALL_TIERS } from "@/data";
+import { AppData } from "@/types/appData";
 import { Filter } from "lucide-react";
 
 interface TierFilterProps {
-  selectedTiers: FormDataContext["modelSize"][];
-  setSelectedTiers: (updater: (prev: FormDataContext["modelSize"][]) => FormDataContext["modelSize"][]) => void;
+  selectedTiers: AppData["modelSize"][];
+  setSelectedTiers: (
+    updater: (prev: AppData["modelSize"][]) => AppData["modelSize"][]
+  ) => void;
 }
 
 const TierFilter = ({ selectedTiers, setSelectedTiers }: TierFilterProps) => {
-  const handleTierChange = (
-    tier: FormDataContext["modelSize"],
-    checked: boolean
-  ) => {
+  const handleTierChange = (tier: AppData["modelSize"], checked: boolean) => {
     setSelectedTiers((prev) =>
       checked ? [...prev, tier] : prev.filter((t) => t !== tier)
     );
@@ -41,9 +39,7 @@ const TierFilter = ({ selectedTiers, setSelectedTiers }: TierFilterProps) => {
               <Checkbox
                 id={`tier-${tier}`}
                 checked={selectedTiers.includes(tier)}
-                onCheckedChange={(checked) =>
-                  handleTierChange(tier, !!checked)
-                }
+                onCheckedChange={(checked) => handleTierChange(tier, !!checked)}
               />
               <Label htmlFor={`tier-${tier}`} className="text-sm capitalize">
                 {tier}

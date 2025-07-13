@@ -1,12 +1,12 @@
-import { FormDataContext } from "@/contexts/form/type";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
+import { AppData } from "@/types/appData";
 import { memo, useCallback, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ExampleTemplateBanner from "./ExampleTemplateBanner";
 import FormCard from "./FormCard";
 
 interface EstimatorFormProps {
-  onSubmit: (data: FormDataContext) => void;
+  onSubmit: (data: AppData) => void;
   updatePrices?: boolean;
 }
 
@@ -15,7 +15,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   const { handleSubmit } = useFormContext();
   const { isConfigFromUrl } = useConfigFromUrl();
 
-  const onFormSubmit = useCallback((data: FormDataContext) => {
+  const onFormSubmit = useCallback((data: AppData) => {
     onSubmit({
       dataCount: data.dataCount,
       dataType: data.dataType,

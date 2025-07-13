@@ -1,6 +1,6 @@
-type ClaudeIconProps = React.SVGProps<SVGSVGElement>;
+type AnthropicIconProps = React.SVGProps<SVGSVGElement>;
 
-const ClaudeIcon = (props: ClaudeIconProps) => {
+const AnthropicIcon = (props: AnthropicIconProps) => {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -16,4 +16,4 @@ const ClaudeIcon = (props: ClaudeIconProps) => {
   );
 };
 
-export default ClaudeIcon;
+export default AnthropicIcon;

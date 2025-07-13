@@ -1,107 +1,123 @@
-import { DataType } from "@/contexts/form/type";
-import modelsData from "../data/models.json";
+import { AppData } from "@/types/appData";
+import { Model } from "@/types/model";
+import { PROVIDERS } from "@/types/provider";
+import { PricingResult, TokenResults } from "@/types/results";
 import { computeImagePrice } from "./imageCost";
-import { Model } from "./types";
 
-// Type assertion to ensure data matches our Model type
-export const ALL_MODELS: Model[] = modelsData as Model[];
+const strToTokens = (str: string): number => {
+  // Rough estimation: ~4 chars per token
+  return Math.ceil(str.length / 4);
+};
 
-export interface PricingResult {
-  model: Model;
-  inputCost: number;
-  outputCost: number;
-  totalCost: number;
-}
+/**
+ * Computes the token usage for a given appData and model.
+ * For a single process
+ * @param appData
+ * @param model
+ * @returns
+ */
+export const computeTokens = (
+  appData: AppData,
+  model?: Model
+): TokenResults => {
+  let textTokensPerItem = strToTokens(appData.prompt);
+  let inputDocumentTokens = 0;
+  let inputImageTokens = 0;
 
-export interface ComputationParams {
-  dataCount: number;
-  inputTokensPerItem: number;
-  outputTokensPerItem: number;
-}
+  const { pdf } = PROVIDERS[model?.provider ?? "openai"];
 
-// Estimate tokens based on data type and prompt
-export const estimateTokens = (
-  dataType: DataType,
-  prompt: string,
-  output: string,
-  imageSize?: { width: number; height: number },
-  pdfData?: { pages: number; tokenPerPage: number }
-): { input: number; output: number } => {
-  // Estimate input tokens: prompt + data type processing
-  const promptTokens = Math.ceil(prompt.length / 4); // Rough estimation: ~4 chars per token
-
-  let inputTokensPerItem = promptTokens;
-
-  // For PDFs, add tokens based on pages and tokens per page
-  if (dataType === "pdfs" && pdfData) {
-    const { pages, tokenPerPage } = pdfData;
-    inputTokensPerItem += pages * tokenPerPage;
+  switch (appData.dataType) {
+    case "prompts":
+      textTokensPerItem += strToTokens(appData.example);
+      break;
+    case "images":
+      if (appData.imageSize) {
+        inputImageTokens = +computeImagePrice(
+          model?.provider ?? "openai",
+          appData.imageSize.width,
+          appData.imageSize.height
+        ).tokens.toFixed(0);
+      }
+      break;
+    case "pdfs":
+      if (appData.pdfData) {
+        inputDocumentTokens +=
+          appData.pdfData.pages *
+          (pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage);
+      }
+      break;
   }
-
-  // For images, add the image tokens based on size
-  else if (dataType === "images" && imageSize) {
-    // Calculate average image tokens across providers (using Claude as baseline)
-    const imageTokens = computeImagePrice(
-      "claude",
-      imageSize.width,
-      imageSize.height
-    ).tokens;
-    inputTokensPerItem += Math.ceil(imageTokens);
-  }
-
-  // Estimate output tokens based on examples
-  const outputTokens = Math.ceil(output.length / 4);
+  const outputTokens = strToTokens(appData.example);
 
   return {
-    input: inputTokensPerItem,
-    output: outputTokens,
+    model,
+    inputTokens: {
+      text: textTokensPerItem,
+      document: inputDocumentTokens,
+      image: inputImageTokens,
+      total: textTokensPerItem + inputDocumentTokens + inputImageTokens,
+    },
+    outputTokens: outputTokens,
+    totalTokens:
+      textTokensPerItem + inputDocumentTokens + inputImageTokens + outputTokens,
   };
 };
 
-export const calculatePricing = (
-  models: Model[],
-  params: ComputationParams
-): PricingResult[] => {
-  return models.map((model) => {
-    // Convert costs from per million tokens to per token
-    const inputCostPerToken = model.input_cost / 1000000;
-    const outputCostPerToken = model.output_cost / 1000000;
+/**
+ * Computes the token usage for a given appData and model.
+ * For all sample
+ */
+export const computePrices = (
+  appData: AppData,
+  model: Model,
+  tokenResults: TokenResults
+): PricingResult => {
+  const provider = PROVIDERS[model.provider];
+  const { input_cost, output_cost, cache_cost } = model;
 
-    // Calculate total costs
-    const totalInputTokens = params.dataCount * params.inputTokensPerItem;
-    const totalOutputTokens = params.dataCount * params.outputTokensPerItem;
+  const outputCost =
+    tokenResults.outputTokens * (output_cost / 1000000) * appData.dataCount;
+  let inputCost =
+    tokenResults.inputTokens.text * (input_cost / 1000000) * appData.dataCount;
+  let cachedCost = 0;
+  let inputDocumentCost = 0;
+  let inputImageCost = 0;
 
-    const inputCost = totalInputTokens * inputCostPerToken;
-    const outputCost = totalOutputTokens * outputCostPerToken;
-    const totalCost = inputCost + outputCost;
+  if (cache_cost !== null) {
+    cachedCost =
+      (appData.dataCount - 1) *
+      tokenResults.inputTokens.text *
+      (cache_cost / 1000000);
+    inputCost = tokenResults.inputTokens.text * (input_cost / 1000000);
+  }
 
-    return {
-      model,
-      inputCost,
-      outputCost,
-      totalCost,
-    };
-  });
-};
+  if (
+    appData.dataType === "pdfs" &&
+    provider.pdf?.pricePerKPage &&
+    appData.pdfData
+  ) {
+    inputDocumentCost +=
+      appData.pdfData.pages * provider.pdf.pricePerKPage * appData.dataCount;
+  }
 
-// Group models by provider for table display
-export const groupModelsByProvider = (results: PricingResult[]) => {
-  const grouped: { [provider: string]: PricingResult[] } = {};
+  if (appData.dataType === "images") {
+    inputImageCost +=
+      computeImagePrice(
+        model.provider,
+        appData.imageSize.width,
+        appData.imageSize.height
+      ).cost * appData.dataCount;
+  }
 
-  results.forEach((result) => {
-    if (!grouped[result.model.provider]) {
-      grouped[result.model.provider] = [];
-    }
-    grouped[result.model.provider].push(result);
-  });
-
-  return grouped;
-};
-
-// Find the best value option
-export const findBestValue = (results: PricingResult[]): PricingResult => {
-  return results.reduce(
-    (best, current) => (current.totalCost < best.totalCost ? current : best),
-    results[0]
-  );
+  return {
+    ...tokenResults,
+    inputCost: {
+      text: inputCost,
+      document: inputDocumentCost,
+      image: inputImageCost,
+      total: inputCost + inputDocumentCost + inputImageCost + cachedCost,
+    },
+    outputCost,
+    totalCost: inputCost + outputCost + inputDocumentCost + inputImageCost,
+  };
 };

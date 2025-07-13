@@ -8,7 +8,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { useFormContext } from "react-hook-form";
 
-const DataCountSelector = () => {
+const DataCountPopover: React.FC = () => {
   const { watch, setValue } = useFormContext();
   const dataCount = watch("dataCount");
 
@@ -64,4 +64,4 @@ const DataCountSelector = () => {
   );
 };
 
-export default DataCountSelector;
+export default DataCountPopover;

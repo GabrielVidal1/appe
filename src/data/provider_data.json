@@ -1,0 +1,21 @@
+{
+  "mistral": {
+    "name": "Mistral",
+    "batchDiscount": 0.5,
+    "pdf": {
+      "pricePerKPage": 1,
+      "tokenPerPage": 1000000
+    }
+  },
+  "anthropic": {
+    "name": "Anthropic",
+    "batchDiscount": 0.5,
+    "pdf": {
+      "tokenPerPage": 2333
+    }
+  },
+  "openai": {
+    "name": "OpenAI",
+    "batchDiscount": 0.5
+  }
+}

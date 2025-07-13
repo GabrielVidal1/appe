@@ -1,9 +1,10 @@
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
+import { PricingResult } from "@/types/results";
 import { getProviderIcon } from "../ProviderIcons";
 
 interface ResultsTableRowProps {
-  result: any;
+  result: PricingResult;
   isBest: boolean;
   isCheapestInProvider: boolean;
   showColumns: Record<string, boolean>;
@@ -33,7 +34,7 @@ const ResultsTableRow = ({
           {result.model.provider}
         </div>
       </TableCell>
-      <TableCell>{result.model.model}</TableCell>
+      <TableCell>{result.model.name}</TableCell>
       {showColumns.size && (
         <TableCell className="text-nowrap">
           {result.model.model_size ? `${result.model.model_size}B` : "N/A"}
@@ -54,12 +55,19 @@ const ResultsTableRow = ({
       {showColumns.inputOutput && (
         <>
           <TableCell className="text-right">
-            ${result.inputCost.toFixed(2)}
+            ${result.inputCost.total.toFixed(2)}
           </TableCell>
           <TableCell className="text-right">
             ${result.outputCost.toFixed(2)}
           </TableCell>
         </>
+      )}
+      {showColumns.cachedTokens && (
+        <TableCell className="text-right">
+          {result.model.cache_cost
+            ? `${(result.model.cache_cost * 100).toFixed(0)} %`
+            : "—"}
+        </TableCell>
       )}
       <TableCell className="text-right font-semibold">
         ${result.totalCost.toFixed(2)}

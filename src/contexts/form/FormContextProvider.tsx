@@ -1,14 +1,13 @@
-import { DEFAULT_FORM_VALUES } from "@/lib/types";
 import { parseConfigFromUrl } from "@/lib/urlConfig";
+import { AppData, DEFAULT_FORM_VALUES } from "@/types/appData";
 import { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { FormDataContext } from "./type";
 
 const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
   // Parse URL config if present
   const urlConfig = useMemo(() => parseConfigFromUrl(), []);
 
-  const methods = useForm<FormDataContext>({
+  const methods = useForm<AppData>({
     defaultValues: {
       ...DEFAULT_FORM_VALUES,
       ...urlConfig, // Override with URL config if present
@@ -22,10 +21,7 @@ const FormContextProvider = ({ children }: { children: React.ReactNode }) => {
     if (urlConfig) {
       Object.entries(urlConfig).forEach(([key, value]) => {
         if (value !== undefined) {
-          setValue(
-            key as keyof FormDataContext,
-            value as FormDataContext[keyof FormDataContext]
-          );
+          setValue(key as keyof AppData, value as AppData[keyof AppData]);
         }
       });
     }

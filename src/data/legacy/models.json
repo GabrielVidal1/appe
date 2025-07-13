@@ -241,7 +241,7 @@
     "model_size": null,
     "input_cost": 0.25,
     "output_cost": 1.25,
-    "cache_cost": null,
+    "cache_cost": 0.9,
     "max_token": null,
     "tier": "small",
     "tags": []
@@ -254,7 +254,7 @@
     "model_size": null,
     "input_cost": 3.0,
     "output_cost": 15.0,
-    "cache_cost": null,
+    "cache_cost": 0.9,
     "max_token": 200000,
     "tier": "medium",
     "tags": ["reasoning"]
@@ -267,7 +267,7 @@
     "model_size": null,
     "input_cost": 15.0,
     "output_cost": 75.0,
-    "cache_cost": null,
+    "cache_cost": 0.9,
     "max_token": null,
     "tier": "big",
     "tags": ["reasoning"]

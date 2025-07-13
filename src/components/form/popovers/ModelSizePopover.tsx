@@ -10,7 +10,7 @@ import { useFormContext } from "react-hook-form";
 
 const TIERS_IN_ORDER = ["small", "medium", "big"];
 
-const ModelSizeSelector = () => {
+const ModelSizePopover = () => {
   const { watch, setValue } = useFormContext();
   const modelSize = watch("modelSize");
 
@@ -42,4 +42,4 @@ const ModelSizeSelector = () => {
   );
 };
 
-export default ModelSizeSelector;
+export default ModelSizePopover;

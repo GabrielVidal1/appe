@@ -6,14 +6,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { FormDataContext } from "@/contexts/form/type";
+import { ALL_TEXT_MODELS } from "@/data";
 import { useFormState } from "@/hooks/useFormState";
-import {
-  ALL_MODELS,
-  calculatePricing,
-  estimateTokens,
-  findBestValue,
-} from "@/lib/computations";
+import { computePrices, computeTokens } from "@/lib/computations";
+import { AppData } from "@/types/appData";
+import { Provider } from "@/types/model";
+import { PricingResult } from "@/types/results";
+import { chain, entries } from "lodash";
 import { ArrowUpDown } from "lucide-react";
 import { useMemo, useState } from "react";
 import ColumnVisibilitySettings from "./table/ColumnVisibilitySettings";
@@ -23,7 +22,7 @@ import TagFilter from "./table/TagFilter";
 import TierFilter from "./table/TierFilter";
 
 interface ResultsTableFilteredProps {
-  data: FormDataContext;
+  data: AppData;
 }
 
 type SortOrder = "asc" | "desc";
@@ -37,82 +36,48 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
   const [selectedTiers, setSelectedTiers] = useFormState("selectedTiers");
   const [tags, setTags] = useFormState("modelCapabilities");
 
-  const pricingResults = useMemo(() => {
-    const tokenEstimates = estimateTokens(
-      data.dataType,
-      data.prompt,
-      data.example,
-      data.imageSize
-    );
-
-    const models = ALL_MODELS.filter((model) => {
-      return (
-        model.model.toLowerCase().includes(searchTerm.toLowerCase()) &&
-        (selectedProvider === "all" || model.provider === selectedProvider) &&
-        (selectedTiers.length === 0 || selectedTiers.includes(model.tier)) &&
-        (tags.length === 0 || model.tags?.some((tag) => tags.includes(tag)))
-      );
-    });
-
-    const results = calculatePricing(models, {
-      dataCount: data.dataCount,
-      inputTokensPerItem: tokenEstimates.input,
-      outputTokensPerItem: tokenEstimates.output,
-    });
-
-    const bestValue = findBestValue(results);
-    return { results, bestValue };
-  }, [data, searchTerm, selectedProvider, selectedTiers, tags]);
+  const pricingResults = useMemo(
+    () =>
+      chain(ALL_TEXT_MODELS)
+        .filter(
+          (model) =>
+            model.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+            (selectedProvider === "all" ||
+              model.provider === selectedProvider) &&
+            (selectedTiers.length === 0 ||
+              selectedTiers.includes(model.tier)) &&
+            (tags.length === 0 || model.tags?.some((tag) => tags.includes(tag)))
+        )
+        .map((model) => ({ model, ...computeTokens(data, model) }))
+        .map((result) => ({
+          ...result,
+          ...computePrices(data, result.model, result),
+        }))
+        .value(),
+    [data, searchTerm, selectedProvider, selectedTiers, tags]
+  );
 
   const { filteredResults } = useMemo(() => {
-    if (!pricingResults) return { filteredResults: [] };
+    if (!pricingResults)
+      return { filteredResults: {} as Record<Provider, PricingResult[]> };
 
-    const filtered = pricingResults.results.filter((result) => {
-      const matchesSearch = result.model.model
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase());
-      const matchesProvider =
-        selectedProvider === "all" ||
-        result.model.provider === selectedProvider;
-      const matchesTier = selectedTiers.includes(result.model.tier);
-      const matchesTags = result.model.tags?.some((tag) =>
-        tags.length ? tags.includes(tag) : true
-      );
-
-      return matchesSearch && matchesProvider && matchesTier && matchesTags;
-    });
-
-    // Sort by cost
-    filtered.sort((a, b) => {
-      return sortOrder === "asc"
-        ? a.totalCost - b.totalCost
-        : b.totalCost - a.totalCost;
-    });
-
-    // Group by provider
-    const grouped: { [provider: string]: typeof filtered } = {};
-    filtered.forEach((result) => {
-      if (!grouped[result.model.provider]) {
-        grouped[result.model.provider] = [];
-      }
-      grouped[result.model.provider].push(result);
-    });
+    const filteredResults = chain(pricingResults)
+      .filter(
+        (result) =>
+          selectedProvider === "all" ||
+          result.model.provider === selectedProvider
+      )
+      .sortBy((result) => result.totalCost)
+      .thru((results) => (sortOrder === "desc" ? results.reverse() : results))
+      .groupBy((result) => result.model.provider)
+      .value();
 
     return {
-      filteredResults: grouped,
+      filteredResults: filteredResults as Record<Provider, PricingResult[]>,
     };
-  }, [
-    pricingResults,
-    searchTerm,
-    selectedProvider,
-    sortOrder,
-    selectedTiers,
-    tags,
-  ]);
+  }, [pricingResults, selectedProvider, sortOrder]);
 
   if (!pricingResults) return null;
-
-  const { bestValue } = pricingResults;
 
   const toggleSort = () => {
     setSortOrder((current) => (current === "asc" ? "desc" : "asc"));
@@ -144,7 +109,7 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
           selectedProvider={selectedProvider}
           setSelectedProvider={setSelectedProvider}
         />
-        
+
         <ColumnVisibilitySettings
           showColumns={showColumns}
           setShowColumns={setShowColumns}
@@ -188,6 +153,11 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
                   </TableHead>
                 </>
               )}
+              {showColumns.cachedTokens && (
+                <TableHead className="font-semibold text-right">
+                  Cached Tokens
+                </TableHead>
+              )}
               <TableHead className="font-semibold text-right">
                 <Button
                   variant="ghost"
@@ -201,15 +171,14 @@ const ResultsTableFiltered = ({ data }: ResultsTableFilteredProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {Object.entries(filteredResults).map(([provider, results]) =>
+            {entries(filteredResults).map(([provider, results]) =>
               results.map((result, index) => {
-                const isBest = result.model.model === bestValue.model.model;
                 const isCheapestInProvider = index === 0;
                 return (
                   <ResultsTableRow
-                    key={`${provider}-${result.model.model}`}
+                    key={`${provider}-${result.model.name}`}
                     result={result}
-                    isBest={isBest}
+                    isBest={false}
                     isCheapestInProvider={isCheapestInProvider}
                     showColumns={showColumns}
                     renderTierDots={renderTierDots}
