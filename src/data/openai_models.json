@@ -10,7 +10,7 @@
     "input_cost": 2.0,
     "output_cost": 8.0,
     "cache_cost": 0.5,
-    "max_token": null,
+    "max_token": 1047576,
     "tier": "big",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -26,7 +26,7 @@
     "input_cost": 0.4,
     "output_cost": 1.6,
     "cache_cost": 0.1,
-    "max_token": null,
+    "max_token": 1047576,
     "tier": "medium",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -42,7 +42,7 @@
     "input_cost": 0.1,
     "output_cost": 0.4,
     "cache_cost": 0.025,
-    "max_token": null,
+    "max_token": 1047576,
     "tier": "small",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -58,7 +58,7 @@
     "input_cost": 75.0,
     "output_cost": 150.0,
     "cache_cost": 37.5,
-    "max_token": null,
+    "max_token": 1047576,
     "tier": "big",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -74,7 +74,7 @@
     "input_cost": 2.5,
     "output_cost": 10.0,
     "cache_cost": 1.25,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -90,7 +90,7 @@
     "input_cost": 2.5,
     "output_cost": 10.0,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["audio", "multilingual"],
     "license": "commercial"
@@ -106,7 +106,7 @@
     "input_cost": 5.0,
     "output_cost": 20.0,
     "cache_cost": 2.5,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -122,7 +122,7 @@
     "input_cost": 0.15,
     "output_cost": 0.6,
     "cache_cost": 0.075,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "small",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -138,7 +138,7 @@
     "input_cost": 0.15,
     "output_cost": 0.6,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "small",
     "tags": ["audio", "multilingual"],
     "license": "commercial"
@@ -154,7 +154,7 @@
     "input_cost": 0.6,
     "output_cost": 2.4,
     "cache_cost": 0.3,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "small",
     "tags": ["reasoning", "coding", "multilingual"],
     "license": "commercial"
@@ -170,7 +170,7 @@
     "input_cost": 15.0,
     "output_cost": 60.0,
     "cache_cost": 7.5,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "big",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -186,7 +186,7 @@
     "input_cost": 150.0,
     "output_cost": 600.0,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "big",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -202,7 +202,7 @@
     "input_cost": 2.0,
     "output_cost": 8.0,
     "cache_cost": 0.5,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "big",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -234,7 +234,7 @@
     "input_cost": 1.1,
     "output_cost": 4.4,
     "cache_cost": 0.275,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "small",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -250,7 +250,7 @@
     "input_cost": 2.0,
     "output_cost": 8.0,
     "cache_cost": 0.5,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "small",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -266,7 +266,7 @@
     "input_cost": 1.1,
     "output_cost": 4.4,
     "cache_cost": 0.55,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "small",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -282,7 +282,7 @@
     "input_cost": 1.1,
     "output_cost": 4.4,
     "cache_cost": 0.55,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "small",
     "tags": ["reasoning", "coding", "math", "science", "vision"],
     "license": "commercial"
@@ -298,7 +298,7 @@
     "input_cost": 1.5,
     "output_cost": 6.0,
     "cache_cost": 0.375,
-    "max_token": null,
+    "max_token": 200000,
     "tier": "small",
     "tags": ["coding"],
     "license": "commercial"
@@ -314,7 +314,7 @@
     "input_cost": 0.15,
     "output_cost": 0.6,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "small",
     "tags": ["search", "multilingual"],
     "license": "commercial"
@@ -330,7 +330,7 @@
     "input_cost": 2.5,
     "output_cost": 10.0,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["search", "multilingual"],
     "license": "commercial"
@@ -346,7 +346,7 @@
     "input_cost": 3.0,
     "output_cost": 12.0,
     "cache_cost": null,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["multilingual"],
     "license": "commercial"
@@ -362,7 +362,7 @@
     "input_cost": 5.0,
     "output_cost": null,
     "cache_cost": 1.25,
-    "max_token": null,
+    "max_token": 128000,
     "tier": "big",
     "tags": ["image generation"],
     "license": "commercial"
