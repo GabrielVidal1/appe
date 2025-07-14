@@ -1,47 +1,35 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { ALL_TEXT_MODELS } from "@/data";
+import { useAppData } from "@/hooks/useAppData";
 import { AppData } from "@/types/appData";
-import { useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { useState } from "react";
+import BatchPricingToggle from "./BatchPricingToggle";
+import ExportModal from "./ExportModal";
 import ResultsSummary from "./ResultsSummary";
 import ResultsTableFiltered from "./ResultsTableFiltered";
-import BatchPricingToggle from "./BatchPricingToggle";
 
 interface ResultsTableProps {
-  data: AppData | null;
   configFromUrl?: AppData | null;
   className?: string;
 }
 
-const ResultsTable: React.FC<ResultsTableProps> = ({
-  data: propData,
-  configFromUrl,
-  className,
-}) => {
-  const { watch, subscribe, getValues, setValue } = useFormContext<AppData>();
-  const [data, setData] = useState<AppData | null>(configFromUrl || propData);
-  const selectedTiers: AppData["selectedTiers"] = watch("selectedTiers");
-  const modelCapabilities: string[] = watch("modelCapabilities");
-  const batchEnabled: boolean = watch("batchEnabled") ?? false;
+const ResultsTable: React.FC<ResultsTableProps> = ({ configFromUrl }) => {
+  const { appData, watch, setValue } = useAppData();
+  const data = configFromUrl ? configFromUrl : appData;
 
-  useEffect(() => {
-    subscribe({
-      formState: { isDirty: true },
-      callback: () => {
-        setData(getValues());
-      },
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
+  const batchEnabled = watch("batchEnabled");
 
   if (!data) return null;
 
   const models = ALL_TEXT_MODELS.filter((model) => {
     return (
-      (selectedTiers.length === 0 || selectedTiers.includes(model.tier)) &&
+      (data.selectedTiers.length === 0 ||
+        data.selectedTiers.includes(model.tier)) &&
       model.tags.some((tag) =>
-        modelCapabilities.length ? modelCapabilities.includes(tag) : true
+        data.modelCapabilities.length
+          ? data.modelCapabilities.includes(tag)
+          : true
       )
     );
   });
@@ -61,13 +49,23 @@ const ResultsTable: React.FC<ResultsTableProps> = ({
                 onCheckedChange={handleBatchToggle}
               />
             </div>
-            <div className="flex-1 mx-12">
-              <ResultsSummary data={data} models={models} />
+            <div className="flex-1 ">
+              <ResultsSummary models={models} />
             </div>
           </div>
-          <ResultsTableFiltered data={{ ...data, batchEnabled }} />
+          <ResultsTableFiltered
+            onExport={() => {
+              setExportModalOpen(true);
+            }}
+          />
         </CardContent>
       </Card>
+      <ExportModal
+        selectedModels={data.selectedModels}
+        open={exportModalOpen}
+        onOpenChange={setExportModalOpen}
+        data={data}
+      />
     </div>
   );
 };

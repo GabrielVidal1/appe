@@ -37,13 +37,13 @@ const TextareaWithCounts = React.forwardRef<
         >
           {hoverCounts ? (
             <div className="bg-white p-1 rounded-lg dark:bg-gray-800">
-              <div>Words: {wordCount}</div>
-              <div>Chars: {charCount}</div>
-              <div>Tokens: ~{tokenCount}</div>
+              <div>Words: {wordCount.toLocaleString()}</div>
+              <div>Chars: {charCount.toLocaleString()}</div>
+              <div>Tokens: ~{tokenCount.toLocaleString()}</div>
             </div>
           ) : (
             <div className="bg-white p-1 rounded-lg dark:bg-gray-800">
-              {tokenCount} tokens
+              {tokenCount.toLocaleString()} tokens
             </div>
           )}
         </div>

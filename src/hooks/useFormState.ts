@@ -1,4 +1,5 @@
 import { AppData } from "@/types/appData";
+import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 
 export const useFormState = <
@@ -7,18 +8,23 @@ export const useFormState = <
 >(
   key: Key
 ) => {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue } = useFormContext<AppData>();
 
-  const value: Value = watch(key);
+  const value = watch(key);
 
-  const setFormValue = (
-    newValue: AppData[Key] | ((prevValue: AppData[Key]) => AppData[Key])
-  ) => {
-    if (typeof newValue === "function") {
-      newValue = newValue(value);
-    }
-    setValue(key, newValue as any);
-  };
+  const setFormValue = useCallback(
+    (newValue: Value | ((prevValue: Value) => Value)) => {
+      if (typeof newValue === "function") {
+        newValue = newValue(value as Value) as Value;
+      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setValue(key, newValue as any);
+    },
+    [key, setValue, value]
+  );
 
-  return [value, setFormValue] as const;
+  return [value, setFormValue] as [
+    Value,
+    (newValue: Value | ((prevValue: Value) => Value)) => void
+  ];
 };

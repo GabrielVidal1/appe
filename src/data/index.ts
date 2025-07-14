@@ -1,5 +1,5 @@
 import { Model, Provider } from "@/types/model";
-import { chain } from "lodash";
+import { chain, keyBy } from "lodash";
 import anthropicModels from "./anthropic_models.json";
 import mistralModels from "./mistral_models.json";
 import openaiModels from "./openai_models.json";
@@ -10,7 +10,9 @@ const models: Record<Provider, Model[]> = {
   openai: openaiModels as Model[],
 };
 
-export const ALL_MODELS = models;
+export const ALL_MODELS = chain(models).values().flatten().value();
+
+export const ALL_MODELS_BY_ID = keyBy(ALL_MODELS, (model) => model.id);
 
 // Type assertion to ensure data matches our Model type
 export const ALL_TEXT_MODELS: Model[] = chain(models)

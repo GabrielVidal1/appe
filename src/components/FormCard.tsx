@@ -22,18 +22,7 @@ const FormCard = ({ onSubmit, updatePrices }: FormCardProps) => {
   const prompt = watch("prompt");
   const { isConfigFromUrl } = useConfigFromUrl();
 
-  const onFormSubmit = (data: AppData) => {
-    onSubmit({
-      dataCount: data.dataCount,
-      dataType: data.dataType,
-      prompt: data.prompt,
-      example: data.example.trim(),
-      imageSize: dataType === "images" ? data.imageSize : undefined,
-      modelSize: data.modelSize,
-      modelCapabilities: data.modelCapabilities,
-    });
-  };
-
+  const onFormSubmit = (data: AppData) => onSubmit(data);
   return (
     <>
       <Card className="w-full max-w-4xl">

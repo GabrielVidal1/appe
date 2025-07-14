@@ -1,19 +1,14 @@
 import { parseConfigFromUrl } from "@/lib/urlConfig";
-import { AppData, DEFAULT_FORM_VALUES } from "@/types/appData";
+import { DEFAULT_APP_DATA } from "@/types/appData";
 import { values } from "lodash";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 export const useConfigFromUrl = () => {
-  const [config, setConfig] = useState<AppData | null>(null);
-
-  useEffect(() => {
-    // Check if current URL has a config parameter
+  const config = useMemo(() => {
     const urlConfig = parseConfigFromUrl();
-    setConfig(
-      values(urlConfig).length > 0
-        ? { ...DEFAULT_FORM_VALUES, ...urlConfig }
-        : null
-    );
+    return values(urlConfig).length > 0
+      ? { ...DEFAULT_APP_DATA, ...urlConfig }
+      : null;
   }, []);
 
   return {

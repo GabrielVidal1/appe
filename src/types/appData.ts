@@ -2,6 +2,14 @@ import { ModelSize, Provider } from "@/types/model";
 
 export type DataType = "prompts" | "images" | "pdfs";
 
+export type AppDataContext = {
+  appData: AppData;
+  setAppData: (data: AppData) => void;
+  defaultValues: AppData;
+  isConfigFromUrl: boolean;
+  urlConfig: AppData | null;
+};
+
 export type AppData = {
   // Form fields
   dataCount: number;
@@ -25,6 +33,7 @@ export type AppData = {
     tags: boolean;
     cachedTokens?: boolean; // percentage of cached tokens
   };
+  selectedModels: string[]; // Models selected in the results table
 
   // save/share options
   configName?: string; // Optional name for shared configurations
@@ -34,7 +43,8 @@ export type ExampleTemplate = Partial<AppData> & {
   name: string;
 };
 
-export const DEFAULT_FORM_VALUES: AppData = {
+export const DEFAULT_APP_DATA: AppData = {
+  selectedModels: [],
   dataCount: 1000,
   dataType: "prompts",
   prompt: "",

@@ -15,11 +15,12 @@ import { createShareableUrl } from "@/lib/urlConfig";
 import { cn } from "@/lib/utils";
 import { AppData } from "@/types/appData";
 import { Check, Copy, Share2 } from "lucide-react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 
 interface ShareConfigButtonProps {
   icon?: React.ReactNode;
+  button?: React.ReactNode;
   className?: string;
   copyOnClick?: boolean;
 }
@@ -27,6 +28,7 @@ interface ShareConfigButtonProps {
 export const ShareConfigButton = ({
   className,
   icon,
+  button,
   copyOnClick = false,
 }: ShareConfigButtonProps) => {
   const { toast } = useToast();
@@ -85,15 +87,17 @@ export const ShareConfigButton = ({
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={generateShareUrl}
-          className={cn("gap-2 aspect-square", className)}
-          title="Share Link"
-        >
-          {icon ?? <Share2 className="h-4 w-4" />}
-        </Button>
+        {button ?? (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generateShareUrl}
+            className={cn("gap-2 aspect-square", className)}
+            title="Share Link"
+          >
+            {icon ?? <Share2 className="h-4 w-4" />}
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

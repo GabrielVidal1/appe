@@ -1,7 +1,6 @@
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
 import { AppData } from "@/types/appData";
-import { memo, useCallback, useEffect, useState } from "react";
-import { useFormContext } from "react-hook-form";
+import { memo, useCallback, useState } from "react";
 import ExampleTemplateBanner from "./ExampleTemplateBanner";
 import FormCard from "./FormCard";
 
@@ -12,34 +11,22 @@ interface EstimatorFormProps {
 
 const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
   const [showExamples, setShowExamples] = useState(true);
-  const { handleSubmit } = useFormContext();
   const { isConfigFromUrl } = useConfigFromUrl();
 
   const onFormSubmit = useCallback((data: AppData) => {
     onSubmit({
-      dataCount: data.dataCount,
-      dataType: data.dataType,
-      prompt: data.prompt,
-      example: data.example.trim(),
+      ...data,
       imageSize: data.dataType === "images" ? data.imageSize : undefined,
-      modelSize: data.modelSize,
-      modelCapabilities: data.modelCapabilities,
+      pdfData: data.dataType === "pdfs" ? data.pdfData : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    // Reset form values when the form is submitted
-    if (updatePrices) {
-      handleSubmit(onFormSubmit)();
-    }
-  }, [updatePrices, handleSubmit, onFormSubmit]);
 
   return (
     <div className="">
       <div className="relative w-full mb-6">
         <div className="w-full z-100 mt-20">
-          <FormCard onSubmit={onSubmit} updatePrices={updatePrices} />
+          <FormCard onSubmit={onFormSubmit} updatePrices={updatePrices} />
         </div>
 
         <ExampleTemplateBanner

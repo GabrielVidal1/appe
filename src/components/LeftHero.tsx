@@ -1,4 +1,5 @@
 import { Brain, Calculator, TrendingUp } from "lucide-react";
+import { memo } from "react";
 
 const LeftSideContent = () => (
   <div className="flex flex-col justify-center h-full p-8">
@@ -58,4 +59,4 @@ const LeftSideContent = () => (
   </div>
 );
 
-export default LeftSideContent;
+export default memo(LeftSideContent);

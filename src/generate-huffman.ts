@@ -1,6 +1,6 @@
 import fs from "fs";
 import { URLSearchParams } from "url";
-import { DEFAULT_FORM_VALUES } from "./types/appData";
+import { DEFAULT_APP_DATA } from "./types/appData";
 
 type HuffmanNode = {
   char?: string;
@@ -56,7 +56,7 @@ function flattenObject(obj: Record<string, any>): Record<string, string> {
 }
 
 // ==== MAIN ====
-const flat = flattenObject(DEFAULT_FORM_VALUES);
+const flat = flattenObject(DEFAULT_APP_DATA);
 const params = new URLSearchParams(flat);
 const urlEncoded = params.toString(); // this is the source string for Huffman
 

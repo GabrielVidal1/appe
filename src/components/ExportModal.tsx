@@ -2,33 +2,37 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ALL_MODELS_BY_ID } from "@/data";
 import { useToast } from "@/hooks/use-toast";
 import { computeTokens } from "@/lib/computations";
 import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
 import { AppData } from "@/types/appData";
+import { Model } from "@/types/model";
 import { Copy, Download, FileText, Share2 } from "lucide-react";
 import { useMemo, useRef, useState } from "react";
-import PriceRangeWidget from "./PriceRangeWidget";
+import PriceBarChartWidget from "./PriceBarChartWidget";
 import { ShareConfigButton } from "./ShareConfigButton";
+import TokenSummary from "./TokenSummary";
 
 interface ExportModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   data: AppData;
-  minCost: number;
-  maxCost: number;
-  minModel: string;
-  maxModel: string;
+  selectedModels: string[];
+  minMaxCosts?: {
+    minModel: Model;
+    min: number;
+    maxModel: Model;
+    max: number;
+  };
 }
 
 const ExportModal = ({
   open,
   onOpenChange,
   data,
-  minCost,
-  maxCost,
-  minModel,
-  maxModel,
+  selectedModels,
+  minMaxCosts,
 }: ExportModalProps) => {
   const exportRef = useRef<HTMLDivElement>(null);
   const [configName, setConfigName] = useState("");
@@ -125,9 +129,9 @@ Input Tokens (Text): ${tokenStats.inputTokens.text.toLocaleString()}
 Input Tokens (Document): ${tokenStats.inputTokens.document.toLocaleString()}
 Input Tokens (Image): ${tokenStats.inputTokens.image.toLocaleString()}
 Output Tokens: ${tokenStats.outputTokens.toLocaleString()}
-Price Range: $${minCost.toFixed(2)} - $${maxCost.toFixed(2)}
-Cheapest: ${minModel}
-Most Expensive: ${maxModel}`;
+Price Range: $${minMaxCosts.min.toFixed(2)} - $${minMaxCosts.max.toFixed(2)}
+Cheapest: ${minMaxCosts.minModel.name}
+Most Expensive: ${minMaxCosts.maxModel.name}`;
 
     try {
       await navigator.clipboard.writeText(text);
@@ -152,9 +156,9 @@ Most Expensive: ${maxModel}`;
         tokenStats.totalTokens
       },${tokenStats.inputTokens.total},${
         tokenStats.outputTokens
-      },${minCost.toFixed(2)},${maxCost.toFixed(
-        2
-      )},"${minModel}","${maxModel}"`;
+      },${minMaxCosts.min.toFixed(2)},${minMaxCosts.max.toFixed(2)},"${
+        minMaxCosts.minModel.name
+      }","${minMaxCosts.maxModel.name}"`;
 
       const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
       const url = URL.createObjectURL(blob);
@@ -226,14 +230,43 @@ Most Expensive: ${maxModel}`;
                   )}
                 </p>
               </div>
-
-              {/* Token Summary */}
+              {/* Token Summary
               <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-6">
                 <h3 className="text-lg font-semibold mb-4">Token Summary</h3>
-                <div className="grid grid-cols-3 gap-4 text-center">
+                <div className="grid grid-cols-3 items-end gap-4 text-center">
                   <div>
+                    <div className="text-xl font-bold text-blue-600">
+                      {(
+                        tokenStats.inputTokens.text * data.dataCount
+                      ).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Text Tokens
+                    </div>
+                    <div className="text-xl font-bold text-blue-600">
+                      {(
+                        tokenStats.inputTokens.image * data.dataCount
+                      ).toLocaleString()}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      Image Tokens
+                    </div>
+                    {data.dataType === "pdfs" && (
+                      <div>
+                        <div className="text-xl font-bold text-blue-600">
+                          {(
+                            tokenStats.inputTokens.document * data.dataCount
+                          ).toLocaleString()}
+                        </div>
+                        <div className="text-sm text-muted-foreground">
+                          Document Tokens
+                        </div>
+                      </div>
+                    )}
                     <div className="text-2xl font-bold text-blue-600">
-                      {tokenStats.inputTokens.total.toLocaleString()}
+                      {(
+                        tokenStats.inputTokens.total * data.dataCount
+                      ).toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Input Tokens
@@ -241,7 +274,9 @@ Most Expensive: ${maxModel}`;
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-green-600">
-                      {tokenStats.outputTokens.toLocaleString()}
+                      {(
+                        tokenStats.outputTokens * data.dataCount
+                      ).toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Output Tokens
@@ -249,17 +284,22 @@ Most Expensive: ${maxModel}`;
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-purple-600">
-                      {tokenStats.totalTokens.toLocaleString()}
+                      {(
+                        tokenStats.totalTokens * data.dataCount
+                      ).toLocaleString()}
                     </div>
                     <div className="text-sm text-muted-foreground">
                       Total Tokens
                     </div>
                   </div>
                 </div>
-              </div>
-
+              </div> */}
+              <TokenSummary data={data} />
               {/* Price Range Widget */}
-              <PriceRangeWidget data={data} />
+              <PriceBarChartWidget
+                data={data}
+                models={selectedModels.map((id) => ALL_MODELS_BY_ID[id])}
+              />
             </div>
           </div>
 

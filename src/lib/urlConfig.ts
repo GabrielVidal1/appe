@@ -1,8 +1,10 @@
+import { ALL_TEXT_MODELS } from "@/data";
 import { AppData } from "@/types/appData";
+import { entries } from "lodash";
 import { LOREM_IPSUM } from "./constants";
 
 // Single letter identifiers for main parameters
-const PARAM_MAP = {
+const PARAM_MAP: Record<keyof AppData, string> = {
   dataCount: "c",
   dataType: "t",
   prompt: "p",
@@ -16,6 +18,7 @@ const PARAM_MAP = {
   showColumns: "w",
   configName: "n",
   batchEnabled: "b",
+  selectedModels: "x",
 } as const;
 
 // Reverse mapping for decoding
@@ -45,6 +48,10 @@ const VALUE_MAPPINGS = {
     mistral: "1",
     openai: "2",
   },
+  models: ALL_TEXT_MODELS.reduce((acc, model, i) => {
+    acc[model.id] = i.toString(); // Assuming each model has a unique id
+    return acc;
+  }, {} as Record<string, string>),
 } as const;
 
 // Reverse mappings for decoding
@@ -66,6 +73,9 @@ const REVERSE_VALUE_MAPPINGS = {
       value,
       key,
     ])
+  ),
+  modelOptions: Object.fromEntries(
+    Object.entries(VALUE_MAPPINGS.models).map(([key, value]) => [value, key])
   ),
 } as const;
 
@@ -103,7 +113,8 @@ function compressFormData(data: AppData): Record<string, unknown> {
   const compressed: Record<string, unknown> = {};
 
   // Map each field to its single letter identifier and compress values
-  Object.entries(data).forEach(([key, value]) => {
+  entries(data).forEach(([rawKey, value]) => {
+    const key = rawKey as keyof AppData;
     const mappedKey = PARAM_MAP[key as keyof AppData];
     if (!mappedKey) return;
 
@@ -166,6 +177,7 @@ function compressFormData(data: AppData): Record<string, unknown> {
         break;
       case "showColumns":
         if (value && typeof value === "object") {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const bvalue = value as any;
           const flags = [
             bvalue.size ? "1" : "0",
@@ -192,8 +204,22 @@ function compressFormData(data: AppData): Record<string, unknown> {
           compressed[mappedKey] = value.length;
         }
         break;
-      default:
-        compressed[mappedKey] = value;
+      case "dataCount":
+        if (typeof value === "number") {
+          compressed[mappedKey] = value.toString();
+        }
+        break;
+      case "selectedModels":
+        if (Array.isArray(value)) {
+          compressed[mappedKey] = value
+            .map((model) => VALUE_MAPPINGS.models[model])
+            .join(",");
+        }
+        break;
+      case "batchEnabled":
+        // Store batchEnabled as a boolean string
+        compressed[mappedKey] = value ? "1" : "0";
+        break;
     }
   });
 
@@ -291,10 +317,20 @@ function decompressFormData(
         break;
       case "prompt":
       case "example":
-        if (typeof value === "number") {
-          decompressed[originalKey] = LOREM_IPSUM.substring(0, value);
-        }
+        decompressed[originalKey] = LOREM_IPSUM.substring(0, +value);
         break;
+      case "selectedModels":
+        if (typeof value === "string") {
+          decompressed[originalKey] = value
+            .split("")
+            .map(
+              (model) =>
+                REVERSE_VALUE_MAPPINGS.modelOptions[
+                  model as keyof typeof REVERSE_VALUE_MAPPINGS.modelOptions
+                ]
+            )
+            .filter(Boolean) as AppData["selectedModels"];
+        }
     }
   });
 
@@ -311,12 +347,12 @@ export function createShareableUrl(
   const dataWithName = configName?.trim()
     ? { ...formData, configName: configName.trim() }
     : formData;
-
+  console.log("sharing config:", dataWithName);
   const compressed = compressFormData(dataWithName);
+  console.log("Compressed form data:", compressed);
   const jsonString = new URLSearchParams(
     Object.entries(compressed).map(([key, value]) => [key, `${value}`])
   ).toString();
-  console.log("JSON String to URL:", jsonString);
   const encrypted = simpleEncrypt(jsonString);
   const configString = encodeURIComponent(encrypted);
 
@@ -337,12 +373,13 @@ export function parseConfigFromUrl(url?: string): Partial<AppData> | null {
     const decrypted = simpleDecrypt(decoded);
     const asParams = new URLSearchParams(decrypted);
     const compressed: Record<string, unknown> = {};
-    console.log("Decrypted config:", compressed.toString());
     asParams.forEach((value, key) => {
       compressed[key] = value;
     });
-
-    return decompressFormData(compressed);
+    console.log("Decrypted and parsed config from URL:", compressed);
+    const config = decompressFormData(compressed);
+    console.log("Parsed config from URL:", config);
+    return config;
   } catch (error) {
     console.error("Failed to parse config from URL:", error);
     clearConfigFromUrl();

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Github, Moon, Sun } from "lucide-react";
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "./ThemeProvider";
 
@@ -24,6 +25,7 @@ const Navbar = ({ className }: NavbarProps) => {
           <Link
             to="/"
             className="flex items-center gap-2 font-semibold text-lg"
+            onClick={() => window.location.reload()}
           >
             <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center text-primary-foreground font-bold">
               <img src="/logo.png" alt="Logo" className="w-6 h-6" />
@@ -67,4 +69,4 @@ const Navbar = ({ className }: NavbarProps) => {
   );
 };
 
-export default Navbar;
+export default memo(Navbar);

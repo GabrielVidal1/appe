@@ -38,7 +38,7 @@ const PromptInput = () => {
       {dataType === "images" && (
         <div className="bg-white border p-2 shadow-sm rounded-xl absolute bottom-2 right-2 text-xs text-gray-500 flex flex-col items-center gap-1">
           <FileImage className="h-10 w-10" />
-          <p>~{imageToken.toFixed()} tokens</p>
+          <p>~{imageToken.toLocaleString()} tokens</p>
         </div>
       )}
       {dataType === "pdfs" && (
@@ -47,14 +47,14 @@ const PromptInput = () => {
           <div className="hidden group-hover/aa:flex flex-col items-center">
             <p>pages x tokens/page</p>
             <p>
-              {pdfData?.pages} x {pdfData?.tokenPerPage}
+              {pdfData?.pages} x {pdfData?.tokenPerPage?.toLocaleString()}
             </p>
           </div>
 
           <p>
             <p className="hidden group-hover/aa:inline">=</p>
             <p className="inline group-hover/aa:hidden">+ </p>
-            {pdfToken.toFixed()} tokens
+            {pdfToken.toLocaleString()} tokens
           </p>
         </div>
       )}

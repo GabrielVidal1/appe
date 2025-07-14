@@ -1,24 +1,22 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ALL_TEXT_MODELS } from "@/data";
+import { useAppData } from "@/hooks/useAppData";
 import { computePrices, computeTokens } from "@/lib/computations";
 import { tokensToRealWorldText } from "@/lib/format";
-import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
-import { Info, Share2 } from "lucide-react";
-import { useMemo, useState } from "react";
-import ExportModal from "./ExportModal";
-import { getProviderIcon } from "./ProviderIcons";
+import { Info } from "lucide-react";
+import { useMemo } from "react";
+import ResultsPriceRange from "./ResultsPriceRange";
 import TokenBreakdownPopover from "./TokenBreakdownPopover";
 
 interface ResultsSummaryProps {
   models?: Model[];
-  data: AppData;
 }
 
-const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
+const ResultsSummary = ({ models: modelsProp }: ResultsSummaryProps) => {
+  const { appData: data } = useAppData();
+
   const models = modelsProp || ALL_TEXT_MODELS;
-  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   const summaryData = useMemo(() => {
     const tokenEstimates = models.map((model) => {
@@ -48,10 +46,16 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
       tokenEstimateNoModel,
       tokenEstimates,
       totalTokens,
-      minCost: minResult?.totalCost,
-      maxCost: maxResult?.totalCost,
-      minModel: minResult?.model,
-      maxModel: maxResult?.model,
+      minMax:
+        minResult && maxResult
+          ? {
+              minIsMax: minResult.model.id === maxResult.model.id,
+              minModel: minResult.model,
+              min: minResult.totalCost,
+              maxModel: maxResult.model,
+              max: maxResult.totalCost,
+            }
+          : undefined,
       modelCount: models.length,
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,17 +64,8 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
   return (
     <>
       <Card className="relative">
-        <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setExportModalOpen(true)}
-          >
-            <Share2 className="h-4 w-4" />
-          </Button>
-        </div>
         <CardContent>
-          <div className="grid grid-cols-2 md:grid-cols-2 gap-4 mt-6">
+          <div className="grid grid-cols-2 gap-4 mt-6">
             <TokenBreakdownPopover
               data={data}
               results={summaryData.tokenEstimateNoModel}
@@ -89,45 +84,12 @@ const ResultsSummary = ({ data, models: modelsProp }: ResultsSummaryProps) => {
                 </div>
               </div>
             </TokenBreakdownPopover>
-            <div className="text-center">
-              <div className="text-sm text-gray-600 text-left">Price Range</div>
-              <div className="text-2xl font-bold text-orange-600">
-                <span className="flex items-center gap-4">
-                  <p className="text-green-600">
-                    {"$" + summaryData.minCost.toFixed(2).padStart(5, " ")}
-                  </p>
-                  <p className="flex items-center gap-2 text-base text-gray-700">
-                    {getProviderIcon(summaryData.minModel.provider)}{" "}
-                    {summaryData.minModel.name}
-                  </p>
-                </span>
-                <p className="text-left bg-gradient-to-b from-green-500 to-red-500 w-[1px] h-8 mx-[7px]">
-                  {" "}
-                </p>
-                <span className="flex items-center gap-4">
-                  <p className="text-red-600">
-                    {"$" + summaryData.maxCost.toFixed(2).padStart(5, " ")}
-                  </p>
-                  <p className="flex items-center gap-2 text-base text-gray-700">
-                    {getProviderIcon(summaryData.maxModel.provider)}{" "}
-                    {summaryData.maxModel.name}
-                  </p>
-                </span>
-              </div>
-            </div>
+            {summaryData.minMax && (
+              <ResultsPriceRange summaryData={summaryData} />
+            )}
           </div>
         </CardContent>
       </Card>
-
-      <ExportModal
-        open={exportModalOpen}
-        onOpenChange={setExportModalOpen}
-        data={data}
-        minCost={summaryData.minCost}
-        maxCost={summaryData.maxCost}
-        minModel={summaryData.minModel.name}
-        maxModel={summaryData.maxModel.name}
-      />
     </>
   );
 };

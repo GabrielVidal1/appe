@@ -49,6 +49,7 @@ The Cooperative Group trials system had become inefficient and slow, and we were
   {
     name: "Image Description",
     dataType: "images",
+    imageSize: { height: 512, width: 512 },
     prompt: "Describe the content of this image",
     example:
       "The image shows a beautiful sunset over a mountain range with a clear sky.",

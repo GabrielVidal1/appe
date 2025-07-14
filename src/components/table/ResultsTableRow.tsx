@@ -2,32 +2,43 @@ import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { PricingResult } from "@/types/results";
 import { getProviderIcon } from "../ProviderIcons";
+import { Checkbox } from "../ui/checkbox";
 
 interface ResultsTableRowProps {
   result: PricingResult;
-  isBest: boolean;
-  isCheapestInProvider: boolean;
+  selectable?: boolean;
+  selected?: boolean;
   showColumns: Record<string, boolean>;
   renderTierDots: (tier: string) => JSX.Element;
+  onSelect?: (checked: boolean) => void;
+  batchEnabled?: boolean;
 }
 
 const ResultsTableRow = ({
+  selectable,
+  selected,
   result,
-  isBest,
-  isCheapestInProvider,
   showColumns,
   renderTierDots,
+  onSelect,
 }: ResultsTableRowProps) => {
   return (
     <TableRow
       className={
-        isBest
-          ? "bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-700"
-          : isCheapestInProvider
-          ? "bg-blue-50 dark:bg-blue-900"
-          : ""
+        // isBest
+        //   ? "bg-green-50 border-green-200 dark:bg-green-900 dark:border-green-700"
+        selected ? "bg-blue-50 dark:bg-blue-900" : ""
       }
     >
+      {selectable && (
+        <TableCell className="font-medium">
+          <Checkbox
+            checked={selected}
+            onCheckedChange={(checked) => onSelect?.(!!checked)}
+            className="h-4 w-4"
+          />
+        </TableCell>
+      )}
       <TableCell className="font-medium">
         <div className="flex items-center gap-2">
           {getProviderIcon(result.model.provider)}

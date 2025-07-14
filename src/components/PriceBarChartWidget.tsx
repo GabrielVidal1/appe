@@ -2,46 +2,34 @@ import { ALL_TEXT_MODELS } from "@/data";
 import { computePrices, computeTokens } from "@/lib/computations";
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
+import { chain } from "lodash";
 import { useMemo } from "react";
 import { getProviderIcon } from "./ProviderIcons";
 
-interface PriceRangeWidgetProps {
+interface PriceBarChartWidgetProps {
   data: AppData;
   models?: Model[];
 }
 
-const PriceRangeWidget = ({
+const PriceBarChartWidget = ({
   data,
   models: modelsProp,
-}: PriceRangeWidgetProps) => {
+}: PriceBarChartWidgetProps) => {
   const models = modelsProp || ALL_TEXT_MODELS;
 
   const chartData = useMemo(() => {
     // Calculate pricing for all models
-    const results = models.map((model) => {
-      const tokenResults = computeTokens(data, model);
-      return computePrices(data, model, tokenResults);
-    });
+    const results = chain(models)
+      .map((model) => {
+        const tokenResults = computeTokens(data, model);
+        return computePrices(data, model, tokenResults);
+      })
+      .sortBy("totalCost")
+      .value();
 
-    // Group by provider and select up to 1 model per provider, max 5 total
-    const providerGroups: { [provider: string]: typeof results } = {};
+    const maxCost = Math.max(...results.map((r) => r.totalCost));
 
-    results.forEach((result) => {
-      if (!providerGroups[result.model.provider]) {
-        providerGroups[result.model.provider] = [];
-      }
-      providerGroups[result.model.provider].push(result);
-    });
-
-    // Get one model per provider (cheapest from each)
-    const selectedResults = Object.values(providerGroups)
-      .map((group) => group.sort((a, b) => a.totalCost - b.totalCost)[0])
-      .sort((a, b) => a.totalCost - b.totalCost)
-      .slice(0, 5); // Max 5 models
-
-    const maxCost = Math.max(...selectedResults.map((r) => r.totalCost));
-
-    return selectedResults.map((result) => ({
+    return results.map((result) => ({
       ...result,
       widthPercentage: (result.totalCost / maxCost) * 100,
     }));
@@ -82,4 +70,4 @@ const PriceRangeWidget = ({
   );
 };
 
-export default PriceRangeWidget;
+export default PriceBarChartWidget;
