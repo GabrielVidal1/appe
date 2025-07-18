@@ -34,6 +34,15 @@ const Navbar = ({ className }: NavbarProps) => {
               AI Processing Price Estimator
             </span>
           </Link>
+          
+          <nav className="hidden md:flex items-center gap-4">
+            <Link
+              to="/ap"
+              className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              AP - AI Processing
+            </Link>
+          </nav>
         </div>
 
         {/* Right side - GitHub and Theme toggle */}
