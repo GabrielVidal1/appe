@@ -8,22 +8,15 @@ const strToTokensRough = (str: string): number => {
 
 // Dynamic imports for tokenizers
 let openaiTokenizer: any = null;
-let mistralTokenizer: any = null;
 
 const getOpenAITokenizer = async () => {
   if (!openaiTokenizer) {
-    const { get_encoding } = await import("tiktoken");
-    openaiTokenizer = get_encoding("cl100k_base");
+    const { Tiktoken } = await import("js-tiktoken/lite");
+    const res = await fetch(`https://tiktoken.pages.dev/js/o200k_base.json`);
+    const o200k_base = await res.json();
+    openaiTokenizer = new Tiktoken(o200k_base);
   }
   return openaiTokenizer;
-};
-
-const getMistralTokenizer = async () => {
-  if (!mistralTokenizer) {
-    const { MistralTokenizer } = await import("mistral-tokenizer-ts");
-    mistralTokenizer = new MistralTokenizer();
-  }
-  return mistralTokenizer;
 };
 
 export const strToTokens = async (str: string, provider?: Provider): Promise<number> => {
@@ -34,12 +27,9 @@ export const strToTokens = async (str: string, provider?: Provider): Promise<num
         return openaiEnc.encode(str).length;
         
       case "mistral":
-        const mistralEnc = await getMistralTokenizer();
-        return mistralEnc.encode(str).length;
-        
       case "anthropic":
       default:
-        // Use rough estimation for anthropic and fallback
+        // Use rough estimation for mistral, anthropic and fallback
         return strToTokensRough(str);
     }
   } catch (error) {
