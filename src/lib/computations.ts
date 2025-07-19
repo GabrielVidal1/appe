@@ -3,15 +3,11 @@ import { Model } from "@/types/model";
 import { PROVIDERS } from "@/types/provider";
 import { PricingResult, TokenResults } from "@/types/results";
 import { computeImagePrice } from "./imageCost";
-
-const strToTokens = (str: string): number => {
-  // Rough estimation: ~4 chars per token
-  return Math.ceil(str.length / 4);
-};
+import { strToTokens, strToTokensSync } from "./tokenization";
 
 /**
  * Computes the token usage for a given appData and model.
- * For a single process
+ * For a single process (synchronous version)
  * @param appData
  * @param model
  * @returns
@@ -20,7 +16,7 @@ export const computeTokens = (
   appData: AppData,
   model?: Model
 ): TokenResults => {
-  const inputTextTokens = strToTokens(appData.prompt);
+  const inputTextTokens = strToTokensSync(appData.prompt);
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
 
@@ -37,7 +33,51 @@ export const computeTokens = (
 
     inputDocumentTokens += appData.pdfData.pages * tokenPerPage;
   }
-  const outputTokens = strToTokens(appData.example);
+  const outputTokens = strToTokensSync(appData.example);
+
+  return {
+    model,
+    inputTokens: {
+      text: inputTextTokens,
+      document: inputDocumentTokens,
+      image: inputImageTokens,
+      total: inputTextTokens + inputDocumentTokens + inputImageTokens,
+    },
+    outputTokens: outputTokens,
+    totalTokens:
+      inputTextTokens + inputDocumentTokens + inputImageTokens + outputTokens,
+  };
+};
+
+/**
+ * Computes the token usage for a given appData and model.
+ * For a single process (async version with accurate tokenization)
+ * @param appData
+ * @param model
+ * @returns
+ */
+export const computeTokensAsync = async (
+  appData: AppData,
+  model?: Model
+): Promise<TokenResults> => {
+  const inputTextTokens = await strToTokens(appData.prompt, model?.provider);
+  let inputDocumentTokens = 0;
+  let inputImageTokens = 0;
+
+  const { pdf } = PROVIDERS[model?.provider ?? "anthropic"];
+
+  if (appData.dataType === "images" && appData.imageSize) {
+    inputImageTokens = +computeImagePrice(
+      model?.provider ?? "openai",
+      appData.imageSize.width,
+      appData.imageSize.height
+    ).tokens.toFixed(0);
+  } else if (appData.dataType === "pdfs" && appData.pdfData) {
+    const tokenPerPage = pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage;
+
+    inputDocumentTokens += appData.pdfData.pages * tokenPerPage;
+  }
+  const outputTokens = await strToTokens(appData.example, model?.provider);
 
   return {
     model,
