@@ -39,5 +39,10 @@ export function computeImagePrice(
     return { tokens, cost };
   }
 
-  throw new Error("Unsupported provider: " + provider);
+  // Unknown provider: use a default image tokenization (same basis as
+  // Anthropic, ~750 px/token) and return no direct cost, so the caller prices
+  // the image via the model's per-token input cost. This is the
+  // "use a default when not known" path for image estimation.
+  const tokens = (width * height) / 750;
+  return { tokens };
 }

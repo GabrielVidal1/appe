@@ -26,6 +26,11 @@ interface ResultsTableFilteredProps {
 
 type SortOrder = "asc" | "desc";
 
+// The models.dev catalogue is thousands of models; rendering every matching row
+// makes the table janky and unusable. Cap the rendered rows and nudge the user
+// to narrow via search / provider / tier / tag filters.
+const MAX_ROWS = 100;
+
 const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
   onExport,
 }) => {
@@ -242,6 +247,7 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
           </TableHeader>
           <TableBody>
             {chain(filteredResults)
+              .take(MAX_ROWS)
               .groupBy((result) => result.model.provider)
               .entries()
               .map(([provider, results]) =>
@@ -269,6 +275,12 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
           </TableBody>
         </Table>
       </div>
+      {filteredResults.length > MAX_ROWS && (
+        <p className="text-sm text-muted-foreground text-center">
+          Showing {MAX_ROWS} of {filteredResults.length} matching models — refine
+          with search, provider, tier or tag filters to narrow the list.
+        </p>
+      )}
     </div>
   );
 };

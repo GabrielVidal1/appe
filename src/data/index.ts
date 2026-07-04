@@ -1,25 +1,27 @@
-import { Model, Provider } from "@/types/model";
-import { chain, keyBy } from "lodash";
-import anthropicModels from "./anthropic_models.json";
-import mistralModels from "./mistral_models.json";
-import openaiModels from "./openai_models.json";
+import { Model } from "@/types/model";
+import { keyBy } from "lodash";
+import modelsData from "./models.json";
+import meta from "./models.meta.json";
 
-const models: Record<Provider, Model[]> = {
-  mistral: mistralModels as Model[],
-  anthropic: anthropicModels as Model[],
-  openai: openaiModels as Model[],
+// The model catalogue is generated from models.dev by scripts/sync-models.mjs
+// (refreshed daily). It is a flat array of every estimable model across all
+// providers — see that script for the mapping.
+export const ALL_MODELS = modelsData as Model[];
+
+export const MODELS_META = meta as {
+  source: string;
+  generatedAt: string;
+  providerCount: number;
+  modelCount: number;
 };
-
-export const ALL_MODELS = chain(models).values().flatten().value();
 
 export const ALL_MODELS_BY_ID = keyBy(ALL_MODELS, (model) => model.id);
 
-// Type assertion to ensure data matches our Model type
-export const ALL_TEXT_MODELS: Model[] = chain(models)
-  .values()
-  .flatten()
-  .filter((model) => model.task?.includes("text"))
-  .value();
+// Every synced model takes text input, so ALL_TEXT_MODELS is the full set today;
+// the filter is kept so a future audio/video-only import stays excluded here.
+export const ALL_TEXT_MODELS: Model[] = ALL_MODELS.filter((model) =>
+  model.task?.includes("text")
+);
 
 export const ALL_TAGS = Array.from(
   new Set(ALL_TEXT_MODELS.flatMap((model) => model.tags))

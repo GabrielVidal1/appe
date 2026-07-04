@@ -1,10 +1,290 @@
 {
+  "requesty": {
+    "name": "Requesty",
+    "batchDiscount": 0.5
+  },
+  "qiniu-ai": {
+    "name": "Qiniu",
+    "batchDiscount": 0.5
+  },
+  "alibaba-cn": {
+    "name": "Alibaba (China)",
+    "batchDiscount": 0.5
+  },
+  "regolo-ai": {
+    "name": "Regolo AI",
+    "batchDiscount": 0.5
+  },
+  "stackit": {
+    "name": "STACKIT",
+    "batchDiscount": 0.5
+  },
+  "vercel": {
+    "name": "Vercel AI Gateway",
+    "batchDiscount": 0.5
+  },
+  "submodel": {
+    "name": "submodel",
+    "batchDiscount": 0.5
+  },
+  "huggingface": {
+    "name": "Hugging Face",
+    "batchDiscount": 0.5
+  },
+  "minimax-coding-plan": {
+    "name": "MiniMax Token Plan (minimax.io)",
+    "batchDiscount": 0.5
+  },
+  "novita-ai": {
+    "name": "NovitaAI",
+    "batchDiscount": 0.5
+  },
+  "xai": {
+    "name": "xAI",
+    "batchDiscount": 0.5
+  },
+  "privatemode-ai": {
+    "name": "Privatemode AI",
+    "batchDiscount": 0.5
+  },
+  "drun": {
+    "name": "D.Run (China)",
+    "batchDiscount": 0.5
+  },
+  "alibaba-token-plan-cn": {
+    "name": "Alibaba Token Plan (China)",
+    "batchDiscount": 0.5
+  },
+  "moonshotai": {
+    "name": "Moonshot AI",
+    "batchDiscount": 0.5
+  },
+  "fireworks-ai": {
+    "name": "Fireworks AI",
+    "batchDiscount": 0.5
+  },
+  "vultr": {
+    "name": "Vultr",
+    "batchDiscount": 0.5
+  },
+  "302ai": {
+    "name": "302.AI",
+    "batchDiscount": 0.5
+  },
+  "zhipuai": {
+    "name": "Zhipu AI",
+    "batchDiscount": 0.5
+  },
+  "cortecs": {
+    "name": "Cortecs",
+    "batchDiscount": 0.5
+  },
+  "nebius": {
+    "name": "Nebius Token Factory",
+    "batchDiscount": 0.5
+  },
+  "auriko": {
+    "name": "Auriko",
+    "batchDiscount": 0.5
+  },
+  "stepfun-ai": {
+    "name": "StepFun AI",
+    "batchDiscount": 0.5
+  },
+  "vivgrid": {
+    "name": "Vivgrid",
+    "batchDiscount": 0.5
+  },
+  "tinfoil": {
+    "name": "Tinfoil",
+    "batchDiscount": 0.5
+  },
   "mistral": {
     "name": "Mistral",
     "batchDiscount": 0.5,
     "pdf": {
       "pricePerKPage": 1
     }
+  },
+  "cloudflare-workers-ai": {
+    "name": "Cloudflare Workers AI",
+    "batchDiscount": 0.5
+  },
+  "bailing": {
+    "name": "Bailing",
+    "batchDiscount": 0.5
+  },
+  "google": {
+    "name": "Google",
+    "batchDiscount": 0.5
+  },
+  "opencode-go": {
+    "name": "OpenCode Go",
+    "batchDiscount": 0.5
+  },
+  "digitalocean": {
+    "name": "DigitalOcean",
+    "batchDiscount": 0.5
+  },
+  "subconscious": {
+    "name": "Subconscious",
+    "batchDiscount": 0.5
+  },
+  "venice": {
+    "name": "Venice AI",
+    "batchDiscount": 0.5
+  },
+  "lmstudio": {
+    "name": "LMStudio",
+    "batchDiscount": 0.5
+  },
+  "poolside": {
+    "name": "Poolside",
+    "batchDiscount": 0.5
+  },
+  "zenmux": {
+    "name": "ZenMux",
+    "batchDiscount": 0.5
+  },
+  "kenari": {
+    "name": "Kenari",
+    "batchDiscount": 0.5
+  },
+  "openai": {
+    "name": "OpenAI",
+    "batchDiscount": 0.5
+  },
+  "berget": {
+    "name": "Berget.AI",
+    "batchDiscount": 0.5
+  },
+  "tencent-token-plan": {
+    "name": "Tencent Token Plan",
+    "batchDiscount": 0.5
+  },
+  "github-models": {
+    "name": "GitHub Models",
+    "batchDiscount": 0.5
+  },
+  "neuralwatt": {
+    "name": "Neuralwatt",
+    "batchDiscount": 0.5
+  },
+  "siliconflow-cn": {
+    "name": "SiliconFlow (China)",
+    "batchDiscount": 0.5
+  },
+  "merge-gateway": {
+    "name": "Merge Gateway",
+    "batchDiscount": 0.5
+  },
+  "qihang-ai": {
+    "name": "QiHang",
+    "batchDiscount": 0.5
+  },
+  "xiaomi-token-plan-ams": {
+    "name": "Xiaomi Token Plan (Europe)",
+    "batchDiscount": 0.5
+  },
+  "modelscope": {
+    "name": "ModelScope",
+    "batchDiscount": 0.5
+  },
+  "groq": {
+    "name": "Groq",
+    "batchDiscount": 0.5
+  },
+  "mixlayer": {
+    "name": "Mixlayer",
+    "batchDiscount": 0.5
+  },
+  "orcarouter": {
+    "name": "OrcaRouter",
+    "batchDiscount": 0.5
+  },
+  "helicone": {
+    "name": "Helicone",
+    "batchDiscount": 0.5
+  },
+  "zai": {
+    "name": "Z.AI",
+    "batchDiscount": 0.5
+  },
+  "nearai": {
+    "name": "NEAR AI Cloud",
+    "batchDiscount": 0.5
+  },
+  "llmgateway": {
+    "name": "LLM Gateway",
+    "batchDiscount": 0.5
+  },
+  "alibaba-coding-plan-cn": {
+    "name": "Alibaba Coding Plan (China)",
+    "batchDiscount": 0.5
+  },
+  "abacus": {
+    "name": "Abacus",
+    "batchDiscount": 0.5
+  },
+  "cloudferro-sherlock": {
+    "name": "CloudFerro Sherlock",
+    "batchDiscount": 0.5
+  },
+  "cloudflare-ai-gateway": {
+    "name": "Cloudflare AI Gateway",
+    "batchDiscount": 0.5
+  },
+  "moonshotai-cn": {
+    "name": "Moonshot AI (China)",
+    "batchDiscount": 0.5
+  },
+  "morph": {
+    "name": "Morph",
+    "batchDiscount": 0.5
+  },
+  "sakana": {
+    "name": "Sakana AI",
+    "batchDiscount": 0.5
+  },
+  "deepinfra": {
+    "name": "Deep Infra",
+    "batchDiscount": 0.5
+  },
+  "google-vertex-anthropic": {
+    "name": "Vertex (Anthropic)",
+    "batchDiscount": 0.5
+  },
+  "v0": {
+    "name": "v0",
+    "batchDiscount": 0.5
+  },
+  "azure": {
+    "name": "Azure",
+    "batchDiscount": 0.5
+  },
+  "cerebras": {
+    "name": "Cerebras",
+    "batchDiscount": 0.5
+  },
+  "zai-coding-plan": {
+    "name": "Z.AI Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "nvidia": {
+    "name": "Nvidia",
+    "batchDiscount": 0.5
+  },
+  "evroc": {
+    "name": "evroc",
+    "batchDiscount": 0.5
+  },
+  "xiaomi": {
+    "name": "Xiaomi",
+    "batchDiscount": 0.5
+  },
+  "inception": {
+    "name": "Inception",
+    "batchDiscount": 0.5
   },
   "anthropic": {
     "name": "Anthropic",
@@ -13,8 +293,284 @@
       "tokenPerPage": 2333
     }
   },
-  "openai": {
-    "name": "OpenAI",
+  "tencent-coding-plan": {
+    "name": "Tencent Coding Plan (China)",
+    "batchDiscount": 0.5
+  },
+  "freemodel": {
+    "name": "FreeModel",
+    "batchDiscount": 0.5
+  },
+  "sap-ai-core": {
+    "name": "SAP AI Core",
+    "batchDiscount": 0.5
+  },
+  "opencode": {
+    "name": "OpenCode Zen",
+    "batchDiscount": 0.5
+  },
+  "inference": {
+    "name": "Inference",
+    "batchDiscount": 0.5
+  },
+  "inceptron": {
+    "name": "Inceptron",
+    "batchDiscount": 0.5
+  },
+  "llama": {
+    "name": "Llama",
+    "batchDiscount": 0.5
+  },
+  "llmtr": {
+    "name": "LLMTR",
+    "batchDiscount": 0.5
+  },
+  "cohere": {
+    "name": "Cohere",
+    "batchDiscount": 0.5
+  },
+  "stepfun": {
+    "name": "StepFun",
+    "batchDiscount": 0.5
+  },
+  "hpc-ai": {
+    "name": "HPC-AI",
+    "batchDiscount": 0.5
+  },
+  "minimax-cn": {
+    "name": "MiniMax (minimaxi.com)",
+    "batchDiscount": 0.5
+  },
+  "alibaba-coding-plan": {
+    "name": "Alibaba Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "poe": {
+    "name": "Poe",
+    "batchDiscount": 0.5
+  },
+  "kimi-for-coding": {
+    "name": "Kimi For Coding",
+    "batchDiscount": 0.5
+  },
+  "dinference": {
+    "name": "DInference",
+    "batchDiscount": 0.5
+  },
+  "perplexity-agent": {
+    "name": "Perplexity Agent",
+    "batchDiscount": 0.5
+  },
+  "siliconflow": {
+    "name": "SiliconFlow",
+    "batchDiscount": 0.5
+  },
+  "umans-ai-coding-plan": {
+    "name": "Umans AI Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "io-net": {
+    "name": "IO.NET",
+    "batchDiscount": 0.5
+  },
+  "gmicloud": {
+    "name": "GMI Cloud",
+    "batchDiscount": 0.5
+  },
+  "xiaomi-token-plan-cn": {
+    "name": "Xiaomi Token Plan (China)",
+    "batchDiscount": 0.5
+  },
+  "zeldoc": {
+    "name": "Zeldoc",
+    "batchDiscount": 0.5
+  },
+  "scaleway": {
+    "name": "Scaleway",
+    "batchDiscount": 0.5
+  },
+  "ovhcloud": {
+    "name": "OVHcloud AI Endpoints",
+    "batchDiscount": 0.5
+  },
+  "friendli": {
+    "name": "Friendli",
+    "batchDiscount": 0.5
+  },
+  "tencent-tokenhub": {
+    "name": "Tencent TokenHub",
+    "batchDiscount": 0.5
+  },
+  "wandb": {
+    "name": "Weights & Biases",
+    "batchDiscount": 0.5
+  },
+  "kuae-cloud-coding-plan": {
+    "name": "KUAE Cloud Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "gitlab": {
+    "name": "GitLab Duo",
+    "batchDiscount": 0.5
+  },
+  "kilo": {
+    "name": "Kilo Gateway",
+    "batchDiscount": 0.5
+  },
+  "lucidquery": {
+    "name": "LucidQuery",
+    "batchDiscount": 0.5
+  },
+  "meganova": {
+    "name": "Meganova",
+    "batchDiscount": 0.5
+  },
+  "perplexity": {
+    "name": "Perplexity",
+    "batchDiscount": 0.5
+  },
+  "amazon-bedrock": {
+    "name": "Amazon Bedrock",
+    "batchDiscount": 0.5
+  },
+  "umans-ai": {
+    "name": "Umans AI",
+    "batchDiscount": 0.5
+  },
+  "togetherai": {
+    "name": "Together AI",
+    "batchDiscount": 0.5
+  },
+  "frogbot": {
+    "name": "FrogBot",
+    "batchDiscount": 0.5
+  },
+  "openrouter": {
+    "name": "OpenRouter",
+    "batchDiscount": 0.5
+  },
+  "jiekou": {
+    "name": "Jiekou.AI",
+    "batchDiscount": 0.5
+  },
+  "alibaba-token-plan": {
+    "name": "Alibaba Token Plan",
+    "batchDiscount": 0.5
+  },
+  "alibaba": {
+    "name": "Alibaba",
+    "batchDiscount": 0.5
+  },
+  "databricks": {
+    "name": "Databricks",
+    "batchDiscount": 0.5
+  },
+  "crof": {
+    "name": "CrofAI",
+    "batchDiscount": 0.5
+  },
+  "fastrouter": {
+    "name": "FastRouter",
+    "batchDiscount": 0.5
+  },
+  "abliteration-ai": {
+    "name": "abliteration.ai",
+    "batchDiscount": 0.5
+  },
+  "xpersona": {
+    "name": "Xpersona",
+    "batchDiscount": 0.5
+  },
+  "azure-cognitive-services": {
+    "name": "Azure Cognitive Services",
+    "batchDiscount": 0.5
+  },
+  "baseten": {
+    "name": "Baseten",
+    "batchDiscount": 0.5
+  },
+  "atomic-chat": {
+    "name": "Atomic Chat",
+    "batchDiscount": 0.5
+  },
+  "routing-run": {
+    "name": "routing.run",
+    "batchDiscount": 0.5
+  },
+  "aihubmix": {
+    "name": "AIHubMix",
+    "batchDiscount": 0.5
+  },
+  "google-vertex": {
+    "name": "Vertex",
+    "batchDiscount": 0.5
+  },
+  "nano-gpt": {
+    "name": "NanoGPT",
+    "batchDiscount": 0.5
+  },
+  "moark": {
+    "name": "Moark",
+    "batchDiscount": 0.5
+  },
+  "lilac": {
+    "name": "Lilac",
+    "batchDiscount": 0.5
+  },
+  "ambient": {
+    "name": "Ambient",
+    "batchDiscount": 0.5
+  },
+  "neon": {
+    "name": "Neon",
+    "batchDiscount": 0.5
+  },
+  "upstage": {
+    "name": "Upstage",
+    "batchDiscount": 0.5
+  },
+  "zhipuai-coding-plan": {
+    "name": "Zhipu AI Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "chutes": {
+    "name": "Chutes",
+    "batchDiscount": 0.5
+  },
+  "minimax-cn-coding-plan": {
+    "name": "MiniMax Token Plan (minimaxi.com)",
+    "batchDiscount": 0.5
+  },
+  "deepseek": {
+    "name": "DeepSeek",
+    "batchDiscount": 0.5
+  },
+  "wafer.ai": {
+    "name": "Wafer",
+    "batchDiscount": 0.5
+  },
+  "minimax": {
+    "name": "MiniMax (minimax.io)",
+    "batchDiscount": 0.5
+  },
+  "github-copilot": {
+    "name": "GitHub Copilot",
+    "batchDiscount": 0.5
+  },
+  "clarifai": {
+    "name": "Clarifai",
+    "batchDiscount": 0.5
+  },
+  "synthetic": {
+    "name": "Synthetic",
+    "batchDiscount": 0.5
+  },
+  "iflowcn": {
+    "name": "iFlow",
+    "batchDiscount": 0.5
+  },
+  "xiaomi-token-plan-sgp": {
+    "name": "Xiaomi Token Plan (Singapore)",
     "batchDiscount": 0.5
   }
 }

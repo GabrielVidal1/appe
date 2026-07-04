@@ -1,6 +1,6 @@
 import { AppData } from "@/types/appData";
 import { Model } from "@/types/model";
-import { PROVIDERS } from "@/types/provider";
+import { getProviderParams } from "@/types/provider";
 import { PricingResult, TokenResults } from "@/types/results";
 import { computeImagePrice } from "./imageCost";
 import { strToTokens, strToTokensSync } from "./tokenization";
@@ -20,7 +20,7 @@ export const computeTokens = (
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
 
-  const { pdf } = PROVIDERS[model?.provider ?? "anthropic"];
+  const { pdf } = getProviderParams(model?.provider);
 
   if (appData.dataType === "images" && appData.imageSize) {
     inputImageTokens = +computeImagePrice(
@@ -64,7 +64,7 @@ export const computeTokensAsync = async (
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
 
-  const { pdf } = PROVIDERS[model?.provider ?? "anthropic"];
+  const { pdf } = getProviderParams(model?.provider);
 
   if (appData.dataType === "images" && appData.imageSize) {
     inputImageTokens = +computeImagePrice(
@@ -102,7 +102,7 @@ export const computePrices = (
   model: Model,
   tokenResults: TokenResults
 ): PricingResult => {
-  const provider = PROVIDERS[model.provider];
+  const provider = getProviderParams(model.provider);
   const { input_cost, output_cost, cache_cost } = model;
   const batchDiscount = appData.batchEnabled ? provider.batchDiscount || 1 : 1;
 

@@ -1,11 +1,27 @@
+import { MODELS_META } from "@/data";
 import { Heart } from "lucide-react";
+
+const updatedOn = MODELS_META.generatedAt.slice(0, 10);
 
 const Footer: React.FC<{ className?: string }> = ({ className }) => {
   return (
     <footer
       className={`border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 mt-auto ${className}`}
     >
-      <div className="container mx-auto px-4 py-4">
+      <div className="container mx-auto px-4 py-4 space-y-1">
+        <div className="text-center text-xs text-muted-foreground">
+          Pricing for {MODELS_META.modelCount.toLocaleString()} models from{" "}
+          {MODELS_META.providerCount} providers, sourced from{" "}
+          <a
+            href="https://models.dev"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-medium text-foreground hover:underline"
+          >
+            models.dev
+          </a>{" "}
+          · updated {updatedOn}
+        </div>
         <div className="flex items-center justify-center text-sm text-muted-foreground">
           <span>Made with</span>
           <Heart className="h-4 w-4 mx-1 text-red-500 fill-current" />

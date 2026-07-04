@@ -1,4 +1,7 @@
-export type Provider = "anthropic" | "mistral" | "openai";
+// Provider ids come from models.dev (e.g. "anthropic", "openai", "openrouter",
+// "groq", …). It is an open string rather than a fixed union so the daily sync
+// can introduce new providers without a code change.
+export type Provider = string;
 
 export type ModelSize = "small" | "medium" | "big";
 
