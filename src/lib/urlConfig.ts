@@ -11,6 +11,7 @@ const PARAM_MAP: Record<keyof AppData, string> = {
   example: "e",
   imageSize: "i",
   pdfData: "d",
+  audioData: "a",
   modelSize: "s",
   modelCapabilities: "m",
   selectedTiers: "r",
@@ -32,6 +33,7 @@ const VALUE_MAPPINGS = {
     prompts: "0",
     images: "1",
     pdfs: "2",
+    audio: "3",
   },
   modelSize: {
     small: "0",
@@ -175,6 +177,16 @@ function compressFormData(data: AppData): Record<string, unknown> {
           compressed[mappedKey] = `${value.pages}-${value.tokenPerPage}`;
         }
         break;
+      case "audioData":
+        if (
+          value &&
+          typeof value === "object" &&
+          "seconds" in value &&
+          "tokensPerSecond" in value
+        ) {
+          compressed[mappedKey] = `${value.seconds}-${value.tokensPerSecond}`;
+        }
+        break;
       case "showColumns":
         if (value && typeof value === "object") {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -286,6 +298,14 @@ function decompressFormData(
           const [pages, tokenPerPage] = value.split("-").map(Number);
           if (!isNaN(pages) && !isNaN(tokenPerPage)) {
             decompressed[originalKey] = { pages, tokenPerPage };
+          }
+        }
+        break;
+      case "audioData":
+        if (typeof value === "string" && value.includes("-")) {
+          const [seconds, tokensPerSecond] = value.split("-").map(Number);
+          if (!isNaN(seconds) && !isNaN(tokensPerSecond)) {
+            decompressed[originalKey] = { seconds, tokensPerSecond };
           }
         }
         break;

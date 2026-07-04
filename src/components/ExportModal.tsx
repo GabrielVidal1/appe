@@ -128,6 +128,7 @@ Total Tokens: ${tokenStats.totalTokens.toLocaleString()}
 Input Tokens (Text): ${tokenStats.inputTokens.text.toLocaleString()}
 Input Tokens (Document): ${tokenStats.inputTokens.document.toLocaleString()}
 Input Tokens (Image): ${tokenStats.inputTokens.image.toLocaleString()}
+Input Tokens (Audio): ${tokenStats.inputTokens.audio.toLocaleString()}
 Output Tokens: ${tokenStats.outputTokens.toLocaleString()}
 Price Range: $${minMaxCosts.min.toFixed(2)} - $${minMaxCosts.max.toFixed(2)}
 Cheapest: ${minMaxCosts.minModel.name}

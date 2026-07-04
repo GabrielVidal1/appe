@@ -14,6 +14,7 @@ type TokenType = keyof TokenResults["inputTokens"];
 const DATA_TO_TOKEN_TYPE: Record<DataType, TokenType[]> = {
   images: ["image", "text", "total"],
   pdfs: ["document", "text", "total"],
+  audio: ["audio", "text", "total"],
   prompts: ["text", "total"],
 };
 

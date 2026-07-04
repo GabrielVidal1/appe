@@ -3,6 +3,9 @@ import { times } from "lodash";
 
 export const CAPABILITIES_FROM_TAG = {
   vision: "see",
+  audio: "hear audio",
+  video: "watch videos",
+  tools: "use tools",
   coding: "code",
   multilingual: "speak multiple languages",
   reasoning: "think",
@@ -11,6 +14,10 @@ export const CAPABILITIES_FROM_TAG = {
   edge: "run on edge devices",
   moderation: "moderate content",
 };
+
+// Default audio tokenization when a model doesn't specify one. ~32 tokens/second
+// (~1,920/min) matches Gemini and most multimodal LLMs. Editable per-estimate.
+export const DEFAULT_AUDIO_TOKENS_PER_SECOND = 32;
 
 export const LOREM_IPSUM = times(
   10,
@@ -53,6 +60,14 @@ The Cooperative Group trials system had become inefficient and slow, and we were
     prompt: "Describe the content of this image",
     example:
       "The image shows a beautiful sunset over a mountain range with a clear sky.",
+  },
+  {
+    name: "Audio Transcription",
+    dataType: "audio",
+    audioData: { seconds: 300, tokensPerSecond: 32 },
+    prompt: "Transcribe this audio recording and note the speaker changes.",
+    example:
+      "[00:00] Speaker 1: Welcome to the show. [00:04] Speaker 2: Thanks for having me...",
   },
   {
     name: "PDF Analysis",

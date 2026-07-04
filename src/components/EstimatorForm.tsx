@@ -18,6 +18,7 @@ const EstimatorForm = ({ onSubmit, updatePrices }: EstimatorFormProps) => {
       ...data,
       imageSize: data.dataType === "images" ? data.imageSize : undefined,
       pdfData: data.dataType === "pdfs" ? data.pdfData : undefined,
+      audioData: data.dataType === "audio" ? data.audioData : undefined,
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

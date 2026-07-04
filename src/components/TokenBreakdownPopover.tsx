@@ -26,6 +26,7 @@ const COLORS = [
   "#3b82f6", // Blue for Input Text
   "#10b981", // Green for Document
   "#f59e0b", // Orange for Image
+  "#8b5cf6", // Violet for Audio
   "#ef4444", // Red for Output
 ];
 
@@ -52,9 +53,14 @@ const TokenBreakdownPopover: React.FC<TokenBreakdownPopoverProps> = ({
       color: COLORS[2],
     },
     {
+      name: "Audio",
+      value: results.inputTokens.audio * data.dataCount,
+      color: COLORS[3],
+    },
+    {
       name: "Output",
       value: results.outputTokens * data.dataCount,
-      color: COLORS[3],
+      color: COLORS[4],
     },
   ].filter((item) => item.value > 0);
 

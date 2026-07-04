@@ -1,6 +1,6 @@
 import { ModelSize, Provider } from "@/types/model";
 
-export type DataType = "prompts" | "images" | "pdfs";
+export type DataType = "prompts" | "images" | "pdfs" | "audio";
 
 export type AppDataContext = {
   appData: AppData;
@@ -18,6 +18,7 @@ export type AppData = {
   example: string;
   imageSize?: { width: number; height: number };
   pdfData?: { pages: number; tokenPerPage: number };
+  audioData?: { seconds: number; tokensPerSecond: number };
   modelSize: ModelSize;
   modelCapabilities: string[];
 
@@ -51,6 +52,7 @@ export const DEFAULT_APP_DATA: AppData = {
   example: "",
   imageSize: { width: 512, height: 512 },
   pdfData: { pages: 10, tokenPerPage: 500 },
+  audioData: { seconds: 60, tokensPerSecond: 32 },
   modelSize: "medium",
   modelCapabilities: [],
   configName: "", // Default empty config name

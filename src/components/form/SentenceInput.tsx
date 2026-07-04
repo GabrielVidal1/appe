@@ -1,5 +1,6 @@
 import { DataType } from "@/types/appData";
 import { useFormContext } from "react-hook-form";
+import DataAudioPopover from "./popovers/DataAudioPopover";
 import DataCountPopover from "./popovers/DataCountPopover";
 import DataPdfPopover from "./popovers/DataPdfPopover";
 import DataTypePopover from "./popovers/DataTypePopover";
@@ -29,6 +30,13 @@ const SentenceInput = () => {
             <span>of</span>
             <DataPdfPopover />
             <span>in average</span>
+          </>
+        )}
+        {dataType === "audio" && (
+          <>
+            <span>of</span>
+            <DataAudioPopover />
+            <span>each</span>
           </>
         )}
       </div>

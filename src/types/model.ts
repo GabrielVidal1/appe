@@ -59,6 +59,12 @@ export type Model = {
   cache_cost: number | null;
 
   /**
+   * Cost per million audio-input tokens, when the provider prices audio
+   * separately. Null means audio is billed at the regular input_cost rate.
+   */
+  input_audio_cost: number | null;
+
+  /**
    * Maximum number of input tokens. Length of the context window.
    */
   max_token: number | null;

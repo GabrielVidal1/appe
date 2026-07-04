@@ -6,6 +6,7 @@ export type TokenResults = {
     text: number;
     document: number;
     image: number;
+    audio: number;
     total: number;
   };
   outputTokens: number;
@@ -17,6 +18,7 @@ export type PricingResult = TokenResults & {
     text: number;
     document: number;
     image: number;
+    audio: number;
     total: number;
   };
   cachedCost?: number;

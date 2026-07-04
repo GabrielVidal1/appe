@@ -17,16 +17,16 @@ const DataTypePopover = () => {
     setValue("dataType", value);
   };
 
+  // Keep the required capability filter in sync with the data type: image input
+  // needs "vision", audio input needs "audio". Drop both otherwise.
   useEffect(() => {
-    if (dataType === "images") {
-      const addedVisionCapabilities = new Set([...modelCapabilities, "vision"]);
-      setValue("modelCapabilities", Array.from(addedVisionCapabilities));
-    } else {
-      const removedVisionCapabilities = modelCapabilities.filter(
-        (capability) => capability !== "vision"
-      );
-      setValue("modelCapabilities", removedVisionCapabilities);
-    }
+    const required =
+      dataType === "images" ? "vision" : dataType === "audio" ? "audio" : null;
+    const next = modelCapabilities.filter(
+      (c) => c !== "vision" && c !== "audio"
+    );
+    if (required) next.push(required);
+    setValue("modelCapabilities", next);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dataType]);
 
@@ -39,6 +39,7 @@ const DataTypePopover = () => {
         <SelectItem value="prompts">prompts</SelectItem>
         <SelectItem value="images">images</SelectItem>
         <SelectItem value="pdfs">pdfs</SelectItem>
+        <SelectItem value="audio">audio</SelectItem>
       </SelectContent>
     </Select>
   );

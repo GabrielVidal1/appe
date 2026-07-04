@@ -453,6 +453,10 @@
     "name": "Jiekou.AI",
     "batchDiscount": 0.5
   },
+  "nova": {
+    "name": "Nova",
+    "batchDiscount": 0.5
+  },
   "alibaba-token-plan": {
     "name": "Alibaba Token Plan",
     "batchDiscount": 0.5
@@ -571,6 +575,10 @@
   },
   "xiaomi-token-plan-sgp": {
     "name": "Xiaomi Token Plan (Singapore)",
+    "batchDiscount": 0.5
+  },
+  "claudinio": {
+    "name": "Claudinio",
     "batchDiscount": 0.5
   }
 }

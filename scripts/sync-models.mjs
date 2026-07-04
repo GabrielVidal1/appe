@@ -24,10 +24,10 @@ const API_URL = "https://models.dev/api.json";
 const LOGO_URL = (id) => `https://models.dev/logos/${id}.svg`;
 const UA = { "user-agent": "appe-sync (+https://appe.dev.gabvdl.xyz)" };
 
-// Only these input modalities are estimable by the app today (text prompt,
-// image-by-pixels, pdf-by-page). Models that need audio/video input are dropped
-// so cost estimates stay honest (per the "exclude other modalities" decision).
-const SUPPORTED_INPUT = new Set(["text", "image", "pdf"]);
+// Input modalities the app knows how to price: text (prompt), image (pixels),
+// pdf (pages), audio (duration). Video is kept so multimodal models (Gemini,
+// Qwen-Omni…) are included, but its input is not separately estimated yet.
+const SUPPORTED_INPUT = new Set(["text", "image", "pdf", "audio", "video"]);
 
 // Per-provider knobs the app needs but models.dev does not carry. PDF token/page
 // and batch discounts are provider policy, not model metadata. Unlisted
@@ -52,6 +52,8 @@ function deriveTier(inputCost, outputCost) {
 function deriveTags(m, inputs) {
   const tags = [];
   if (inputs.includes("image")) tags.push("vision");
+  if (inputs.includes("audio")) tags.push("audio");
+  if (inputs.includes("video")) tags.push("video");
   if (m.reasoning) tags.push("reasoning");
   if (m.tool_call) tags.push("tools");
   if (m.open_weights) tags.push("opensource");
@@ -75,6 +77,10 @@ function mapModel(providerId, m) {
     model_size: null, // models.dev does not expose parameter counts
     input_cost: inputCost,
     output_cost: outputCost,
+    // Dedicated audio-input $/Mtok when models.dev provides it; otherwise the
+    // estimator falls back to the regular input_cost (the "default when not
+    // known" path for audio).
+    input_audio_cost: cost.input_audio != null ? Number(cost.input_audio) : null,
     cache_cost: cost.cache_read != null ? Number(cost.cache_read) : null,
     max_token: m.limit?.context ?? null,
     tier: deriveTier(inputCost, outputCost),

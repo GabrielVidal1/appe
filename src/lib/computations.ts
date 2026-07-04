@@ -19,6 +19,7 @@ export const computeTokens = (
   const inputTextTokens = strToTokensSync(appData.prompt);
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
+  let inputAudioTokens = 0;
 
   const { pdf } = getProviderParams(model?.provider);
 
@@ -32,8 +33,14 @@ export const computeTokens = (
     const tokenPerPage = pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage;
 
     inputDocumentTokens += appData.pdfData.pages * tokenPerPage;
+  } else if (appData.dataType === "audio" && appData.audioData) {
+    inputAudioTokens =
+      appData.audioData.seconds * appData.audioData.tokensPerSecond;
   }
   const outputTokens = strToTokensSync(appData.example);
+
+  const inputTotal =
+    inputTextTokens + inputDocumentTokens + inputImageTokens + inputAudioTokens;
 
   return {
     model,
@@ -41,11 +48,11 @@ export const computeTokens = (
       text: inputTextTokens,
       document: inputDocumentTokens,
       image: inputImageTokens,
-      total: inputTextTokens + inputDocumentTokens + inputImageTokens,
+      audio: inputAudioTokens,
+      total: inputTotal,
     },
     outputTokens: outputTokens,
-    totalTokens:
-      inputTextTokens + inputDocumentTokens + inputImageTokens + outputTokens,
+    totalTokens: inputTotal + outputTokens,
   };
 };
 
@@ -63,6 +70,7 @@ export const computeTokensAsync = async (
   const inputTextTokens = await strToTokens(appData.prompt, model?.provider);
   let inputDocumentTokens = 0;
   let inputImageTokens = 0;
+  let inputAudioTokens = 0;
 
   const { pdf } = getProviderParams(model?.provider);
 
@@ -76,8 +84,14 @@ export const computeTokensAsync = async (
     const tokenPerPage = pdf?.tokenPerPage ?? appData.pdfData.tokenPerPage;
 
     inputDocumentTokens += appData.pdfData.pages * tokenPerPage;
+  } else if (appData.dataType === "audio" && appData.audioData) {
+    inputAudioTokens =
+      appData.audioData.seconds * appData.audioData.tokensPerSecond;
   }
   const outputTokens = await strToTokens(appData.example, model?.provider);
+
+  const inputTotal =
+    inputTextTokens + inputDocumentTokens + inputImageTokens + inputAudioTokens;
 
   return {
     model,
@@ -85,11 +99,11 @@ export const computeTokensAsync = async (
       text: inputTextTokens,
       document: inputDocumentTokens,
       image: inputImageTokens,
-      total: inputTextTokens + inputDocumentTokens + inputImageTokens,
+      audio: inputAudioTokens,
+      total: inputTotal,
     },
     outputTokens: outputTokens,
-    totalTokens:
-      inputTextTokens + inputDocumentTokens + inputImageTokens + outputTokens,
+    totalTokens: inputTotal + outputTokens,
   };
 };
 
@@ -119,6 +133,7 @@ export const computePrices = (
   let cachedCost = 0;
   let inputDocumentCost = 0;
   let inputImageCost = 0;
+  let inputAudioCost = 0;
 
   if (cache_cost !== null) {
     cachedCost =
@@ -161,15 +176,37 @@ export const computePrices = (
         batchDiscount;
   }
 
+  if (appData.dataType === "audio") {
+    // Use the dedicated audio-input rate when models.dev provides one,
+    // otherwise fall back to the regular input-token rate.
+    const audioRate = model.input_audio_cost ?? model.input_cost;
+    inputAudioCost +=
+      tokenResults.inputTokens.audio *
+      (audioRate / 1000000) *
+      appData.dataCount *
+      batchDiscount;
+  }
+
   return {
     ...tokenResults,
     inputCost: {
       text: inputCost,
       document: inputDocumentCost,
       image: inputImageCost,
-      total: inputCost + inputDocumentCost + inputImageCost + cachedCost,
+      audio: inputAudioCost,
+      total:
+        inputCost +
+        inputDocumentCost +
+        inputImageCost +
+        inputAudioCost +
+        cachedCost,
     },
     outputCost,
-    totalCost: inputCost + outputCost + inputDocumentCost + inputImageCost,
+    totalCost:
+      inputCost +
+      outputCost +
+      inputDocumentCost +
+      inputImageCost +
+      inputAudioCost,
   };
 };

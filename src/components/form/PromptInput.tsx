@@ -1,7 +1,7 @@
 import { TextareaWithCounts } from "@/components/ui/textarea-with-counts";
 import { computeImagePrice } from "@/lib/imageCost";
 import { AppData } from "@/types/appData";
-import { FileImage, FileText } from "lucide-react";
+import { FileAudio, FileImage, FileText } from "lucide-react";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";
 
@@ -24,6 +24,11 @@ const PromptInput = () => {
   const pdfToken = useMemo(() => {
     return pdfData ? pdfData.pages * pdfData.tokenPerPage : 0;
   }, [pdfData]);
+
+  const audioData = watch("audioData");
+  const audioToken = useMemo(() => {
+    return audioData ? audioData.seconds * audioData.tokensPerSecond : 0;
+  }, [audioData]);
 
   return (
     <div className="relative">
@@ -55,6 +60,22 @@ const PromptInput = () => {
             <p className="hidden group-hover/aa:inline">=</p>
             <p className="inline group-hover/aa:hidden">+ </p>
             {pdfToken.toLocaleString()} tokens
+          </p>
+        </div>
+      )}
+      {dataType === "audio" && (
+        <div className="group/aa bg-white border p-2 shadow-sm rounded-xl absolute bottom-2 right-2 text-xs text-gray-500 flex flex-col items-center gap-1">
+          <FileAudio className="h-10 w-10" />
+          <div className="hidden group-hover/aa:flex flex-col items-center">
+            <p>seconds x tokens/sec</p>
+            <p>
+              {audioData?.seconds} x {audioData?.tokensPerSecond}
+            </p>
+          </div>
+          <p>
+            <span className="hidden group-hover/aa:inline">= </span>
+            <span className="inline group-hover/aa:hidden">~ </span>
+            {audioToken.toLocaleString()} tokens
           </p>
         </div>
       )}

@@ -32,6 +32,11 @@ const ExampleTemplates = ({
       const pageNumber = Math.ceil(Math.floor(Math.random() * 10) + 10);
       const tokenPerPage = Math.ceil(Math.floor(Math.random() * 1500) + 1000);
       setValue("pdfData", { pages: pageNumber, tokenPerPage });
+    } else if (dataType === "audio") {
+      setValue(
+        "audioData",
+        exampleTemplate.audioData ?? { seconds: 60, tokensPerSecond: 32 }
+      );
     }
   };
 
