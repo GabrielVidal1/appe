@@ -1,6 +1,11 @@
 # APPE: AI Processing Price Estimator
 
-A comprehensive web application that helps you estimate and compare costs across major AI providers (OpenAI, Claude, Mistral) for different types of data processing tasks.
+A comprehensive web application that helps you estimate and compare costs across
+**~4,900 models from ~144 providers** for different types of data processing
+tasks. Pricing is sourced from the [models.dev](https://models.dev) database and
+refreshed daily.
+
+**Live:** https://appe.dev.gabvdl.xyz
 
 ![screenshot](./doc/screen.png)
 
@@ -8,8 +13,11 @@ A comprehensive web application that helps you estimate and compare costs across
 
 ### Multi-Provider Cost Comparison
 
-- Compare pricing across **OpenAI**, **Claude**, and **Mistral** models
-- Support for small, medium, and large model tiers
+- Compare pricing across every major provider — OpenAI, Anthropic, Google,
+  Mistral, xAI, DeepSeek, Meta, Groq, Cohere, Together, Amazon Bedrock and many
+  more (the same model is often listed under several providers at different
+  prices, so you can compare where to buy it)
+- Filter by provider, model tier (small/medium/large), and capability tags
 - Real-time cost calculations based on token usage
 
 ### Data Type Support
@@ -17,6 +25,8 @@ A comprehensive web application that helps you estimate and compare costs across
 - **Text Prompts**: Standard text processing and generation
 - **Images**: Image analysis with size-based token calculation
 - **PDFs**: Document processing with page-based token estimation
+- **Audio**: Duration-based token estimation (default ~32 tokens/sec, editable),
+  priced with the model's dedicated audio rate when available
 
 ### Advanced Token Estimation
 
@@ -90,7 +100,7 @@ A comprehensive web application that helps you estimate and compare costs across
 
 ### Basic Workflow
 
-1. **Select Data Type**: Choose between prompts, images, or PDFs
+1. **Select Data Type**: Choose between prompts, images, PDFs, or audio
 2. **Enter Your Prompt**: Describe the task you want the AI to perform
 3. **Provide Example Output**: Show what kind of response you expect
 4. **Set Data Count**: Specify how many items you want to process
@@ -127,28 +137,35 @@ Example: "Title: ..., Authors: ..., Key Findings: ..."
 Data Count: 50 documents
 ```
 
-## 📊 Model Support
+## 📊 Model data (models.dev)
 
-The application includes comprehensive model data for:
+The model catalogue is **generated**, not hand-maintained. `scripts/sync-models.mjs`
+pulls it from the [models.dev](https://models.dev) API (`/api.json`) plus the
+per-provider logos, and writes the local database under `src/data/`:
 
-- **OpenAI**: GPT-4, GPT-3.5, and various specialized models
-- **Claude**: Haiku, Sonnet, and Opus variants
-- **Mistral**: Small, medium, and large models
+- `models.json` — every estimable model across all providers
+- `provider_data.json` — provider display names, batch discounts, PDF pricing
+- `models.meta.json` — source, generation timestamp and counts
+- `public/logos/*.svg` — provider logos (inlined so they adapt to dark mode)
 
-Each model includes:
+```bash
+node scripts/sync-models.mjs   # refresh the local model + logo data
+```
 
-- Input/output token costs
-- Context window sizes
-- Capability tags (vision, code, multilingual, reasoning)
-- Model tier classifications
+A daily cron (`scripts/sync-and-deploy.sh`) runs the sync, rebuilds and
+redeploys, so the live site stays current. Each model includes input/output
+(and, where available, cached and audio) token costs, context-window size,
+capability tags (vision, audio, video, reasoning, tools, opensource) and a
+tier classification.
 
 ## 🎨 Features in Detail
 
 ### Token Estimation
 
-- **Text**: ~4 characters per token estimation
-- **Images**: Provider-specific calculations (Claude: width×height/750, OpenAI: complex tile-based)
-- **PDFs**: Page-based token multiplication
+- **Text**: tokenizer-based counting (OpenAI o200k) with a ~4-chars/token fallback
+- **Images**: Provider-specific calculations (Anthropic: width×height/750, OpenAI: tile-based, others: default)
+- **PDFs**: Page-based token multiplication (or per-page pricing where the provider bills that way)
+- **Audio**: Duration × tokens/second (default ~32 tok/s), priced with the model's dedicated audio rate when models.dev provides one
 
 ### Export Options
 
@@ -162,6 +179,19 @@ Each model includes:
 - Search models by name
 - Sort results by cost or performance
 
+## 🚢 Deployment
+
+The app is a static build deployed to zipgo on raspy2 at
+`appe.dev.gabvdl.xyz` (Let's Encrypt HTTPS):
+
+```bash
+npm run deploy   # build + rsync dist/ to zipgo (scripts/deploy.sh)
+```
+
+A daily cron runs `scripts/sync-and-deploy.sh` to refresh the models.dev data
+and redeploy automatically.
+
 ---
 
-Built with ❤️ using React, TypeScript, and Tailwind CSS
+Built with ❤️ using React, TypeScript, and Tailwind CSS · model data from
+[models.dev](https://models.dev)
