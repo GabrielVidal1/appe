@@ -10,13 +10,19 @@
 // Run:  node scripts/sync-models.mjs
 // A daily cron (scripts/sync-and-deploy.sh) runs this, rebuilds and redeploys.
 
-import { writeFile } from "node:fs/promises";
+import { writeFile, mkdir, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "..", "src", "data");
+const LOGO_DIR = join(__dirname, "..", "public", "logos");
 const API_URL = "https://models.dev/api.json";
+// models.dev serves a per-provider logo (SVG) at this path. Some are monochrome
+// `currentColor` svgs, some are full-colour brand marks — the app inlines them
+// so both render correctly (see components/ProviderIcons.tsx).
+const LOGO_URL = (id) => `https://models.dev/logos/${id}.svg`;
+const UA = { "user-agent": "appe-sync (+https://appe.dev.gabvdl.xyz)" };
 
 // Only these input modalities are estimable by the app today (text prompt,
 // image-by-pixels, pdf-by-page). Models that need audio/video input are dropped
@@ -87,6 +93,40 @@ function isEstimable(m) {
   return true;
 }
 
+/** Fetch a provider's SVG logo. Returns sanitised svg text, or null on any
+ *  failure (the app then falls back to a generic icon). */
+async function fetchLogo(id) {
+  try {
+    const res = await fetch(LOGO_URL(id), { headers: UA });
+    if (!res.ok) return null;
+    const svg = await res.text();
+    if (!svg.includes("<svg")) return null;
+    // Defensive: drop any scripting even though models.dev logos are clean —
+    // these are inlined via dangerouslySetInnerHTML.
+    if (/<script/i.test(svg)) return null;
+    return svg.trim();
+  } catch {
+    return null;
+  }
+}
+
+/** Download every provider logo into public/logos/<id>.svg (rebuilt each run). */
+async function syncLogos(ids) {
+  await rm(LOGO_DIR, { recursive: true, force: true });
+  await mkdir(LOGO_DIR, { recursive: true });
+  let ok = 0;
+  await Promise.all(
+    ids.map(async (id) => {
+      const svg = await fetchLogo(id);
+      if (svg) {
+        await writeFile(join(LOGO_DIR, `${id}.svg`), svg + "\n");
+        ok++;
+      }
+    })
+  );
+  return ok;
+}
+
 async function main() {
   process.stdout.write(`Fetching ${API_URL} …\n`);
   const res = await fetch(API_URL, { headers: { accept: "application/json" } });
@@ -118,11 +158,14 @@ async function main() {
       a.name.localeCompare(b.name)
   );
 
+  const logoCount = await syncLogos(Object.keys(providers));
+
   const meta = {
     source: API_URL,
     generatedAt: new Date().toISOString(),
     providerCount: Object.keys(providers).length,
     modelCount: models.length,
+    logoCount,
   };
 
   await writeFile(join(DATA_DIR, "models.json"), JSON.stringify(models, null, 2) + "\n");
@@ -133,7 +176,8 @@ async function main() {
   await writeFile(join(DATA_DIR, "models.meta.json"), JSON.stringify(meta, null, 2) + "\n");
 
   process.stdout.write(
-    `✓ Wrote ${models.length} models from ${meta.providerCount} providers to src/data/\n`
+    `✓ Wrote ${models.length} models from ${meta.providerCount} providers to src/data/\n` +
+      `✓ Downloaded ${logoCount}/${meta.providerCount} provider logos to public/logos/\n`
   );
 }
 
