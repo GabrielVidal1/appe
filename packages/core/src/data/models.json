@@ -13155,6 +13155,33 @@
     "license": "commercial"
   },
   {
+    "id": "ambient/stepfun/step-3.7-flash",
+    "provider": "ambient",
+    "name": "Step 3.7 Flash",
+    "version": "2026-05-29",
+    "task": [
+      "text",
+      "image",
+      "video"
+    ],
+    "description": "StepFun flash model for efficient multimodal reasoning, coding, and tool use",
+    "model_size": null,
+    "input_cost": 0.2,
+    "output_cost": 1.15,
+    "input_audio_cost": null,
+    "cache_cost": 0.04,
+    "max_token": 262144,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "video",
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
     "id": "ambient/moonshotai/kimi-k2.7-code",
     "provider": "ambient",
     "name": "Kimi K2.7 Code",
@@ -13207,6 +13234,52 @@
     "license": "opensource"
   },
   {
+    "id": "ambient/ambient/large",
+    "provider": "ambient",
+    "name": "Ambient Large",
+    "version": "2026-06-13",
+    "task": [
+      "text"
+    ],
+    "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+    "model_size": null,
+    "input_cost": 1.05,
+    "output_cost": 4.4,
+    "input_audio_cost": null,
+    "cache_cost": 0.2,
+    "max_token": 101376,
+    "tier": "medium",
+    "tags": [
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
+    "id": "ambient/z-ai/glm-5.2",
+    "provider": "ambient",
+    "name": "GLM-5.2",
+    "version": "2026-06-13",
+    "task": [
+      "text"
+    ],
+    "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
+    "model_size": null,
+    "input_cost": 1.05,
+    "output_cost": 4.4,
+    "input_audio_cost": null,
+    "cache_cost": 0.2,
+    "max_token": 101376,
+    "tier": "medium",
+    "tags": [
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
     "id": "ambient/zai-org/GLM-5.2-FP8",
     "provider": "ambient",
     "name": "GLM-5.2",
@@ -13230,29 +13303,6 @@
     "license": "opensource"
   },
   {
-    "id": "ambient/ambient/large",
-    "provider": "ambient",
-    "name": "Ambient Large",
-    "version": "2026-06-13",
-    "task": [
-      "text"
-    ],
-    "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
-    "model_size": null,
-    "input_cost": 1.4,
-    "output_cost": 4.4,
-    "input_audio_cost": null,
-    "cache_cost": 0.26,
-    "max_token": 101376,
-    "tier": "medium",
-    "tags": [
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
     "id": "ambient/zai-org/GLM-5.1-FP8",
     "provider": "ambient",
     "name": "GLM 5.1",
@@ -13267,29 +13317,6 @@
     "input_audio_cost": null,
     "cache_cost": 0,
     "max_token": 202752,
-    "tier": "medium",
-    "tags": [
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
-    "id": "ambient/z-ai/glm-5.2",
-    "provider": "ambient",
-    "name": "GLM-5.2",
-    "version": "2026-06-13",
-    "task": [
-      "text"
-    ],
-    "description": "Flagship GLM model for hybrid reasoning, coding, and agentic engineering",
-    "model_size": null,
-    "input_cost": 1.4,
-    "output_cost": 4.4,
-    "input_audio_cost": null,
-    "cache_cost": 0.26,
-    "max_token": 101376,
     "tier": "medium",
     "tags": [
       "reasoning",
@@ -19294,7 +19321,7 @@
     "output_cost": 4.4,
     "input_audio_cost": null,
     "cache_cost": 0.3,
-    "max_token": 202720,
+    "max_token": 1048576,
     "tier": "medium",
     "tags": [
       "reasoning",
@@ -22680,7 +22707,7 @@
     "task": [
       "text"
     ],
-    "description": "Cohere retrieval model for long-context chat and enterprise RAG workflows",
+    "description": "Open Command R model optimized for Arabic enterprise chat, RAG, and cultural knowledge",
     "model_size": null,
     "input_cost": 0.0375,
     "output_cost": 0.15,
@@ -22771,7 +22798,7 @@
     "task": [
       "text"
     ],
-    "description": "Cohere command model for multilingual enterprise agents, tools, and chat",
+    "description": "Cohere reasoning model for multilingual enterprise agents, tools, and complex workflows",
     "model_size": null,
     "input_cost": 2.5,
     "output_cost": 10,
@@ -22817,7 +22844,7 @@
       "text",
       "image"
     ],
-    "description": "Cohere command model for multilingual enterprise agents, tools, and chat",
+    "description": "Cohere vision model for multilingual document analysis, OCR, and image understanding",
     "model_size": null,
     "input_cost": 2.5,
     "output_cost": 10,
@@ -25280,6 +25307,30 @@
     "license": "commercial"
   },
   {
+    "id": "crossmodel/x-ai/grok-build-0.1",
+    "provider": "crossmodel",
+    "name": "Grok Build 0.1",
+    "version": "2026-04-16",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "Fast Grok coding model tuned for agentic engineering and iterative edits",
+    "model_size": null,
+    "input_cost": 1,
+    "output_cost": 2,
+    "input_audio_cost": null,
+    "cache_cost": 0.2,
+    "max_token": 256000,
+    "tier": "medium",
+    "tags": [
+      "vision",
+      "reasoning",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "crossmodel/moonshot/kimi-k2.6",
     "provider": "crossmodel",
     "name": "Kimi K2.6",
@@ -25375,6 +25426,30 @@
       "vision",
       "audio",
       "video",
+      "reasoning",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
+    "id": "crossmodel/x-ai/grok-4.3",
+    "provider": "crossmodel",
+    "name": "Grok 4.3",
+    "version": "2026-04-17",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "xAI's default Grok for chat, coding, agentic tools, and lower hallucination risk",
+    "model_size": null,
+    "input_cost": 1.25,
+    "output_cost": 2.5,
+    "input_audio_cost": null,
+    "cache_cost": 0.2,
+    "max_token": 1000000,
+    "tier": "medium",
+    "tags": [
+      "vision",
       "reasoning",
       "tools"
     ],
@@ -25477,6 +25552,30 @@
       "vision",
       "audio",
       "video",
+      "reasoning",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
+    "id": "crossmodel/x-ai/grok-4.5",
+    "provider": "crossmodel",
+    "name": "Grok 4.5",
+    "version": "2026-07-08",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "xAI's latest Grok for chat, coding, agentic tools, and lower hallucination risk",
+    "model_size": null,
+    "input_cost": 2,
+    "output_cost": 6,
+    "input_audio_cost": null,
+    "cache_cost": 0.5,
+    "max_token": 500000,
+    "tier": "medium",
+    "tags": [
+      "vision",
       "reasoning",
       "tools"
     ],
@@ -86628,29 +86727,6 @@
     "license": "opensource"
   },
   {
-    "id": "openrouter/openai/gpt-oss-120b:free",
-    "provider": "openrouter",
-    "name": "gpt-oss-120b (free)",
-    "version": "2025-08-05",
-    "task": [
-      "text"
-    ],
-    "description": "Open GPT reasoning model for self-hosted agents and controllable deployments",
-    "model_size": null,
-    "input_cost": 0,
-    "output_cost": 0,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 131072,
-    "tier": "small",
-    "tags": [
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
     "id": "openrouter/openai/gpt-oss-20b:free",
     "provider": "openrouter",
     "name": "gpt-oss-20b (free)",
@@ -86755,50 +86831,6 @@
     "input_audio_cost": null,
     "cache_cost": null,
     "max_token": 262144,
-    "tier": "small",
-    "tags": [
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
-    "id": "openrouter/liquid/lfm-2.5-1.2b-instruct:free",
-    "provider": "openrouter",
-    "name": "LFM2.5-1.2B-Instruct (free)",
-    "version": "2026-01-20",
-    "task": [
-      "text"
-    ],
-    "description": "Free provider route for experiments, demos, and cost-sensitive chat workloads",
-    "model_size": null,
-    "input_cost": 0,
-    "output_cost": 0,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 32768,
-    "tier": "small",
-    "tags": [
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
-    "id": "openrouter/liquid/lfm-2.5-1.2b-thinking:free",
-    "provider": "openrouter",
-    "name": "LFM2.5-1.2B-Thinking (free)",
-    "version": "2026-01-20",
-    "task": [
-      "text"
-    ],
-    "description": "Free provider route for experiments, demos, and cost-sensitive chat workloads",
-    "model_size": null,
-    "input_cost": 0,
-    "output_cost": 0,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 32768,
     "tier": "small",
     "tags": [
       "reasoning",
@@ -87310,6 +87342,29 @@
     "license": "opensource"
   },
   {
+    "id": "openrouter/openai/gpt-oss-120b",
+    "provider": "openrouter",
+    "name": "GPT OSS 120B",
+    "version": "2025-08-05",
+    "task": [
+      "text"
+    ],
+    "description": "Open GPT reasoning model for self-hosted agents and controllable deployments",
+    "model_size": null,
+    "input_cost": 0.03,
+    "output_cost": 0.15,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 131072,
+    "tier": "small",
+    "tags": [
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
     "id": "openrouter/amazon/nova-micro-v1",
     "provider": "openrouter",
     "name": "Nova Micro 1.0",
@@ -87329,29 +87384,6 @@
       "tools"
     ],
     "license": "commercial"
-  },
-  {
-    "id": "openrouter/openai/gpt-oss-120b",
-    "provider": "openrouter",
-    "name": "GPT OSS 120B",
-    "version": "2025-08-05",
-    "task": [
-      "text"
-    ],
-    "description": "Open GPT reasoning model for self-hosted agents and controllable deployments",
-    "model_size": null,
-    "input_cost": 0.036,
-    "output_cost": 0.18,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 131072,
-    "tier": "small",
-    "tags": [
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
   },
   {
     "id": "openrouter/cohere/command-r7b-12-2024",
@@ -87501,7 +87533,7 @@
     "input_cost": 0.05,
     "output_cost": 0.4,
     "input_audio_cost": null,
-    "cache_cost": 0.01,
+    "cache_cost": 0.005,
     "max_token": 400000,
     "tier": "small",
     "tags": [
@@ -87633,6 +87665,33 @@
     "model_size": null,
     "input_cost": 0.06,
     "output_cost": 0.33,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 262144,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "video",
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
+    "id": "openrouter/google/gemma-4-31b-it",
+    "provider": "openrouter",
+    "name": "Gemma 4 31B IT",
+    "version": "2026-04-02",
+    "task": [
+      "image",
+      "text",
+      "video"
+    ],
+    "description": "Largest Gemma 4 instruction model for open, self-hosted chat and reasoning",
+    "model_size": null,
+    "input_cost": 0.06,
+    "output_cost": 0.35,
     "input_audio_cost": null,
     "cache_cost": null,
     "max_token": 262144,
@@ -88570,33 +88629,6 @@
     "license": "opensource"
   },
   {
-    "id": "openrouter/google/gemma-4-31b-it",
-    "provider": "openrouter",
-    "name": "Gemma 4 31B IT",
-    "version": "2026-04-02",
-    "task": [
-      "image",
-      "text",
-      "video"
-    ],
-    "description": "Largest Gemma 4 instruction model for open, self-hosted chat and reasoning",
-    "model_size": null,
-    "input_cost": 0.12,
-    "output_cost": 0.35,
-    "input_audio_cost": null,
-    "cache_cost": 0.09,
-    "max_token": 262144,
-    "tier": "small",
-    "tags": [
-      "vision",
-      "video",
-      "reasoning",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
-  },
-  {
     "id": "openrouter/qwen/qwen3-30b-a3b",
     "provider": "openrouter",
     "name": "Qwen3 30B A3B",
@@ -88945,6 +88977,27 @@
     "max_token": 128000,
     "tier": "small",
     "tags": [],
+    "license": "commercial"
+  },
+  {
+    "id": "openrouter/kwaipilot/kat-coder-air-v2.5",
+    "provider": "openrouter",
+    "name": "KAT-Coder-Air V2.5",
+    "version": "2026-07-10",
+    "task": [
+      "text"
+    ],
+    "description": "Coding model for repository understanding, refactors, and agentic engineering tasks",
+    "model_size": null,
+    "input_cost": 0.15,
+    "output_cost": 0.6,
+    "input_audio_cost": null,
+    "cache_cost": 0.03,
+    "max_token": 256000,
+    "tier": "small",
+    "tags": [
+      "tools"
+    ],
     "license": "commercial"
   },
   {
@@ -90075,10 +90128,10 @@
     ],
     "description": "Qwen vision-language model for visual reasoning, documents, and agent tasks",
     "model_size": null,
-    "input_cost": 0.285,
+    "input_cost": 0.289,
     "output_cost": 2.4,
     "input_audio_cost": null,
-    "cache_cost": 0.15,
+    "cache_cost": null,
     "max_token": 262144,
     "tier": "small",
     "tags": [
@@ -91501,6 +91554,27 @@
     "license": "opensource"
   },
   {
+    "id": "openrouter/kwaipilot/kat-coder-pro-v2.5",
+    "provider": "openrouter",
+    "name": "KAT-Coder-Pro V2.5",
+    "version": "2026-07-10",
+    "task": [
+      "text"
+    ],
+    "description": "Coding model for repository understanding, refactors, and agentic engineering tasks",
+    "model_size": null,
+    "input_cost": 0.74,
+    "output_cost": 2.96,
+    "input_audio_cost": null,
+    "cache_cost": 0.15,
+    "max_token": 256000,
+    "tier": "medium",
+    "tags": [
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "openrouter/openai/gpt-5.4-mini",
     "provider": "openrouter",
     "name": "GPT-5.4 mini",
@@ -91808,10 +91882,10 @@
     ],
     "description": "Open flagship GLM for long-horizon coding agents and million-token context work",
     "model_size": null,
-    "input_cost": 0.93,
-    "output_cost": 3,
+    "input_cost": 0.924,
+    "output_cost": 2.904,
     "input_audio_cost": null,
-    "cache_cost": 0.18,
+    "cache_cost": 0.1716,
     "max_token": 1048576,
     "tier": "medium",
     "tags": [
@@ -92435,7 +92509,7 @@
     "input_cost": 1.25,
     "output_cost": 10,
     "input_audio_cost": null,
-    "cache_cost": 0.13,
+    "cache_cost": 0.125,
     "max_token": 400000,
     "tier": "medium",
     "tags": [
@@ -93712,27 +93786,6 @@
       "tools"
     ],
     "license": "commercial"
-  },
-  {
-    "id": "openrouter/sao10k/l3.1-70b-hanami-x1",
-    "provider": "openrouter",
-    "name": "Llama 3.1 70B Hanami x1",
-    "version": "2025-01-08",
-    "task": [
-      "text"
-    ],
-    "description": "Open Llama instruction model for multilingual chat, reasoning, and coding",
-    "model_size": null,
-    "input_cost": 3,
-    "output_cost": 3,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 16000,
-    "tier": "medium",
-    "tags": [
-      "opensource"
-    ],
-    "license": "opensource"
   },
   {
     "id": "openrouter/anthracite-org/magnum-v4-72b",
@@ -103514,6 +103567,46 @@
     "license": "commercial"
   },
   {
+    "id": "sap-ai-core/text-embedding-3-small",
+    "provider": "sap-ai-core",
+    "name": "text-embedding-3-small",
+    "version": "2024-01-25",
+    "task": [
+      "text"
+    ],
+    "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+    "model_size": null,
+    "input_cost": 0.02,
+    "output_cost": 0,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 8191,
+    "tier": "small",
+    "tags": [],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/amazon--nova-micro",
+    "provider": "sap-ai-core",
+    "name": "amazon--nova-micro",
+    "version": "2024-12-03",
+    "task": [
+      "text"
+    ],
+    "description": "Efficient model for low-latency assistance, extraction, and routine automation",
+    "model_size": null,
+    "input_cost": 0.03,
+    "output_cost": 0.1,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 128000,
+    "tier": "small",
+    "tags": [
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "sap-ai-core/gpt-5-nano",
     "provider": "sap-ai-core",
     "name": "gpt-5-nano",
@@ -103535,6 +103628,92 @@
       "reasoning",
       "tools"
     ],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/mistralai--mistral-small",
+    "provider": "sap-ai-core",
+    "name": "mistralai--mistral-small",
+    "version": "2026-03-16",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "Fast Mistral production model for chat, extraction, and cost-sensitive agents",
+    "model_size": null,
+    "input_cost": 0.07,
+    "output_cost": 0.28,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 128000,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
+  },
+  {
+    "id": "sap-ai-core/nvidia--llama-3.2-nv-embedqa-1b",
+    "provider": "sap-ai-core",
+    "name": "nvidia--llama-3.2-nv-embedqa-1b",
+    "version": "2024-09-25",
+    "task": [
+      "text"
+    ],
+    "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+    "model_size": null,
+    "input_cost": 0.07,
+    "output_cost": 0,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 8192,
+    "tier": "small",
+    "tags": [],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/gpt-4.1-nano",
+    "provider": "sap-ai-core",
+    "name": "gpt-4.1-nano",
+    "version": "2025-04-14",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "Tiny GPT-4.1 option for classification, routing, and very high-volume tasks",
+    "model_size": null,
+    "input_cost": 0.08,
+    "output_cost": 0.26,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 1047576,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/text-embedding-3-large",
+    "provider": "sap-ai-core",
+    "name": "text-embedding-3-large",
+    "version": "2024-01-25",
+    "task": [
+      "text"
+    ],
+    "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+    "model_size": null,
+    "input_cost": 0.09,
+    "output_cost": 0,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 8191,
+    "tier": "small",
+    "tags": [],
     "license": "commercial"
   },
   {
@@ -103564,6 +103743,25 @@
       "reasoning",
       "tools"
     ],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/amazon--titan-embed-text",
+    "provider": "sap-ai-core",
+    "name": "amazon--titan-embed-text",
+    "version": "2024-04-30",
+    "task": [
+      "text"
+    ],
+    "description": "Embedding model for semantic search, retrieval, clustering, and ranking pipelines",
+    "model_size": null,
+    "input_cost": 0.14,
+    "output_cost": 0,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 8192,
+    "tier": "small",
+    "tags": [],
     "license": "commercial"
   },
   {
@@ -103644,6 +103842,32 @@
     "license": "commercial"
   },
   {
+    "id": "sap-ai-core/amazon--nova-lite",
+    "provider": "sap-ai-core",
+    "name": "amazon--nova-lite",
+    "version": "2025-12-02",
+    "task": [
+      "text",
+      "image",
+      "video"
+    ],
+    "description": "Efficient model for low-latency assistance, extraction, and routine automation",
+    "model_size": null,
+    "input_cost": 0.3,
+    "output_cost": 2.37,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 1000000,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "video",
+      "reasoning",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "sap-ai-core/gemini-2.5-flash",
     "provider": "sap-ai-core",
     "name": "gemini-2.5-flash",
@@ -103673,6 +103897,29 @@
     "license": "commercial"
   },
   {
+    "id": "sap-ai-core/mistralai--mistral-medium-instruct",
+    "provider": "sap-ai-core",
+    "name": "mistralai--mistral-medium-instruct",
+    "version": "2025-05-07",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "Mistral model for multilingual chat, reasoning, and tool-assisted workflows",
+    "model_size": null,
+    "input_cost": 0.36,
+    "output_cost": 1.22,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 128000,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "sap-ai-core/gpt-4.1-mini",
     "provider": "sap-ai-core",
     "name": "gpt-4.1-mini",
@@ -103695,6 +103942,75 @@
       "tools"
     ],
     "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/sap-abap-1",
+    "provider": "sap-ai-core",
+    "name": "sap-abap-1",
+    "version": "2025-11-26",
+    "task": [
+      "text"
+    ],
+    "description": "SAP-hosted model for ABAP code generation and enterprise development tasks",
+    "model_size": null,
+    "input_cost": 0.48,
+    "output_cost": 1.7,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 32768,
+    "tier": "small",
+    "tags": [
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/amazon--nova-pro",
+    "provider": "sap-ai-core",
+    "name": "amazon--nova-pro",
+    "version": "2024-12-03",
+    "task": [
+      "text",
+      "image",
+      "video"
+    ],
+    "description": "Flagship model for demanding analysis, coding, and production agent workflows",
+    "model_size": null,
+    "input_cost": 0.56,
+    "output_cost": 2.13,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 300000,
+    "tier": "small",
+    "tags": [
+      "vision",
+      "video",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
+    "id": "sap-ai-core/cohere--command-a-reasoning",
+    "provider": "sap-ai-core",
+    "name": "cohere--command-a-reasoning",
+    "version": "2025-08-21",
+    "task": [
+      "text"
+    ],
+    "description": "Cohere reasoning model for multilingual enterprise agents, tools, and complex workflows",
+    "model_size": null,
+    "input_cost": 0.63,
+    "output_cost": 5.05,
+    "input_audio_cost": null,
+    "cache_cost": null,
+    "max_token": 256000,
+    "tier": "medium",
+    "tags": [
+      "reasoning",
+      "tools",
+      "opensource"
+    ],
+    "license": "opensource"
   },
   {
     "id": "sap-ai-core/anthropic--claude-4.5-haiku",
@@ -103794,6 +104110,30 @@
     "license": "commercial"
   },
   {
+    "id": "sap-ai-core/gpt-5.2",
+    "provider": "sap-ai-core",
+    "name": "gpt-5.2",
+    "version": "2025-12-11",
+    "task": [
+      "text",
+      "image"
+    ],
+    "description": "Reliable GPT generation for broad coding, writing, and tool-assisted product work",
+    "model_size": null,
+    "input_cost": 1.25,
+    "output_cost": 9.44,
+    "input_audio_cost": null,
+    "cache_cost": 0.12,
+    "max_token": 400000,
+    "tier": "medium",
+    "tags": [
+      "vision",
+      "reasoning",
+      "tools"
+    ],
+    "license": "commercial"
+  },
+  {
     "id": "sap-ai-core/gemini-3.5-flash",
     "provider": "sap-ai-core",
     "name": "gemini-3.5-flash",
@@ -103837,7 +104177,7 @@
     "input_cost": 2,
     "output_cost": 8,
     "input_audio_cost": null,
-    "cache_cost": 0.5,
+    "cache_cost": 0.32,
     "max_token": 1047576,
     "tier": "medium",
     "tags": [
@@ -112061,27 +112401,6 @@
     "license": "commercial"
   },
   {
-    "id": "vercel/mistral/devstral-small",
-    "provider": "vercel",
-    "name": "Devstral Small 1.1",
-    "version": "2025-05-21",
-    "task": [
-      "text"
-    ],
-    "description": "Mistral coding agent model for repository tasks and software engineering workflows",
-    "model_size": null,
-    "input_cost": 0.1,
-    "output_cost": 0.3,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 128000,
-    "tier": "small",
-    "tags": [
-      "tools"
-    ],
-    "license": "commercial"
-  },
-  {
     "id": "vercel/mistral/devstral-small-2",
     "provider": "vercel",
     "name": "Devstral Small 2",
@@ -112192,28 +112511,6 @@
     "max_token": 128000,
     "tier": "small",
     "tags": [],
-    "license": "commercial"
-  },
-  {
-    "id": "vercel/xiaomi/mimo-v2-flash",
-    "provider": "vercel",
-    "name": "MiMo V2 Flash",
-    "version": "2025-12-16",
-    "task": [
-      "text"
-    ],
-    "description": "MiMo flash model for fast multimodal assistance and agent workflows",
-    "model_size": null,
-    "input_cost": 0.1,
-    "output_cost": 0.3,
-    "input_audio_cost": null,
-    "cache_cost": 0.01,
-    "max_token": 262144,
-    "tier": "small",
-    "tags": [
-      "reasoning",
-      "tools"
-    ],
     "license": "commercial"
   },
   {
@@ -113155,27 +113452,6 @@
     "tags": [
       "vision",
       "reasoning",
-      "tools"
-    ],
-    "license": "commercial"
-  },
-  {
-    "id": "vercel/arcee-ai/trinity-large-preview",
-    "provider": "vercel",
-    "name": "Trinity Large Preview",
-    "version": "2026-01-27",
-    "task": [
-      "text"
-    ],
-    "description": "Flagship model for demanding analysis, coding, and production agent workflows",
-    "model_size": null,
-    "input_cost": 0.25,
-    "output_cost": 1,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 131000,
-    "tier": "small",
-    "tags": [
       "tools"
     ],
     "license": "commercial"
@@ -114398,30 +114674,6 @@
     "license": "commercial"
   },
   {
-    "id": "vercel/anthropic/claude-3.5-haiku",
-    "provider": "vercel",
-    "name": "Claude 3.5 Haiku",
-    "version": "2024-11-04",
-    "task": [
-      "text",
-      "image",
-      "pdf"
-    ],
-    "description": "Fast Claude model for responsive assistance, classification, and lightweight agents",
-    "model_size": null,
-    "input_cost": 0.8,
-    "output_cost": 4,
-    "input_audio_cost": null,
-    "cache_cost": 0.08,
-    "max_token": 200000,
-    "tier": "medium",
-    "tags": [
-      "vision",
-      "tools"
-    ],
-    "license": "commercial"
-  },
-  {
     "id": "vercel/morph/morph-v3-fast",
     "provider": "vercel",
     "name": "Morph v3 Fast",
@@ -114626,28 +114878,6 @@
     "tier": "medium",
     "tags": [
       "vision",
-      "reasoning",
-      "tools"
-    ],
-    "license": "commercial"
-  },
-  {
-    "id": "vercel/xiaomi/mimo-v2-pro",
-    "provider": "vercel",
-    "name": "MiMo V2 Pro",
-    "version": "2026-03-18",
-    "task": [
-      "text"
-    ],
-    "description": "Earlier MiMo Pro model for multimodal agents, reasoning, and code tasks",
-    "model_size": null,
-    "input_cost": 1,
-    "output_cost": 3,
-    "input_audio_cost": null,
-    "cache_cost": 0.2,
-    "max_token": 1000000,
-    "tier": "medium",
-    "tags": [
       "reasoning",
       "tools"
     ],
@@ -115394,25 +115624,6 @@
     "license": "commercial"
   },
   {
-    "id": "vercel/openai/gpt-3.5-turbo-instruct",
-    "provider": "vercel",
-    "name": "GPT-3.5 Turbo Instruct",
-    "version": "2023-09-18",
-    "task": [
-      "text"
-    ],
-    "description": "Compact GPT model for low-latency assistance and high-volume workloads",
-    "model_size": null,
-    "input_cost": 1.5,
-    "output_cost": 2,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 8192,
-    "tier": "medium",
-    "tags": [],
-    "license": "commercial"
-  },
-  {
     "id": "vercel/interfaze/interfaze-beta",
     "provider": "vercel",
     "name": "Interfaze Beta",
@@ -115839,30 +116050,6 @@
       "tools"
     ],
     "license": "commercial"
-  },
-  {
-    "id": "vercel/mistral/pixtral-large",
-    "provider": "vercel",
-    "name": "Pixtral Large (latest)",
-    "version": "2024-11-01",
-    "task": [
-      "text",
-      "image"
-    ],
-    "description": "Mistral's larger vision model for document-heavy image understanding and chat",
-    "model_size": null,
-    "input_cost": 2,
-    "output_cost": 6,
-    "input_audio_cost": null,
-    "cache_cost": null,
-    "max_token": 128000,
-    "tier": "medium",
-    "tags": [
-      "vision",
-      "tools",
-      "opensource"
-    ],
-    "license": "opensource"
   },
   {
     "id": "vercel/zai/glm-5.2-fast",
