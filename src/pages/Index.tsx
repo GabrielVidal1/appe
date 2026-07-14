@@ -6,7 +6,7 @@ import Navbar from "@/components/Navbar";
 import ResultsTable from "@/components/ResultsTable";
 import { useAppData } from "@/hooks/useAppData";
 import { cn } from "@/lib/utils";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 const Index = () => {

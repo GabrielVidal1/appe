@@ -1,4 +1,4 @@
-import { ALL_PROVIDERS, MODELS_META } from "@/data";
+import { ALL_PROVIDERS, MODELS_META } from "@appe/core";
 import { Brain, Calculator, ExternalLink, TrendingUp } from "lucide-react";
 import { memo } from "react";
 import { ProviderIcon } from "./ProviderIcons";

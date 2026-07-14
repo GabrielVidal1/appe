@@ -1,5 +1,5 @@
 import { parseConfigFromUrl } from "@/lib/urlConfig";
-import { DEFAULT_APP_DATA } from "@/types/appData";
+import { DEFAULT_APP_DATA } from "@appe/core";
 import { values } from "lodash";
 import { useMemo } from "react";
 

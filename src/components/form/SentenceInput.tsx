@@ -1,4 +1,4 @@
-import { DataType } from "@/types/appData";
+import { DataType } from "@appe/core";
 import { useFormContext } from "react-hook-form";
 import DataAudioPopover from "./popovers/DataAudioPopover";
 import DataCountPopover from "./popovers/DataCountPopover";

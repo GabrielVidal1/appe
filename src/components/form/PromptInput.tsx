@@ -1,6 +1,5 @@
 import { TextareaWithCounts } from "@/components/ui/textarea-with-counts";
-import { computeImagePrice } from "@/lib/imageCost";
-import { AppData } from "@/types/appData";
+import { computeImagePrice, AppData } from "@appe/core";
 import { FileAudio, FileImage, FileText } from "lucide-react";
 import { useMemo } from "react";
 import { useFormContext } from "react-hook-form";

@@ -1,6 +1,6 @@
 import { Provider } from "./model";
 
-import providerData from "@/data/provider_data.json";
+import providerData from "../data/provider_data.json";
 
 export type ProviderConfig = {
   name: string; // Display name of the provider

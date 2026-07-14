@@ -4,8 +4,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { AppData } from "@/types/appData";
-import { TokenResults } from "@/types/results";
+import { AppData, TokenResults } from "@appe/core";
 import {
   Cell,
   Legend,

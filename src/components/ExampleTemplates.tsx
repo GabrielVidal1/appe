@@ -1,7 +1,6 @@
 import { Badge } from "@/components/ui/badge";
-import { EXAMPLES } from "@/lib/constants";
+import { EXAMPLES, ExampleTemplate } from "@appe/core";
 import { cn } from "@/lib/utils";
-import { ExampleTemplate } from "@/types/appData";
 import { useFormContext } from "react-hook-form";
 
 interface ExampleTemplatesProps {

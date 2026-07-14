@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Provider } from "@/types/model";
+import { Provider } from "@appe/core";
 import { Bot } from "lucide-react";
 import { useEffect, useState } from "react";
 

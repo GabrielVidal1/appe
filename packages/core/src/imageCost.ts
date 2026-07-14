@@ -1,4 +1,4 @@
-import { Provider } from "@/types/model";
+import { Provider } from "./types/model";
 
 function resizeOpenAI(width: number, height: number): [number, number] {
   if (width > 1024 || height > 1024) {

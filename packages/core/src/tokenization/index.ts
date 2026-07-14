@@ -1,4 +1,6 @@
-import { Provider } from "@/types/model";
+import type { TiktokenBPE } from "js-tiktoken/lite";
+
+import { Provider } from "../types/model";
 
 // Fallback function for rough estimation
 const strToTokensRough = (str: string): number => {
@@ -13,7 +15,7 @@ const getOpenAITokenizer = async () => {
   if (!openaiTokenizer) {
     const { Tiktoken } = await import("js-tiktoken/lite");
     const res = await fetch(`https://tiktoken.pages.dev/js/o200k_base.json`);
-    const o200k_base = await res.json();
+    const o200k_base = (await res.json()) as TiktokenBPE;
     openaiTokenizer = new Tiktoken(o200k_base);
   }
   return openaiTokenizer;

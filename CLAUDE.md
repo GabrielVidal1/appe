@@ -18,12 +18,12 @@ The model catalogue is **generated**, not hand-maintained. `scripts/sync-models.
 fetches `https://models.dev/api.json` (and the per-provider logos from
 `https://models.dev/logos/<id>.svg`) and writes:
 
-- `src/data/models.json` — flat `Model[]` of every estimable model (~4.9k across
+- `packages/core/src/data/models.json` — flat `Model[]` of every estimable model (~4.9k across
   ~144 providers). One entry per provider×model (the same base model appears
   under many providers at different prices — that's intentional for comparison).
-- `src/data/provider_data.json` — per-provider display name, batch discount, and
+- `packages/core/src/data/provider_data.json` — per-provider display name, batch discount, and
   known PDF pricing knobs.
-- `src/data/models.meta.json` — `{ source, generatedAt, providerCount,
+- `packages/core/src/data/models.meta.json` — `{ source, generatedAt, providerCount,
   modelCount, logoCount }`, surfaced in the hero and footer.
 - `public/logos/<id>.svg` — provider logos, inlined by `ProviderIcons`.
 
@@ -60,19 +60,35 @@ npx tsc --noEmit -p tsconfig.app.json   # typecheck
 
 ## Architecture pointers
 
-- Estimation math: `src/lib/computations.ts` (tokens + prices), `src/lib/imageCost.ts`,
-  `src/lib/tokenization/`. A data type (`prompts|images|pdfs|audio`) drives which
-  input tokens are computed. It is covered by unit tests in `src/lib/__tests__/`
-  (vitest, `vitest.config.ts`) — they pin the current numbers, so a failing test
-  after a refactor means the estimate moved. Change a number only on purpose.
-- Data access + derived lists: `src/data/index.ts` (`ALL_MODELS`, `ALL_TEXT_MODELS`,
-  `ALL_PROVIDERS`, `ALL_TAGS`, `MODELS_META`).
+- **The estimator is a package, not app code.** It lives in `packages/core`
+  (`@appe/core`) — an npm workspace of pure, framework-free TypeScript: the
+  catalogue, the tokenizers, the image/PDF/audio rules and the pricing maths.
+  The web app imports it through the barrel (`import { … } from "@appe/core"`)
+  and *nothing else* — there is no second copy of a formula to keep in sync, and
+  the forthcoming `appe` CLI will import the very same functions. Anything that
+  computes a token count or a cost belongs there; anything that renders belongs
+  in `src/`.
+- Estimation math: `packages/core/src/computations.ts` (tokens + prices),
+  `imageCost.ts`, `tokenization/`. A data type (`prompts|images|pdfs|audio`)
+  drives which input tokens are computed. It is covered by unit tests in
+  `packages/core/src/__tests__/` (vitest, `vitest.config.ts`) — they pin the
+  current numbers, so a failing test after a refactor means the estimate moved.
+  Change a number only on purpose.
+- Data access + derived lists: `packages/core/src/data/index.ts` (`ALL_MODELS`,
+  `ALL_TEXT_MODELS`, `ALL_PROVIDERS`, `ALL_TAGS`, `MODELS_META`).
+- `@appe/core` is wired up twice and both must stay in step: as an npm workspace
+  (root `workspaces: ["packages/*"]`) and as an explicit alias in
+  `vite.config.ts`, `vitest.config.ts` and the `paths` of `tsconfig.json` /
+  `tsconfig.app.json`. Its `exports` point at TS **source** on purpose — every
+  consumer is TypeScript behind a bundler, so there is no build step to drift.
 - Form/state: `react-hook-form` context under `src/contexts/form/`; shareable
   config is (de)serialized in `src/lib/urlConfig.ts` — add new `AppData` fields
   there too (it's a `Record<keyof AppData, …>`).
 - Results table (`src/components/ResultsTableFiltered.tsx`) caps rendered rows at
   100 (the catalogue is thousands) with a "refine filters" note.
 
-When adding a new data type or `Model`/`AppData` field, update: the type, both
-functions in `computations.ts`, `results.ts`, `urlConfig.ts`, the form
-(`SentenceInput` + a popover), and `TokenSummary`/`TokenBreakdownPopover`.
+When adding a new data type or `Model`/`AppData` field, update: the type
+(`packages/core/src/types/`), both functions in `packages/core/src/computations.ts`,
+`types/results.ts`, then re-export it from `packages/core/src/index.ts` if it is
+new — and in the app: `src/lib/urlConfig.ts`, the form (`SentenceInput` + a
+popover), and `TokenSummary`/`TokenBreakdownPopover`.

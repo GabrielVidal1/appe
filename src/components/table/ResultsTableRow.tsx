@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { PricingResult } from "@/types/results";
+import { PricingResult } from "@appe/core";
 import { getProviderIcon } from "../ProviderIcons";
 import { Checkbox } from "../ui/checkbox";
 

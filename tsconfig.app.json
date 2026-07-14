@@ -23,7 +23,8 @@
 
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@appe/core": ["./packages/core/src/index.ts"]
     }
   },
   "include": ["src"]

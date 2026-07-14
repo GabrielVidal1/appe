@@ -21,6 +21,8 @@ export default defineConfig(({ mode }) => ({
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      // The estimator core is a workspace package consumed as TS source.
+      "@appe/core": path.resolve(__dirname, "./packages/core/src/index.ts"),
     },
   },
 }));

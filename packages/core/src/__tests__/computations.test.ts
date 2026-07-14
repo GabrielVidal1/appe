@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
-import { AppData } from "@/types/appData";
-import { Model } from "@/types/model";
+import { AppData } from "../types/appData";
+import { Model } from "../types/model";
 
 import { computePrices, computeTokens, computeTokensAsync } from "../computations";
 

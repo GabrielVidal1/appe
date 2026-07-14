@@ -1,0 +1,42 @@
+{
+  "name": "@appe/core",
+  "version": "0.1.0",
+  "description": "The APPE estimator: models.dev catalogue + token estimation + AI inference pricing maths. Framework-free.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielVidal1/appe.git",
+    "directory": "packages/core"
+  },
+  "keywords": [
+    "llm",
+    "pricing",
+    "cost",
+    "estimation",
+    "tokens",
+    "models.dev"
+  ],
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "js-tiktoken": "^1.0.20",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@types/lodash": "^4.17.20",
+    "typescript": "^5.5.3",
+    "vitest": "^4.1.10"
+  }
+}

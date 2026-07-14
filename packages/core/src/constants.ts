@@ -1,4 +1,4 @@
-import { ExampleTemplate } from "@/types/appData";
+import { ExampleTemplate } from "./types/appData";
 import { times } from "lodash";
 
 export const CAPABILITIES_FROM_TAG = {

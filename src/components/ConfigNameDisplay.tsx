@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useFormContext } from "react-hook-form";
 import { ShareConfigButton } from "./ShareConfigButton";
 

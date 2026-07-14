@@ -1,4 +1,4 @@
-import { MODELS_META } from "@/data";
+import { MODELS_META } from "@appe/core";
 import { Heart } from "lucide-react";
 
 const updatedOn = MODELS_META.generatedAt.slice(0, 10);

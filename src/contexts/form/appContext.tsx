@@ -1,5 +1,5 @@
 import { parseConfigFromUrl } from "@/lib/urlConfig";
-import { AppData, DEFAULT_APP_DATA } from "@/types/appData";
+import { AppData, DEFAULT_APP_DATA } from "@appe/core";
 import React, { useEffect, useMemo } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { AppContext } from "./contexts";

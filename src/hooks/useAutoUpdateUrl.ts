@@ -1,5 +1,5 @@
 import { updateUrlWithConfig } from "@/lib/urlConfig";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useEffect, useRef } from "react";
 import { useFormContext } from "react-hook-form";
 
