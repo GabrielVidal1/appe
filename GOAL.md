@@ -19,6 +19,9 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
+- [appe] Unit tests for the estimator core (vitest): token counts per data type,
+  image tiling per provider, PDF per-page pricing, batch discounts. — @2026-07-14T14:14Z
+
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
