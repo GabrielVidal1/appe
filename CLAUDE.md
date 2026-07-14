@@ -2,6 +2,9 @@
 
 Guidance for Claude Code when working in this repo.
 
+Where this is going is defined in [GOAL.md](GOAL.md) — read it before proposing
+features.
+
 ## What this is
 
 A single-page Vite + React + TypeScript + Tailwind/shadcn app that estimates and

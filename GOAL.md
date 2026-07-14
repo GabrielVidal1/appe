@@ -1,0 +1,132 @@
+# GOAL — where APPE is going
+
+## North star
+
+**Anyone about to spend money on AI can describe their task in plain words and,
+in under a minute, get a trustworthy cost figure — in a browser or in a
+terminal — for free, with the maths open to inspection.**
+
+The bet: cost estimation is the one AI question nobody can answer confidently,
+and every vendor's own calculator is a sales tool. APPE is the neutral one —
+"a pricing calculator, but the model catalogue is a daily-synced open database
+and the estimator is a library you can run yourself." Free and open source, no
+account, no telemetry, no upsell. The unit of input is a **task** ("summarise
+10k support tickets", "run this coding agent over my repo"), not a token count
+— because the token count is exactly what the user doesn't know.
+
+## Target
+
+- **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
+  "which model should I run this on" with a number instead of a vibe.
+- **Developers evaluating an AI feature** — need a defensible cost line for a
+  spec or a PR: "this pipeline costs $X/month at Y items/day."
+- **Indie hackers / small teams shipping AI products** — margin depends on
+  picking the right model at the right provider; they need to compare all of
+  them, not the three a vendor lists.
+- **Scripters and CI pipelines** — want the same estimate from a command, in
+  JSON, without opening a browser.
+
+## Horizons
+
+### Short term — v0.1 (now): a real, installable open-source tool
+
+The web app already works; make it a project people can actually adopt.
+
+- An OSI license (MIT) and a contributor-facing README (not the scaffold one).
+- The estimator core extracted out of `src/lib/` into a framework-free package
+  (`@appe/core`: token estimation + pricing math + the models.dev catalogue),
+  imported by the web app so the two never drift.
+- A `appe` CLI on top of that core: `appe estimate --task "…" --count 1000`
+  → a ranked table of models and costs, `--json` for pipelines.
+- The web app renamed and versioned properly (`package.json` is still
+  `vite_react_shadcn_ts@0.0.0`).
+
+### Middle term — v0.2: agentic task costs
+
+Estimate what an **agent run** costs, not just one prompt. An agent is a loop:
+N turns, growing context, tool results fed back in, cache hits on the prefix.
+That's a different formula from "input + output × count", and nobody offers it.
+
+- A model of an agentic run: turns, tools per turn, context growth, prompt
+  caching (cached-read vs write pricing), reasoning-token overhead.
+- Presets for the shapes people actually run — coding agent over a repo, RAG
+  question-answering, batch classification, a scraper-summariser loop.
+- Sensitivity output: "the estimate is $2–$18; it is dominated by turn count."
+- `appe estimate-agent` in the CLI with the same model.
+
+### Long term — v1.0 / someday
+
+APPE is the thing you reach for before you build anything with an LLM: paste a
+task (or point it at a repo, a dataset, an agent trace), get cost, latency and
+the cheapest model that can actually do it. The core is a package other tools
+import; the catalogue is trusted enough that people cite it. Possibly it reads
+a real usage log (an Anthropic/OpenAI billing export, a Claude Code transcript)
+and tells you what you *would have* paid on every other model — estimation
+validated against reality.
+
+## Wishlist
+
+Order roughly by value. Each item is one session of work.
+
+- [ ] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors
+      (install, dev, how the models.dev sync works, how to contribute).
+- [ ] Fix `package.json`: real name (`appe`), version `0.1.0`, description,
+      repository/license fields.
+- [ ] Extract the estimator into `packages/core` (pure TS, no React): move
+      `lib/computations.ts`, `lib/imageCost.ts`, `lib/tokenization/`,
+      `data/index.ts` + the generated JSON; web app imports it. No behaviour
+      change — the results table must be identical before/after.
+- [ ] Unit tests for the estimator core (vitest): token counts per data type,
+      image tiling per provider, PDF per-page pricing, batch discounts.
+- [ ] `packages/cli` — `appe estimate` reading a task description + count,
+      printing a ranked cost table; `--json`, `--provider`, `--tag`, `--top N`.
+- [ ] CLI: `appe models` — search/filter the catalogue from the terminal
+      (`appe models --tag reasoning --max-cost 1`).
+- [ ] CLI: read the prompt from stdin / a file so it composes in pipelines.
+- [ ] Publish the CLI to npm as `appe` (bump + tag only; leave the actual
+      publish credential step to a human).
+- [ ] Agentic cost model in core: `estimateAgentRun({ turns, toolsPerTurn,
+      contextGrowth, cacheHitRate, reasoning })` with cached-read pricing.
+- [ ] Agent presets (coding agent / RAG / batch classify / scrape-summarise)
+      exposed in both GUI and CLI.
+- [ ] GUI: an "Agent" data type alongside prompts/images/pdfs/audio, wired
+      through `computations.ts`, `urlConfig.ts`, the form and `TokenSummary`
+      (see CLAUDE.md's checklist for adding a data type).
+- [ ] Sensitivity / range output: show a low–high band and which input drives
+      the cost, instead of a single point estimate.
+- [ ] Show cache-aware pricing in the results table (models.dev has
+      cached-read/write rates) — big lever on agent costs.
+- [ ] Import a Claude Code / OpenAI usage export and re-price it against every
+      other model ("what would this have cost on X").
+- [ ] A shareable permalink already exists — add an OG-image endpoint or static
+      card so a shared estimate previews with the number.
+- [ ] Accessibility + mobile pass on the results table (it's the core surface).
+
+## Non-goals (for now)
+
+- **No accounts, no backend, no telemetry.** APPE stays a static site + a local
+  CLI. Anything that needs a server is a different project.
+- **Not a proxy / gateway / router.** It estimates cost; it does not call models
+  on your behalf or spend your money.
+- **Not a benchmark.** Quality/latency rankings are someone else's job — APPE
+  answers "what does this cost", and only borrows quality signals if models.dev
+  already carries them.
+- **No hand-maintained model prices.** Everything comes from models.dev via the
+  sync script; a wrong price is fixed upstream or in the mapping, never by
+  editing the JSON.
+
+## Guard rails (for the goal-keeper)
+
+- One wishlist item per run, finished end-to-end: implement, typecheck
+  (`npx tsc --noEmit -p tsconfig.app.json`), build, and verify the app still
+  renders results before committing.
+- **Never hand-edit** `src/data/models.json`, `provider_data.json`,
+  `models.meta.json` or `public/logos/*` — they are generated by
+  `scripts/sync-models.mjs`.
+- Don't publish to npm and don't push git tags — bump versions, leave the
+  release to a human.
+- Don't touch the deploy cron (`scripts/sync-and-deploy.sh`, the 4:30 crontab
+  entry) or the zipgo deploy target.
+- Refactors (e.g. the core extraction) must be behaviour-preserving — if the
+  estimate for the same inputs changes, that's a bug, not a feature.
+- No paid API calls. APPE estimates costs; it must never incur them.
