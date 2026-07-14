@@ -51,6 +51,7 @@ refreshes daily.
 
 ```bash
 npm run dev                     # local dev server (Vite, port 8080)
+npm test                        # vitest — estimator unit tests (src/**/__tests__)
 node scripts/sync-models.mjs    # refresh model + logo data from models.dev
 npm run build                   # type-checked production build
 npm run deploy                  # build + deploy to zipgo (scripts/deploy.sh)
@@ -61,7 +62,9 @@ npx tsc --noEmit -p tsconfig.app.json   # typecheck
 
 - Estimation math: `src/lib/computations.ts` (tokens + prices), `src/lib/imageCost.ts`,
   `src/lib/tokenization/`. A data type (`prompts|images|pdfs|audio`) drives which
-  input tokens are computed.
+  input tokens are computed. It is covered by unit tests in `src/lib/__tests__/`
+  (vitest, `vitest.config.ts`) — they pin the current numbers, so a failing test
+  after a refactor means the estimate moved. Change a number only on purpose.
 - Data access + derived lists: `src/data/index.ts` (`ALL_MODELS`, `ALL_TEXT_MODELS`,
   `ALL_PROVIDERS`, `ALL_TAGS`, `MODELS_META`).
 - Form/state: `react-hook-form` context under `src/contexts/form/`; shareable

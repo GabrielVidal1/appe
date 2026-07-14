@@ -19,9 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Unit tests for the estimator core (vitest): token counts per data type,
-  image tiling per provider, PDF per-page pricing, batch discounts. — @2026-07-14T14:14Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -84,8 +81,12 @@ Order roughly by value. Each item is one session of work.
       `lib/computations.ts`, `lib/imageCost.ts`, `lib/tokenization/`,
       `data/index.ts` + the generated JSON; web app imports it. No behaviour
       change — the results table must be identical before/after.
-- [ ] Unit tests for the estimator core (vitest): token counts per data type,
+- [x] Unit tests for the estimator core (vitest): token counts per data type,
       image tiling per provider, PDF per-page pricing, batch discounts.
+      *(44 tests in `src/lib/__tests__/` + `src/data/__tests__/`, run with
+      `npm test`. Written before the `packages/core` extraction on purpose:
+      they pin today's numbers, so the extraction can be shown to be
+      behaviour-preserving. Move them with the code.)*
 - [ ] `packages/cli` — `appe estimate` reading a task description + count,
       printing a ranked cost table; `--json`, `--provider`, `--tag`, `--top N`.
 - [ ] CLI: `appe models` — search/filter the catalogue from the terminal

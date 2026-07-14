@@ -51,6 +51,8 @@ Other commands:
 
 ```bash
 npm run build                            # type-checked production build
+npm test                                 # vitest — estimator unit tests
+npm run test:watch                       # vitest in watch mode
 npm run lint                             # eslint
 npx tsc --noEmit -p tsconfig.app.json    # typecheck only
 node scripts/sync-models.mjs             # refresh the model + logo catalogue
@@ -126,13 +128,21 @@ image-tiling rule for a provider).
 
 Before opening a PR:
 
-1. `npx tsc --noEmit -p tsconfig.app.json` and `npm run build` both pass.
+1. `npm test`, `npx tsc --noEmit -p tsconfig.app.json` and `npm run build` all
+   pass.
 2. `npm run dev` still renders a results table for a normal estimate — the
    results table is the product; if it's empty, nothing else matters.
 3. No changes to the generated files listed above.
 4. Estimator changes are behaviour-preserving unless the PR *is* the behaviour
    change, in which case say which inputs produce a different number and why the
    new one is right.
+
+The estimator has unit tests (`src/lib/__tests__/`, `src/data/__tests__/`) that
+pin the numbers it produces: rough vs. tokenizer token counts, per-provider image
+tiling, PDF per-page vs. per-token pricing, batch discounts, audio rates and the
+(currently inconsistent) cached-token handling. A pricing fix should come with
+the test that shows the old number was wrong. The catalogue tests only assert
+*shape*, never specific models or prices — models.dev changes daily.
 
 **Adding a new input data type** touches a fixed set of places, in this order:
 the `AppData` type → both functions in `lib/computations.ts` → `types/results.ts`
