@@ -1,197 +1,156 @@
-# APPE: AI Processing Price Estimator
+# APPE — AI Processing Price Estimator
 
-A comprehensive web application that helps you estimate and compare costs across
-**~4,900 models from ~144 providers** for different types of data processing
-tasks. Pricing is sourced from the [models.dev](https://models.dev) database and
-refreshed daily.
+Describe an AI task in plain words, get a trustworthy cost figure. APPE compares
+what that task would cost across **~4,900 models from ~144 providers**, with the
+maths open to inspection.
 
-**Live:** https://appe.dev.gabvdl.xyz
+**Live:** https://appe.dev.gabvdl.xyz · **License:** [MIT](LICENSE) · **Where
+this is going:** [GOAL.md](GOAL.md)
 
 ![screenshot](./doc/screen.png)
 
-## 🚀 Features
+The unit of input is a *task* ("summarise 10k support tickets", "describe 500
+product photos"), not a token count — the token count is exactly what you don't
+know yet. APPE estimates the tokens, applies each model's real published prices,
+and ranks the results.
 
-### Multi-Provider Cost Comparison
+It is deliberately neutral: no account, no backend, no telemetry, no upsell. The
+model catalogue is not hand-maintained — it is synced daily from the open
+[models.dev](https://models.dev) database, so a wrong price is a bug that gets
+fixed upstream rather than a number someone chose.
 
-- Compare pricing across every major provider — OpenAI, Anthropic, Google,
-  Mistral, xAI, DeepSeek, Meta, Groq, Cohere, Together, Amazon Bedrock and many
-  more (the same model is often listed under several providers at different
-  prices, so you can compare where to buy it)
-- Filter by provider, model tier (small/medium/large), and capability tags
-- Real-time cost calculations based on token usage
+## What it does
 
-### Data Type Support
+- **Compare every provider, not three.** The same base model is listed under many
+  providers at different prices, and each provider×model pair is its own row — so
+  "where should I buy Llama 3.3" is an answerable question.
+- **Four input types**: text prompts, images (provider-specific tiling), PDFs
+  (per-page tokens, or per-page pricing where the provider bills that way) and
+  audio (duration × tokens/second, at the model's dedicated audio rate when one
+  exists).
+- **Batch discounts**, cached-input rates and context-window limits come from the
+  catalogue rather than from assumptions.
+- **Filter and rank** by provider, tier (small/medium/large) and capability tags
+  (vision, audio, video, reasoning, tools, opensource).
+- **Shareable estimates** — the whole form state is encoded in the URL, so a
+  permalink reproduces someone else's numbers exactly.
 
-- **Text Prompts**: Standard text processing and generation
-- **Images**: Image analysis with size-based token calculation
-- **PDFs**: Document processing with page-based token estimation
-- **Audio**: Duration-based token estimation (default ~32 tokens/sec, editable),
-  priced with the model's dedicated audio rate when available
+## Quick start
 
-### Advanced Token Estimation
-
-- Accurate token counting for input and output
-- Provider-specific image token calculations
-- Batch processing cost estimates
-
-### Interactive Features
-
-- **Live Results**: Real-time pricing updates as you modify inputs
-- **Export Options**: Download results as images or copy as text
-- **Example Templates**: Pre-built templates for common use cases
-- **Model Filtering**: Filter by provider, model size, and capabilities
-
-### Visual Analytics
-
-- Price range visualization with cost comparisons
-- Token breakdown (input vs output)
-- Best value recommendations
-- Interactive charts and summaries
-
-## 📋 Use Cases
-
-- **Content Creation**: Estimate costs for generating articles, summaries, or translations
-- **Image Analysis**: Calculate expenses for image description and analysis tasks
-- **Document Processing**: Budget for PDF analysis and extraction workflows
-- **API Planning**: Compare providers before implementing AI features
-- **Cost Optimization**: Find the most cost-effective models for your specific needs
-
-## 🛠️ Technology Stack
-
-- **Frontend**: React 18 with TypeScript
-- **Styling**: Tailwind CSS with shadcn/ui components
-- **Build Tool**: Vite
-- **Form Management**: React Hook Form
-- **State Management**: React Context API
-- **Icons**: Lucide React
-
-## 🏃‍♂️ Getting Started
-
-### Prerequisites
-
-- Node.js (recommended: install with [nvm](https://github.com/nvm-sh/nvm#installing-and-updating))
-- npm
-
-### Installation
-
-1. **Clone the repository**
-
-   ```bash
-   git clone <YOUR_GIT_URL>
-   cd prompt-price-predictor
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Start development server**
-
-   ```bash
-   npm run dev
-   ```
-
-4. **Open your browser**
-   Navigate to `http://localhost:5173`
-
-## 📖 How to Use
-
-### Basic Workflow
-
-1. **Select Data Type**: Choose between prompts, images, PDFs, or audio
-2. **Enter Your Prompt**: Describe the task you want the AI to perform
-3. **Provide Example Output**: Show what kind of response you expect
-4. **Set Data Count**: Specify how many items you want to process
-5. **Configure Options**: Select model size and capabilities if needed
-6. **View Results**: Compare costs across all providers and models
-
-### Example Scenarios
-
-#### Text Summarization
-
-```
-Data Type: Prompts
-Prompt: "Summarize the following article: [article text]"
-Example: "Brief summary highlighting key points..."
-Data Count: 100 articles
-```
-
-#### Image Description
-
-```
-Data Type: Images
-Prompt: "Describe the content of this image"
-Example: "The image shows a sunset over mountains..."
-Data Count: 500 images
-Image Size: 1024x1024
-```
-
-#### PDF Analysis
-
-```
-Data Type: PDFs
-Prompt: "Extract key information from this research paper"
-Example: "Title: ..., Authors: ..., Key Findings: ..."
-Data Count: 50 documents
-```
-
-## 📊 Model data (models.dev)
-
-The model catalogue is **generated**, not hand-maintained. `scripts/sync-models.mjs`
-pulls it from the [models.dev](https://models.dev) API (`/api.json`) plus the
-per-provider logos, and writes the local database under `src/data/`:
-
-- `models.json` — every estimable model across all providers
-- `provider_data.json` — provider display names, batch discounts, PDF pricing
-- `models.meta.json` — source, generation timestamp and counts
-- `public/logos/*.svg` — provider logos (inlined so they adapt to dark mode)
+Requirements: Node.js 18+ (install via [nvm](https://github.com/nvm-sh/nvm)) and
+npm.
 
 ```bash
-node scripts/sync-models.mjs   # refresh the local model + logo data
+git clone https://github.com/GabrielVidal1/appe
+cd appe
+npm install
+npm run dev          # http://localhost:8080
 ```
 
-A daily cron (`scripts/sync-and-deploy.sh`) runs the sync, rebuilds and
-redeploys, so the live site stays current. Each model includes input/output
-(and, where available, cached and audio) token costs, context-window size,
-capability tags (vision, audio, video, reasoning, tools, opensource) and a
-tier classification.
-
-## 🎨 Features in Detail
-
-### Token Estimation
-
-- **Text**: tokenizer-based counting (OpenAI o200k) with a ~4-chars/token fallback
-- **Images**: Provider-specific calculations (Anthropic: width×height/750, OpenAI: tile-based, others: default)
-- **PDFs**: Page-based token multiplication (or per-page pricing where the provider bills that way)
-- **Audio**: Duration × tokens/second (default ~32 tok/s), priced with the model's dedicated audio rate when models.dev provides one
-
-### Export Options
-
-- **Image Export**: Generate shareable cost estimation graphics
-- **Text Export**: Copy formatted results to clipboard
-- **Summary Cards**: Visual cost breakdowns
-
-### Filtering & Search
-
-- Filter by provider, model tier, or capabilities
-- Search models by name
-- Sort results by cost or performance
-
-## 🚢 Deployment
-
-The app is a static build deployed to zipgo on raspy2 at
-`appe.dev.gabvdl.xyz` (Let's Encrypt HTTPS):
+Other commands:
 
 ```bash
-npm run deploy   # build + rsync dist/ to zipgo (scripts/deploy.sh)
+npm run build                            # type-checked production build
+npm run lint                             # eslint
+npx tsc --noEmit -p tsconfig.app.json    # typecheck only
+node scripts/sync-models.mjs             # refresh the model + logo catalogue
+npm run deploy                           # build + deploy (maintainer only)
 ```
 
-A daily cron runs `scripts/sync-and-deploy.sh` to refresh the models.dev data
-and redeploy automatically.
+## How the estimate is computed
 
----
+Everything lives in `src/lib/` and is plain TypeScript — no React, no server.
+Read it; that's the point.
 
-Built with ❤️ using React, TypeScript, and Tailwind CSS · model data from
-[models.dev](https://models.dev)
+1. **Tokens** (`lib/computations.ts`, `lib/tokenization/`) — the prompt and the
+   example output are tokenized with the OpenAI `o200k` tokenizer (its rank table
+   is fetched once from `tiktoken.pages.dev`; until it lands, a synchronous
+   ~4-chars/token approximation is used). Non-text input adds to the input side:
+   - *images* — `lib/imageCost.ts` applies the provider's own rule (Anthropic:
+     `width × height / 750`; OpenAI: tile-based; otherwise a default), and uses a
+     provider's flat per-image price when it publishes one.
+   - *PDFs* — `pages × tokensPerPage`, unless the provider prices per page.
+   - *audio* — `seconds × tokensPerSecond` (default 32, editable).
+2. **Price** (`computePrices`) — input and output tokens are multiplied by the
+   model's `$/Mtok` rates, then by the number of items, then by the provider's
+   batch discount if batching is enabled.
+
+If you think a number is wrong, those two functions are the whole story — a
+failing case there is the most useful bug report this project can get.
+
+## Model data comes from models.dev — never hand-edit it
+
+`scripts/sync-models.mjs` fetches the [models.dev](https://models.dev) API and
+the per-provider logos, and **generates**:
+
+| File | Contents |
+| --- | --- |
+| `src/data/models.json` | one entry per provider×model: costs, context window, tags, tier |
+| `src/data/provider_data.json` | provider display name, batch discount, PDF pricing knobs |
+| `src/data/models.meta.json` | source, generation timestamp, provider/model/logo counts |
+| `public/logos/<id>.svg` | provider logos (inlined, so they adapt to dark mode) |
+
+> **Do not edit those files in a PR.** They are regenerated on every sync and
+> your change will vanish. To fix model data, fix the mapping in
+> `scripts/sync-models.mjs` and re-run it — or fix it upstream at models.dev.
+
+A daily cron runs `scripts/sync-and-deploy.sh` (sync → build → deploy), so the
+committed JSON is only a seed; the live site refreshes itself.
+
+`provider` is an open `string`, not a fixed union — new providers appear
+constantly. Never switch exhaustively on it: use `getProviderParams()` (which has
+a safe fallback) and `<ProviderIcon>` (which falls back to a generic icon).
+
+## Project layout
+
+```
+src/
+  lib/            estimator core — computations.ts, imageCost.ts, tokenization/,
+                  urlConfig.ts (share-link (de)serialization), format.ts
+  data/           the generated catalogue + index.ts (ALL_MODELS, ALL_PROVIDERS,
+                  ALL_TAGS, MODELS_META)
+  types/          Model, AppData, Provider, results
+  contexts/form/  react-hook-form context holding the whole app state
+  components/     form/ (inputs), table/ (results), ai-processing/, ui/ (shadcn)
+  pages/          Index.tsx, AIProcessing.tsx
+scripts/          sync-models.mjs, deploy.sh, sync-and-deploy.sh
+```
+
+Stack: Vite · React 18 · TypeScript · Tailwind + shadcn/ui · react-hook-form.
+
+## Contributing
+
+Issues and PRs are welcome — especially **pricing bugs** (a model whose estimate
+you can show to be wrong) and **estimation accuracy** (a better tokenization or
+image-tiling rule for a provider).
+
+Before opening a PR:
+
+1. `npx tsc --noEmit -p tsconfig.app.json` and `npm run build` both pass.
+2. `npm run dev` still renders a results table for a normal estimate — the
+   results table is the product; if it's empty, nothing else matters.
+3. No changes to the generated files listed above.
+4. Estimator changes are behaviour-preserving unless the PR *is* the behaviour
+   change, in which case say which inputs produce a different number and why the
+   new one is right.
+
+**Adding a new input data type** touches a fixed set of places, in this order:
+the `AppData` type → both functions in `lib/computations.ts` → `types/results.ts`
+→ `lib/urlConfig.ts` (it is a `Record<keyof AppData, …>`, so the compiler will
+tell you) → the form (`SentenceInput` + a popover) → `TokenSummary` and
+`TokenBreakdownPopover`.
+
+[GOAL.md](GOAL.md) holds the roadmap and an ordered wishlist — the top unchecked
+item is always the best thing to pick up. Near-term: extracting `src/lib` into a
+standalone `@appe/core` package and putting a CLI (`appe estimate --task … --count
+1000 --json`) on top of it.
+
+## Deployment
+
+The app is a static build. `npm run deploy` builds it and rsyncs `dist/` to the
+maintainer's server (zipgo on raspy2, Let's Encrypt HTTPS at
+`appe.dev.gabvdl.xyz`). Any static host works — there is no backend.
+
+## License
+
+[MIT](LICENSE) © Gabriel Vidal. Model data from [models.dev](https://models.dev).
