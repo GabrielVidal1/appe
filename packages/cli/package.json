@@ -1,0 +1,45 @@
+{
+  "name": "appe",
+  "version": "0.1.0",
+  "description": "Estimate and compare what an AI task costs across every provider, from the terminal. Powered by the daily-synced models.dev catalogue.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielVidal1/appe.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://appe.dev.gabvdl.xyz",
+  "keywords": [
+    "llm",
+    "pricing",
+    "cost",
+    "estimation",
+    "tokens",
+    "cli",
+    "models.dev"
+  ],
+  "bin": {
+    "appe": "./dist/appe.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "start": "node dist/appe.js"
+  },
+  "dependencies": {
+    "@appe/core": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22.5.5",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.5.3"
+  },
+  "engines": {
+    "node": ">=18.3.0"
+  }
+}

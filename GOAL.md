@@ -19,7 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] `packages/cli` — `appe estimate` reading a task description + count, printing a ranked cost table; `--json`, `--provider`, `--tag`, `--top N`. — @2026-07-14T19:15Z
 
 ## Target
 
@@ -98,8 +97,20 @@ Order roughly by value. Each item is one session of work.
       `npm test`. Written before the `packages/core` extraction on purpose:
       they pin today's numbers, so the extraction can be shown to be
       behaviour-preserving. Move them with the code.)*
-- [ ] `packages/cli` — `appe estimate` reading a task description + count,
+- [x] `packages/cli` — `appe estimate` reading a task description + count,
       printing a ranked cost table; `--json`, `--provider`, `--tag`, `--top N`.
+      *(The `appe` package: `parseArgs` (no dep) → `estimate.ts` (filter, rank,
+      render) → `format.ts` (money + aligned table). `--count` takes `10k`/`1e6`;
+      `--output`/`--output-tokens` set the output side, and with neither it
+      assumes 500 and says so — output dominates most bills, so a silent 0 would
+      have been a lie. Two display rules, not maths: models with `output_cost === 0`
+      (embedders, rerankers, free tiers — models.dev gives them no distinguishing
+      tag) are hidden unless `--include-free`, because otherwise they fill every
+      row of an ascending cost sort with a useless $0.000001. Built by esbuild
+      into one dependency-free `dist/appe.js` (`npm run build:cli`) — the one
+      place core's TS-source exports get compiled. 9 new tests, one of which
+      pins CLI output == the web app's `computeTokens`+`computePrices` for the
+      same inputs, so the two can never drift.)*
 - [ ] CLI: `appe models` — search/filter the catalogue from the terminal
       (`appe models --tag reasoning --max-cost 1`).
 - [ ] CLI: read the prompt from stdin / a file so it composes in pipelines.
