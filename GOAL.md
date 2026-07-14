@@ -14,6 +14,13 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 10k support tickets", "run this coding agent over my repo"), not a token count
 — because the token count is exactly what the user doesn't know.
 
+## Being worked on
+
+<!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
+     yours in the same commit that ticks its checkbox. -->
+
+- [appe] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors — @2026-07-14T14:02Z
+
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
