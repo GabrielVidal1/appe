@@ -1,7 +1,7 @@
-import { AppData } from "@/types/appData";
-import { Model } from "@/types/model";
-import { getProviderParams } from "@/types/provider";
-import { PricingResult, TokenResults } from "@/types/results";
+import { AppData } from "./types/appData";
+import { Model } from "./types/model";
+import { getProviderParams } from "./types/provider";
+import { PricingResult, TokenResults } from "./types/results";
 import { computeImagePrice } from "./imageCost";
 import { strToTokens, strToTokensSync } from "./tokenization";
 

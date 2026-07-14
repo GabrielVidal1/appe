@@ -6,7 +6,7 @@ import {
   ALL_PROVIDERS,
   ALL_TEXT_MODELS,
   MODELS_META,
-} from "@/data";
+} from "../data";
 
 // The catalogue is regenerated daily by scripts/sync-models.mjs, so these are
 // deliberately shape/invariant checks, not assertions about specific models or

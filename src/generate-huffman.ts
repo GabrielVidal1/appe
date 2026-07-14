@@ -1,6 +1,6 @@
 import fs from "fs";
 import { URLSearchParams } from "url";
-import { DEFAULT_APP_DATA } from "./types/appData";
+import { DEFAULT_APP_DATA } from "@appe/core";
 
 type HuffmanNode = {
   char?: string;

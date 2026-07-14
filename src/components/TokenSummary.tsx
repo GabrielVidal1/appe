@@ -1,7 +1,5 @@
-import { computeTokens } from "@/lib/computations";
+import { computeTokens, AppData, DataType, TokenResults } from "@appe/core";
 import { capitalizeFirstLetter, cn } from "@/lib/utils";
-import { AppData, DataType } from "@/types/appData";
-import { TokenResults } from "@/types/results";
 import { chain } from "lodash";
 import React, { useMemo } from "react";
 

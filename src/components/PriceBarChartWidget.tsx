@@ -1,7 +1,4 @@
-import { ALL_TEXT_MODELS } from "@/data";
-import { computePrices, computeTokens } from "@/lib/computations";
-import { AppData } from "@/types/appData";
-import { Model } from "@/types/model";
+import { ALL_TEXT_MODELS, computePrices, computeTokens, AppData, Model } from "@appe/core";
 import { chain } from "lodash";
 import { useMemo } from "react";
 import { getProviderIcon } from "./ProviderIcons";

@@ -6,7 +6,7 @@ import {
 } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { PROVIDERS } from "@/types/provider";
+import { PROVIDERS } from "@appe/core";
 import { useState } from "react";
 import HelpButton from "./HelpButton";
 

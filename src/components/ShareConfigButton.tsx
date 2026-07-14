@@ -13,7 +13,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useFormState } from "@/hooks/useFormState";
 import { createShareableUrl } from "@/lib/urlConfig";
 import { cn } from "@/lib/utils";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { Check, Copy, Share2 } from "lucide-react";
 import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";

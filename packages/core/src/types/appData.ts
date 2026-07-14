@@ -1,4 +1,4 @@
-import { ModelSize, Provider } from "@/types/model";
+import { ModelSize, Provider } from "./model";
 
 export type DataType = "prompts" | "images" | "pdfs" | "audio";
 

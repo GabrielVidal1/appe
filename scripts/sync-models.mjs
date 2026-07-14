@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // sync-models.mjs — pull the model catalogue from models.dev and regenerate the
-// app's local JSON "database" (src/data/models.json + provider_data.json).
+// core package's local JSON "database" (packages/core/src/data/models.json +
+// provider_data.json), which the web app and the CLI both read.
 //
 // models.dev exposes a single public endpoint, https://models.dev/api.json, an
 // object keyed by provider id, each with a `models` map. We flatten every
@@ -15,7 +16,7 @@ import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const DATA_DIR = join(__dirname, "..", "src", "data");
+const DATA_DIR = join(__dirname, "..", "packages", "core", "src", "data");
 const LOGO_DIR = join(__dirname, "..", "public", "logos");
 const API_URL = "https://models.dev/api.json";
 // models.dev serves a per-provider logo (SVG) at this path. Some are monochrome
@@ -182,7 +183,7 @@ async function main() {
   await writeFile(join(DATA_DIR, "models.meta.json"), JSON.stringify(meta, null, 2) + "\n");
 
   process.stdout.write(
-    `✓ Wrote ${models.length} models from ${meta.providerCount} providers to src/data/\n` +
+    `✓ Wrote ${models.length} models from ${meta.providerCount} providers to packages/core/src/data/\n` +
       `✓ Downloaded ${logoCount}/${meta.providerCount} provider logos to public/logos/\n`
   );
 }

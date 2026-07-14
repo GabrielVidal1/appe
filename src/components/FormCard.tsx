@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 import ExampleOutput from "./form/ExampleOutputs";

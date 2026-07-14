@@ -12,8 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TAGS } from "@/data";
-import { CAPABILITIES_FROM_TAG } from "@/lib/constants";
+import { ALL_TAGS, CAPABILITIES_FROM_TAG } from "@appe/core";
 import { cn } from "@/lib/utils";
 import { Check } from "lucide-react";
 import { useEffect, useState } from "react";

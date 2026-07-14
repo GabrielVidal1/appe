@@ -61,14 +61,16 @@ npm run deploy                           # build + deploy (maintainer only)
 
 ## How the estimate is computed
 
-Everything lives in `src/lib/` and is plain TypeScript — no React, no server.
-Read it; that's the point.
+Everything lives in **`packages/core`** (the `@appe/core` workspace package) and
+is plain TypeScript — no React, no server. The web app is only a front-end over
+it, and the planned `appe` CLI will import the same functions, so the two can
+never disagree about a number. Read it; that's the point.
 
-1. **Tokens** (`lib/computations.ts`, `lib/tokenization/`) — the prompt and the
+1. **Tokens** (`core/computations.ts`, `core/tokenization/`) — the prompt and the
    example output are tokenized with the OpenAI `o200k` tokenizer (its rank table
    is fetched once from `tiktoken.pages.dev`; until it lands, a synchronous
    ~4-chars/token approximation is used). Non-text input adds to the input side:
-   - *images* — `lib/imageCost.ts` applies the provider's own rule (Anthropic:
+   - *images* — `core/imageCost.ts` applies the provider's own rule (Anthropic:
      `width × height / 750`; OpenAI: tile-based; otherwise a default), and uses a
      provider's flat per-image price when it publishes one.
    - *PDFs* — `pages × tokensPerPage`, unless the provider prices per page.
@@ -87,9 +89,9 @@ the per-provider logos, and **generates**:
 
 | File | Contents |
 | --- | --- |
-| `src/data/models.json` | one entry per provider×model: costs, context window, tags, tier |
-| `src/data/provider_data.json` | provider display name, batch discount, PDF pricing knobs |
-| `src/data/models.meta.json` | source, generation timestamp, provider/model/logo counts |
+| `packages/core/src/data/models.json` | one entry per provider×model: costs, context window, tags, tier |
+| `packages/core/src/data/provider_data.json` | provider display name, batch discount, PDF pricing knobs |
+| `packages/core/src/data/models.meta.json` | source, generation timestamp, provider/model/logo counts |
 | `public/logos/<id>.svg` | provider logos (inlined, so they adapt to dark mode) |
 
 > **Do not edit those files in a PR.** They are regenerated on every sync and
@@ -137,7 +139,7 @@ Before opening a PR:
    change, in which case say which inputs produce a different number and why the
    new one is right.
 
-The estimator has unit tests (`src/lib/__tests__/`, `src/data/__tests__/`) that
+The estimator has unit tests (`packages/core/src/__tests__/`) that
 pin the numbers it produces: rough vs. tokenizer token counts, per-provider image
 tiling, PDF per-page vs. per-token pricing, batch discounts, audio rates and the
 (currently inconsistent) cached-token handling. A pricing fix should come with
@@ -145,15 +147,14 @@ the test that shows the old number was wrong. The catalogue tests only assert
 *shape*, never specific models or prices — models.dev changes daily.
 
 **Adding a new input data type** touches a fixed set of places, in this order:
-the `AppData` type → both functions in `lib/computations.ts` → `types/results.ts`
-→ `lib/urlConfig.ts` (it is a `Record<keyof AppData, …>`, so the compiler will
-tell you) → the form (`SentenceInput` + a popover) → `TokenSummary` and
-`TokenBreakdownPopover`.
+in `packages/core`, the `AppData` type → both functions in `computations.ts` →
+`types/results.ts` → the `index.ts` barrel; then in the app, `src/lib/urlConfig.ts`
+(it is a `Record<keyof AppData, …>`, so the compiler will tell you) → the form
+(`SentenceInput` + a popover) → `TokenSummary` and `TokenBreakdownPopover`.
 
 [GOAL.md](GOAL.md) holds the roadmap and an ordered wishlist — the top unchecked
-item is always the best thing to pick up. Near-term: extracting `src/lib` into a
-standalone `@appe/core` package and putting a CLI (`appe estimate --task … --count
-1000 --json`) on top of it.
+item is always the best thing to pick up. Near-term: a CLI (`appe estimate --task …
+--count 1000 --json`) on top of `@appe/core`.
 
 ## Deployment
 

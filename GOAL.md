@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Extract the estimator into `packages/core` (pure TS, no React) — @2026-07-14T18:53Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -79,10 +77,19 @@ Order roughly by value. Each item is one session of work.
       (install, dev, how the models.dev sync works, how to contribute).
 - [ ] Fix `package.json`: real name (`appe`), version `0.1.0`, description,
       repository/license fields.
-- [ ] Extract the estimator into `packages/core` (pure TS, no React): move
+- [x] Extract the estimator into `packages/core` (pure TS, no React): move
       `lib/computations.ts`, `lib/imageCost.ts`, `lib/tokenization/`,
       `data/index.ts` + the generated JSON; web app imports it. No behaviour
       change — the results table must be identical before/after.
+      *(`@appe/core`, an npm workspace whose `exports` point at TS source; the
+      types, constants and `format.ts` came along since the maths depends on
+      them. The app now imports only from the `@appe/core` barrel — 33 files
+      rewritten, no `@/lib/computations`-style import left. `sync-models.mjs`
+      writes into `packages/core/src/data/`. Verified behaviour-preserving by
+      dumping every text model × 4 data types × batch on/off through the old and
+      the new estimator: the two 8 MB dumps are byte-identical; 44 tests, both
+      typechecks and the build pass, and the built app still renders the results
+      table.)*
 - [x] Unit tests for the estimator core (vitest): token counts per data type,
       image tiling per provider, PDF per-page pricing, batch discounts.
       *(44 tests in `src/lib/__tests__/` + `src/data/__tests__/`, run with

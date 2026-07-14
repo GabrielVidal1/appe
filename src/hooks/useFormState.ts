@@ -1,4 +1,4 @@
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useCallback } from "react";
 import { useFormContext } from "react-hook-form";
 

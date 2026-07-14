@@ -1,9 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ALL_TEXT_MODELS } from "@/data";
+import { ALL_TEXT_MODELS, computePrices, computeTokens, tokensToRealWorldText, Model } from "@appe/core";
 import { useAppData } from "@/hooks/useAppData";
-import { computePrices, computeTokens } from "@/lib/computations";
-import { tokensToRealWorldText } from "@/lib/format";
-import { Model } from "@/types/model";
 import { Info } from "lucide-react";
 import { useMemo } from "react";
 import ResultsPriceRange from "./ResultsPriceRange";

@@ -1,4 +1,4 @@
-import { Model } from "@/types/model";
+import { Model } from "../types/model";
 import { keyBy } from "lodash";
 import modelsData from "./models.json";
 import meta from "./models.meta.json";

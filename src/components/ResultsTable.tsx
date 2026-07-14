@@ -1,7 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { ALL_TEXT_MODELS } from "@/data";
+import { ALL_TEXT_MODELS, AppData } from "@appe/core";
 import { useAppData } from "@/hooks/useAppData";
-import { AppData } from "@/types/appData";
 import { useState } from "react";
 import BatchPricingToggle from "./BatchPricingToggle";
 import ExportModal from "./ExportModal";

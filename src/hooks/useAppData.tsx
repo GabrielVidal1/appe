@@ -1,5 +1,5 @@
 import { AppContext } from "@/contexts/form/contexts";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { useContext } from "react";
 import { useFormContext } from "react-hook-form";
 

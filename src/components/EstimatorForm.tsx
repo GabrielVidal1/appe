@@ -1,5 +1,5 @@
 import { useConfigFromUrl } from "@/hooks/useConfigFromUrl";
-import { AppData } from "@/types/appData";
+import { AppData } from "@appe/core";
 import { memo, useCallback, useState } from "react";
 import ExampleTemplateBanner from "./ExampleTemplateBanner";
 import FormCard from "./FormCard";

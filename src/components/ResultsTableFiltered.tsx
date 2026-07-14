@@ -6,10 +6,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ALL_TEXT_MODELS } from "@/data";
+import { ALL_TEXT_MODELS, computePrices, computeTokens } from "@appe/core";
 import { useAppData } from "@/hooks/useAppData";
 import { useFormState } from "@/hooks/useFormState";
-import { computePrices, computeTokens } from "@/lib/computations";
 import { chain, first, flatMap } from "lodash";
 import { ArrowUpDown, Download } from "lucide-react";
 import React, { useEffect, useMemo, useState } from "react";

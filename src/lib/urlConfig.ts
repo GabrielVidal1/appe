@@ -1,7 +1,5 @@
-import { ALL_TEXT_MODELS } from "@/data";
-import { AppData } from "@/types/appData";
+import { ALL_TEXT_MODELS, AppData, LOREM_IPSUM } from "@appe/core";
 import { entries } from "lodash";
-import { LOREM_IPSUM } from "./constants";
 
 // Single letter identifiers for main parameters
 const PARAM_MAP: Record<keyof AppData, string> = {

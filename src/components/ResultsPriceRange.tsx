@@ -1,4 +1,4 @@
-import { Model } from "@/types/model";
+import { Model } from "@appe/core";
 import { getProviderIcon } from "./ProviderIcons";
 
 interface ResultsPriceRangeProps {

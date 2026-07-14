@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TAGS } from "@/data";
+import { ALL_TAGS } from "@appe/core";
 import { Filter } from "lucide-react";
 
 interface TagFilterProps {

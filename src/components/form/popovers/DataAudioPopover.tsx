@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { DEFAULT_AUDIO_TOKENS_PER_SECOND } from "@/lib/constants";
+import { DEFAULT_AUDIO_TOKENS_PER_SECOND } from "@appe/core";
 import { useState } from "react";
 import { useFormContext } from "react-hook-form";
 

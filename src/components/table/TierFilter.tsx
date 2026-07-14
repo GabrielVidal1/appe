@@ -6,8 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ALL_TIERS } from "@/data";
-import { AppData } from "@/types/appData";
+import { ALL_TIERS, AppData } from "@appe/core";
 import { Filter } from "lucide-react";
 
 interface TierFilterProps {
