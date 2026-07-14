@@ -51,6 +51,10 @@
     "name": "D.Run (China)",
     "batchDiscount": 0.5
   },
+  "ebcloud": {
+    "name": "EBCloud",
+    "batchDiscount": 0.5
+  },
   "alibaba-token-plan-cn": {
     "name": "Alibaba Token Plan (China)",
     "batchDiscount": 0.5
@@ -88,7 +92,7 @@
     "batchDiscount": 0.5
   },
   "stepfun-ai": {
-    "name": "StepFun AI",
+    "name": "StepFun (Global)",
     "batchDiscount": 0.5
   },
   "vivgrid": {
@@ -134,12 +138,20 @@
     "name": "Venice AI",
     "batchDiscount": 0.5
   },
+  "crossmodel": {
+    "name": "CrossModel",
+    "batchDiscount": 0.5
+  },
   "lmstudio": {
     "name": "LMStudio",
     "batchDiscount": 0.5
   },
   "poolside": {
     "name": "Poolside",
+    "batchDiscount": 0.5
+  },
+  "zenifra": {
+    "name": "Zenifra",
     "batchDiscount": 0.5
   },
   "zenmux": {
@@ -214,6 +226,10 @@
     "name": "NEAR AI Cloud",
     "batchDiscount": 0.5
   },
+  "pioneer": {
+    "name": "Pioneer",
+    "batchDiscount": 0.5
+  },
   "llmgateway": {
     "name": "LLM Gateway",
     "batchDiscount": 0.5
@@ -248,6 +264,10 @@
   },
   "deepinfra": {
     "name": "Deep Infra",
+    "batchDiscount": 0.5
+  },
+  "daoxe": {
+    "name": "DaoXE",
     "batchDiscount": 0.5
   },
   "google-vertex-anthropic": {
@@ -297,6 +317,10 @@
     "name": "Tencent Coding Plan (China)",
     "batchDiscount": 0.5
   },
+  "lynkr": {
+    "name": "Lynkr",
+    "batchDiscount": 0.5
+  },
   "freemodel": {
     "name": "FreeModel",
     "batchDiscount": 0.5
@@ -330,7 +354,7 @@
     "batchDiscount": 0.5
   },
   "stepfun": {
-    "name": "StepFun",
+    "name": "StepFun (China)",
     "batchDiscount": 0.5
   },
   "hpc-ai": {
@@ -341,8 +365,16 @@
     "name": "MiniMax (minimaxi.com)",
     "batchDiscount": 0.5
   },
+  "unorouter": {
+    "name": "UnoRouter",
+    "batchDiscount": 0.5
+  },
   "alibaba-coding-plan": {
     "name": "Alibaba Coding Plan",
+    "batchDiscount": 0.5
+  },
+  "longcat": {
+    "name": "LongCat",
     "batchDiscount": 0.5
   },
   "poe": {
@@ -369,6 +401,10 @@
     "name": "Umans AI Coding Plan",
     "batchDiscount": 0.5
   },
+  "ai-router": {
+    "name": "AI-ROUTER",
+    "batchDiscount": 0.5
+  },
   "io-net": {
     "name": "IO.NET",
     "batchDiscount": 0.5
@@ -387,6 +423,10 @@
   },
   "scaleway": {
     "name": "Scaleway",
+    "batchDiscount": 0.5
+  },
+  "empiriolabs": {
+    "name": "EmpirioLabs AI",
     "batchDiscount": 0.5
   },
   "ovhcloud": {
@@ -423,6 +463,10 @@
   },
   "meganova": {
     "name": "Meganova",
+    "batchDiscount": 0.5
+  },
+  "inferx": {
+    "name": "InferX",
     "batchDiscount": 0.5
   },
   "perplexity": {
@@ -495,6 +539,10 @@
   },
   "atomic-chat": {
     "name": "Atomic Chat",
+    "batchDiscount": 0.5
+  },
+  "meta": {
+    "name": "Meta",
     "batchDiscount": 0.5
   },
   "routing-run": {
