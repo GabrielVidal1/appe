@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
+    "noEmit": true,
+
+    /* Same laxness as the core package and the web app — this CLI is a new
+       consumer of the same source, not a place to fork strictness. */
+    "strict": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+
+    "types": ["node"],
+
+    /* @appe/core resolves to TS source (its `exports` point at src/), exactly
+       like the web app's vite/vitest aliases. The CLI is bundled by esbuild, so
+       there is no build-output drift to worry about either. */
+    "baseUrl": ".",
+    "paths": {
+      "@appe/core": ["../core/src/index.ts"]
+    }
+  },
+  "include": ["src"]
+}

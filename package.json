@@ -10,6 +10,7 @@
     "dev": "vite",
     "build": "vite build",
     "build:dev": "vite build --mode development",
+    "build:cli": "npm run build --workspace=appe",
     "deploy": "npm run build && bash scripts/deploy.sh",
     "test": "vitest run",
     "test:watch": "vitest",

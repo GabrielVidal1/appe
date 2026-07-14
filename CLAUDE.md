@@ -63,11 +63,25 @@ npx tsc --noEmit -p tsconfig.app.json   # typecheck
 - **The estimator is a package, not app code.** It lives in `packages/core`
   (`@appe/core`) — an npm workspace of pure, framework-free TypeScript: the
   catalogue, the tokenizers, the image/PDF/audio rules and the pricing maths.
-  The web app imports it through the barrel (`import { … } from "@appe/core"`)
-  and *nothing else* — there is no second copy of a formula to keep in sync, and
-  the forthcoming `appe` CLI will import the very same functions. Anything that
-  computes a token count or a cost belongs there; anything that renders belongs
-  in `src/`.
+  Both front-ends import it through the barrel (`import { … } from "@appe/core"`)
+  and *nothing else* — there is no second copy of a formula to keep in sync.
+  Anything that computes a token count or a cost belongs there; anything that
+  renders belongs in `src/` (browser) or `packages/cli/` (terminal).
+- **There are two consumers of the core, and they must never disagree.** The web
+  app (`src/`) and the `appe` CLI (`packages/cli`). If the same inputs produce a
+  different number in the terminal and in the browser, that is a bug — a test in
+  `packages/cli/src/__tests__/estimate.test.ts` pins that equality on purpose.
+- **The CLI** (`packages/cli`, published name `appe`): `src/index.ts` parses args
+  with node's built-in `parseArgs` (no dependency), `src/estimate.ts` filters,
+  ranks and renders, `src/format.ts` does money + table layout. Build it with
+  `npm run build:cli` — esbuild bundles core, its deps and the models.dev JSON
+  into a single dependency-free `packages/cli/dist/appe.js`. That bundle is the
+  one place the core's TS *source* exports actually get compiled (node cannot
+  import them raw), which is why the CLI has a build step and the web app just
+  aliases. Two rules live in the CLI as *display* choices, never in the maths:
+  models with `output_cost === 0` (embedders, rerankers, free tiers) are hidden
+  unless `--include-free`, and with neither `--output` nor `--output-tokens` it
+  assumes 500 output tokens and labels the estimate as assumed.
 - Estimation math: `packages/core/src/computations.ts` (tokens + prices),
   `imageCost.ts`, `tokenization/`. A data type (`prompts|images|pdfs|audio`)
   drives which input tokens are computed. It is covered by unit tests in
