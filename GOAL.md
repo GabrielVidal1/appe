@@ -19,6 +19,8 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
+- [appe] Extract the estimator into `packages/core` (pure TS, no React) — @2026-07-14T18:53Z
+
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
