@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Fix root `package.json`: real name, version 0.1.0, description, repository/license fields — @2026-07-14T23:14:30Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -77,8 +75,17 @@ Order roughly by value. Each item is one session of work.
 
 - [x] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors
       (install, dev, how the models.dev sync works, how to contribute).
-- [ ] Fix `package.json`: real name (`appe`), version `0.1.0`, description,
+- [x] Fix `package.json`: real name (`appe`), version `0.1.0`, description,
       repository/license fields.
+      *(The root web-app `package.json` was still the scaffold's
+      `vite_react_shadcn_ts@0.0.0`. Renamed to **`@appe/web`** — not bare `appe`,
+      because `packages/cli` already owns the published `appe` name; `@appe/web`
+      matches the `@appe/core` scope and stays `private: true` (the site isn't
+      published). Added `version: 0.1.0`, a real `description`, `license: MIT`,
+      `homepage`, `repository` (GitHub `GabrielVidal1/appe`) and `keywords`.
+      Metadata-only, so behaviour-preserving: typecheck, `npm run build`, and 53
+      unit tests all pass, and `npm ls --workspaces` still dedupes `@appe/core`
+      across the app and the CLI.)*
 - [x] Extract the estimator into `packages/core` (pure TS, no React): move
       `lib/computations.ts`, `lib/imageCost.ts`, `lib/tokenization/`,
       `data/index.ts` + the generated JSON; web app imports it. No behaviour

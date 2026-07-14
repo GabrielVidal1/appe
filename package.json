@@ -1,8 +1,23 @@
 {
-  "name": "vite_react_shadcn_ts",
+  "name": "@appe/web",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
+  "description": "APPE web app — estimate and compare what an AI task costs across every provider, in the browser. Powered by the daily-synced models.dev catalogue.",
+  "license": "MIT",
   "type": "module",
+  "homepage": "https://appe.dev.gabvdl.xyz",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GabrielVidal1/appe.git"
+  },
+  "keywords": [
+    "llm",
+    "pricing",
+    "cost",
+    "estimation",
+    "tokens",
+    "models.dev"
+  ],
   "workspaces": [
     "packages/*"
   ],
