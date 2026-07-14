@@ -19,6 +19,8 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
+- [appe] `packages/cli` — `appe estimate` reading a task description + count, printing a ranked cost table; `--json`, `--provider`, `--tag`, `--top N`. — @2026-07-14T19:15Z
+
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
