@@ -19,6 +19,7 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
+- [appe] Fix root `package.json`: real name, version 0.1.0, description, repository/license fields — @2026-07-14T23:14:30Z
 
 ## Target
 
