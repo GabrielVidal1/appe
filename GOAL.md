@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors — @2026-07-14T14:02Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -75,7 +73,7 @@ validated against reality.
 
 Order roughly by value. Each item is one session of work.
 
-- [ ] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors
+- [x] Add an MIT `LICENSE` and rewrite `README.md` for outside contributors
       (install, dev, how the models.dev sync works, how to contribute).
 - [ ] Fix `package.json`: real name (`appe`), version `0.1.0`, description,
       repository/license fields.
@@ -102,7 +100,11 @@ Order roughly by value. Each item is one session of work.
 - [ ] Sensitivity / range output: show a low–high band and which input drives
       the cost, instead of a single point estimate.
 - [ ] Show cache-aware pricing in the results table (models.dev has
-      cached-read/write rates) — big lever on agent costs.
+      cached-read/write rates) — big lever on agent costs. **Note:** in
+      `computePrices`, `cachedCost` is folded into `inputCost.total` but *not*
+      into `totalCost`, and the input cost is still billed at the full
+      (uncached) rate on every item — so today's cache handling is
+      self-inconsistent. Settle the intended semantics before surfacing it.
 - [ ] Import a Claude Code / OpenAI usage export and re-price it against every
       other model ("what would this have cost on X").
 - [ ] A shareable permalink already exists — add an OG-image endpoint or static
