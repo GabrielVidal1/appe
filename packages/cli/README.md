@@ -45,6 +45,7 @@ appe estimate <task> [options]
 | Option | |
 | --- | --- |
 | `-t, --task <text>` | The task, in plain words. Also accepted as a positional. |
+| `-f, --file <path>` | Read the task from a file. `-` (or a bare pipe) reads stdin. |
 | `-n, --count <n>` | How many items you will run it on. Accepts `10k`, `1e6`, `1_000`. Default `1000`. |
 | `-o, --output <text>` | A sample of the expected output; tokenized to get the output cost. |
 | `--output-tokens <n>` | Output tokens per item. Wins over `--output`. Default `500`. |
@@ -69,6 +70,18 @@ a vector, not tokens) and free/promo endpoints on aggregator gateways. Sorting
 ascending by cost would fill every row with them: technically true, entirely
 useless. They are hidden by default; `--include-free` brings them back. This is
 a display rule only — the maths is untouched.
+
+### The task can come from a file or a pipe
+
+The task doesn't have to be a command-line argument — so a real prompt, a system
+prompt or a whole document composes without shell-quoting it. An inline `--task`
+always wins; otherwise the task is read from `--file`, then from stdin:
+
+```bash
+cat system-prompt.md | appe estimate --tier small   # piped in
+appe estimate -f ./system-prompt.txt --count 50000   # from a file
+appe estimate -f - < ./ticket.txt                    # explicit stdin
+```
 
 ## Pipelines
 
