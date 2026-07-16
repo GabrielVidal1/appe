@@ -18,6 +18,7 @@ import {
   type EstimateOptions,
 } from "./estimate";
 import { bold, dim, red } from "./format";
+import { pickTaskSource, readTask, TaskReadError } from "./input";
 
 const VERSION = "0.1.0";
 
@@ -30,6 +31,7 @@ ${bold("USAGE")}
 
 ${bold("OPTIONS")}
   -t, --task <text>       The task, in plain words ("summarise a support ticket")
+  -f, --file <path>       Read the task from a file (use "-" for stdin)
   -n, --count <n>         How many items you will run it on            [default: 1000]
   -o, --output <text>     A sample of the expected output, tokenized for output cost
       --output-tokens <n> Output tokens per item; wins over --output   [default: ${ASSUMED_OUTPUT_TOKENS}]
@@ -48,6 +50,8 @@ ${bold("EXAMPLES")}
   appe estimate "classify a review as positive or negative" -n 1e6 --tier small
   appe estimate "answer a question about a PDF" -p anthropic,openai --top 5
   appe estimate "write a unit test" --tag reasoning --json | jq '.results[0]'
+  cat prompt.md | appe estimate --tier small          # task piped in from stdin
+  appe estimate -f ./system-prompt.txt --count 50000  # …or read from a file
 
 ${bold("NOTES")}
   Output tokens dominate most bills. Pass --output-tokens (or a real --output
@@ -91,6 +95,7 @@ const main = () => {
       allowPositionals: true,
       options: {
         task: { type: "string", short: "t" },
+        file: { type: "string", short: "f" },
         count: { type: "string", short: "n" },
         output: { type: "string", short: "o" },
         "output-tokens": { type: "string" },
@@ -130,12 +135,32 @@ const main = () => {
     );
   }
 
-  // `appe estimate "the task"` is the same as `--task "the task"`.
-  const task = (values.task as string) ?? rest.join(" ");
-  if (!task.trim()) {
+  // `appe estimate "the task"` is the same as `--task "the task"`. Failing that,
+  // the task can come from a file (`-f`) or a pipe (bare stdin, or `-f -`), so
+  // the CLI composes: `cat ticket.txt | appe estimate`.
+  const inline = (values.task as string) ?? rest.join(" ");
+  const source = pickTaskSource({
+    inline,
+    file: values.file as string | undefined,
+    stdinPiped: !process.stdin.isTTY,
+  });
+
+  let task: string | null;
+  try {
+    task = readTask(source);
+  } catch (e) {
+    if (e instanceof TaskReadError) {
+      return fail(`could not read task from "${e.path}".`, e.cause.message);
+    }
+    throw e;
+  }
+
+  if (task === null || !task.trim()) {
     return fail(
-      "no task given.",
-      'Describe the work: appe estimate "summarise a support ticket" --count 10000'
+      source.kind === "none" ? "no task given." : "the task is empty.",
+      'Describe the work inline, from a file, or on stdin:\n' +
+        '  appe estimate "summarise a support ticket" --count 10000\n' +
+        "  cat ticket.txt | appe estimate"
     );
   }
 

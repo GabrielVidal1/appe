@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] CLI: read the prompt from stdin / a file so it composes in pipelines — @2026-07-16T18:04Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -123,7 +121,12 @@ Order roughly by value. Each item is one session of work.
       same inputs, so the two can never drift.)*
 - [ ] CLI: `appe models` — search/filter the catalogue from the terminal
       (`appe models --tag reasoning --max-cost 1`).
-- [ ] CLI: read the prompt from stdin / a file so it composes in pipelines.
+- [x] CLI: read the prompt from stdin / a file so it composes in pipelines.
+      *(`-f, --file <path>` reads a file; `-f -` or a bare pipe reads stdin; an
+      inline `--task` still wins. The source decision is pure and unit-tested
+      in `packages/cli/src/input.ts` / `__tests__/input.test.ts` — file, stdin,
+      inline-beats-pipe, empty and missing-file cases; verified end-to-end
+      against the built `dist/appe.js` with `cat prompt | appe estimate`.)*
 - [ ] Publish the CLI to npm as `appe` (bump + tag only; leave the actual
       publish credential step to a human).
 - [ ] Agentic cost model in core: `estimateAgentRun({ turns, toolsPerTurn,
