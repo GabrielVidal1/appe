@@ -19,6 +19,8 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
+- [appe] CLI: `appe models` — search/filter the catalogue from the terminal — @2026-07-16T22:02Z
+
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
