@@ -39,8 +39,11 @@ npx appe --help      # the workspace links the `appe` bin
 ## Usage
 
 ```
-appe estimate <task> [options]
+appe estimate <task> [options]      # price a task across every model
+appe models [query] [options]       # browse / search the catalogue
 ```
+
+### `appe estimate` — price a task
 
 | Option | |
 | --- | --- |
@@ -81,6 +84,36 @@ always wins; otherwise the task is read from `--file`, then from stdin:
 cat system-prompt.md | appe estimate --tier small   # piped in
 appe estimate -f ./system-prompt.txt --count 50000   # from a file
 appe estimate -f - < ./ticket.txt                    # explicit stdin
+```
+
+## Browse the catalogue: `appe models`
+
+`estimate` prices *your task*; `models` just lists the catalogue — search by
+name and filter by provider, tag, tier or price, with no task and no token
+maths. It is a lens on the same daily-synced models.dev data the web app browses.
+
+```
+appe models [query] [options]
+```
+
+| Option | |
+| --- | --- |
+| `-q, --query <text>` | Search name / id / provider. Every word must match. Also a positional. |
+| `-p, --provider <id>` | Only these providers. Repeatable or comma-separated. |
+| `--tag <tag>` | Only models carrying **any** of these tags (`reasoning`, `tools`, `vision`, …). |
+| `--tier <tier>` | Only these tiers: `small`, `medium`, `big`. |
+| `--max-cost <n>` | Only models billing **≤ $n /Mtok on both input and output** (a $0.1-in/$30-out model is not "cheap"). |
+| `--sort <key>` | `cost` (default), `input`, `output`, `context`, `name`, `provider`. |
+| `--top <n>` | Rows to print. Default `30`. |
+| `-j, --json` | Machine-readable output, for pipelines. |
+
+Unlike `estimate`, `models` shows the whole catalogue — free/embedder entries
+included, since you're browsing, not ranking a bill.
+
+```bash
+appe models claude --provider anthropic                    # find a family
+appe models --tag reasoning --max-cost 1 --sort context    # cheap reasoners, biggest window first
+appe models "gpt" --provider openai --json | jq -r '.results[].id'
 ```
 
 ## Pipelines

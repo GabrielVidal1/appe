@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] CLI: `appe models` — search/filter the catalogue from the terminal — @2026-07-16T22:02Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -121,8 +119,19 @@ Order roughly by value. Each item is one session of work.
       place core's TS-source exports get compiled. 9 new tests, one of which
       pins CLI output == the web app's `computeTokens`+`computePrices` for the
       same inputs, so the two can never drift.)*
-- [ ] CLI: `appe models` — search/filter the catalogue from the terminal
+- [x] CLI: `appe models` — search/filter the catalogue from the terminal
       (`appe models --tag reasoning --max-cost 1`).
+      *(A sibling command to `estimate` in `packages/cli` (`src/models.ts`):
+      lists `@appe/core`'s `ALL_TEXT_MODELS` — free-text `--query`/positional
+      over name·id·provider, plus `--provider`/`--tag`/`--tier` (shared with
+      `estimate`, one validated `parseFilters`), a `--max-cost N` that caps
+      **both** input and output $/Mtok (a $0.1-in/$30-out model isn't "cheap"),
+      and `--sort cost|input|output|context|name|provider`. Table adds a CONTEXT
+      column (compact `200k`/`2M`) + TAGS; `--json` for pipelines. Unlike
+      `estimate` it shows the whole catalogue (browsing, not ranking a bill).
+      6 tests in `packages/cli/src/__tests__/models.test.ts` (69 total pass);
+      typecheck + esbuild build green; verified end-to-end against the built
+      `dist/appe.js`, and `estimate` is unchanged.)*
 - [x] CLI: read the prompt from stdin / a file so it composes in pipelines.
       *(`-f, --file <path>` reads a file; `-f -` or a bare pipe reads stdin; an
       inline `--task` still wins. The source decision is pure and unit-tested
