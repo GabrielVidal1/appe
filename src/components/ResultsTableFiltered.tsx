@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
+  TableCaption,
   TableHead,
   TableHeader,
   TableRow,
@@ -110,11 +111,16 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
 
   const renderTierDots = (tier: string) => {
     const dots = tier === "small" ? 1 : tier === "medium" ? 2 : 3;
+    const label =
+      tier === "small" ? "Small" : tier === "medium" ? "Medium" : "Large";
+    // The dots carry the tier purely visually, so expose the tier as text to
+    // assistive tech and hide the decorative dots from it.
     return (
-      <div className="flex gap-1">
+      <div className="flex gap-1" role="img" aria-label={`Tier: ${label}`}>
         {Array.from({ length: 3 }, (_, i) => (
           <div
             key={i}
+            aria-hidden="true"
             className={`w-2 h-2 rounded-full ${
               i < dots ? "bg-primary" : "bg-muted"
             }`}
@@ -170,13 +176,28 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
         </Button>
       </div>
 
-      {/* Results Table */}
-      <div className="overflow-x-auto">
-        <Table>
+      {/* Results Table — focusable, labelled scroll region so keyboard and
+          screen-reader users can reach and pan the (often wide) table. */}
+      <div
+        role="region"
+        aria-label="Model cost comparison"
+        tabIndex={0}
+        className="overflow-x-auto rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      >
+        <Table className="min-w-[640px]">
+          <TableCaption className="sr-only">
+            Estimated cost per model for the current task, sorted by total cost
+            ({sortOrder === "asc" ? "lowest first" : "highest first"}).
+          </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="font-semibold">
+              <TableHead scope="col" className="font-semibold">
                 <Checkbox
+                  aria-label={
+                    selectedModels.length === pricingResults.length
+                      ? "Deselect all models"
+                      : "Select all models"
+                  }
                   checked={
                     selectedModels.length < pricingResults.length
                       ? "indeterminate"
@@ -195,12 +216,18 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
                 />
               </TableHead>
 
-              <TableHead className="font-semibold">Provider</TableHead>
-              <TableHead className="font-semibold">Model</TableHead>
+              <TableHead scope="col" className="font-semibold">
+                Provider
+              </TableHead>
+              <TableHead scope="col" className="font-semibold">
+                Model
+              </TableHead>
               {showColumns.size && (
-                <TableHead className="font-semibold">Size</TableHead>
+                <TableHead scope="col" className="font-semibold">
+                  Size
+                </TableHead>
               )}
-              <TableHead className="font-semibold">
+              <TableHead scope="col" className="font-semibold">
                 <div className="flex items-center gap-2">
                   Tier
                   <TierFilter
@@ -210,7 +237,7 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
                 </div>
               </TableHead>
               {showColumns.tags && (
-                <TableHead className="font-semibold">
+                <TableHead scope="col" className="font-semibold">
                   <div className="flex items-center gap-2">
                     Tags
                     <TagFilter tags={tags} setTags={setTags} />
@@ -219,27 +246,42 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
               )}
               {showColumns.inputOutput && (
                 <>
-                  <TableHead className="font-semibold text-right">
+                  <TableHead
+                    scope="col"
+                    className="font-semibold text-right"
+                  >
                     Input Cost
                   </TableHead>
-                  <TableHead className="font-semibold text-right">
+                  <TableHead
+                    scope="col"
+                    className="font-semibold text-right"
+                  >
                     Output Cost
                   </TableHead>
                 </>
               )}
               {showColumns.cachedTokens && (
-                <TableHead className="font-semibold text-right">
+                <TableHead scope="col" className="font-semibold text-right">
                   Cached Tokens
                 </TableHead>
               )}
-              <TableHead className="font-semibold text-right">
+              <TableHead
+                scope="col"
+                aria-sort={
+                  sortOrder === "asc" ? "ascending" : "descending"
+                }
+                className="font-semibold text-right"
+              >
                 <Button
                   variant="ghost"
                   onClick={toggleSort}
+                  aria-label={`Sort by total cost, currently ${
+                    sortOrder === "asc" ? "ascending" : "descending"
+                  }`}
                   className="p-0 h-auto"
                 >
                   Total Cost
-                  <ArrowUpDown className="ml-1 h-3 w-3" />
+                  <ArrowUpDown className="ml-1 h-3 w-3" aria-hidden="true" />
                 </Button>
               </TableHead>
             </TableRow>

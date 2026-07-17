@@ -33,6 +33,7 @@ const ResultsTableRow = ({
       {selectable && (
         <TableCell className="font-medium">
           <Checkbox
+            aria-label={`Select ${result.model.name}`}
             checked={selected}
             onCheckedChange={(checked) => onSelect?.(!!checked)}
             className="h-4 w-4"

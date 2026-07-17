@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Accessibility + mobile pass on the results table (it's the core surface) — @2026-07-17T22:39Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -161,7 +159,22 @@ Order roughly by value. Each item is one session of work.
       other model ("what would this have cost on X").
 - [ ] A shareable permalink already exists — add an OG-image endpoint or static
       card so a shared estimate previews with the number.
-- [ ] Accessibility + mobile pass on the results table (it's the core surface).
+- [x] Accessibility + mobile pass on the results table (it's the core surface).
+      *(The results table (`ResultsTableFiltered` + `table/ResultsTableRow`) had
+      several a11y gaps: unlabeled select-all / per-row checkboxes, tier conveyed
+      only by colored dots (silent to screen readers), a sort control with no
+      `aria-sort`, no `scope` on headers, no table caption. Added: an sr-only
+      `<caption>` describing the sort, `scope="col"` on every header, `aria-sort`
+      on the Total Cost column reflecting the live order, an accessible sort-button
+      label, `aria-label`s on all checkboxes (`Select <model>` / `Select all
+      models`), and `role="img" aria-label="Tier: …"` on the dots (decorative dots
+      `aria-hidden`). Mobile: the table now has a `min-w-[640px]` and lives in a
+      focusable, labeled `role="region"` scroll container so narrow screens pan
+      horizontally instead of crushing columns. Pure markup/attribute changes —
+      82 tests, typecheck and build all green; verified in the running app via
+      browserless that every attribute renders (caption, `aria-sort=ascending`,
+      the region, `Tier: Medium`, per-model checkbox labels, 5 `scope=col`
+      headers) and confirmed the 640px horizontal scroll on a 390px viewport.)*
 
 ## Non-goals (for now)
 
