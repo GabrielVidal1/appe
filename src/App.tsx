@@ -7,6 +7,7 @@ import { ThemeProvider } from "./components/ThemeProvider";
 import { AppDataProvider } from "./contexts/form/appContext";
 import Index from "./pages/Index";
 import AIProcessing from "./pages/AIProcessing";
+import AgentEstimator from "./pages/AgentEstimator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -22,6 +23,7 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/ap" element={<AIProcessing />} />
+              <Route path="/agent" element={<AgentEstimator />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

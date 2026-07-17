@@ -26,6 +26,26 @@ export type { ProviderConfig, ProviderParams } from "./types/provider";
 export { DEFAULT_PROVIDER, PROVIDERS, getProviderParams } from "./types/provider";
 export type { PricingResult, TokenResults } from "./types/results";
 
+// Agentic estimation — types, empirical priors/presets, and the estimator.
+export type {
+  AgentRunConfig,
+  AgentTypology,
+  AgentComplexity,
+  AgentPricingResult,
+  AgentPreset,
+  TypologyPrior,
+  ComplexityPreset,
+  SensitivityDriver,
+} from "./types/agent";
+export {
+  AGENT_DEFAULTS,
+  AGENT_POWER_LAW,
+  AGENT_PRESETS,
+  TYPOLOGY_PRIORS,
+  COMPLEXITY_PRESETS,
+} from "./types/agent";
+export { estimateAgentRun } from "./agentCost";
+
 // The catalogue, generated from models.dev by scripts/sync-models.mjs.
 export {
   ALL_MODELS,

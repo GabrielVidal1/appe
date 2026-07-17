@@ -42,6 +42,15 @@ const Navbar = ({ className }: NavbarProps) => {
             >
               AP - AI Processing
             </Link>
+            <Link
+              to="/agent"
+              className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+            >
+              Agent estimator
+              <span className="rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-700 dark:bg-amber-500/20 dark:text-amber-400">
+                beta
+              </span>
+            </Link>
           </nav>
         </div>
 
