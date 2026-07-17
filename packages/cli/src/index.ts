@@ -18,6 +18,19 @@ import {
   type EstimateOptions,
 } from "./estimate";
 import { bold, dim, red } from "./format";
+import {
+  type AgentOptions,
+  renderAgentJson,
+  renderAgentTable,
+  runAgent,
+} from "./estimateAgent";
+import {
+  AGENT_PRESETS,
+  COMPLEXITY_PRESETS,
+  TYPOLOGY_PRIORS,
+  type AgentComplexity,
+  type AgentTypology,
+} from "@appe/core";
 import { pickTaskSource, readTask, TaskReadError } from "./input";
 import {
   renderModelsJson,
@@ -35,6 +48,7 @@ ${bold("appe")} — what will this AI task cost?
 
 ${bold("USAGE")}
   appe estimate <task> [options]      price a task across every model
+  appe estimate-agent [options]       price an AGENT RUN (a loop, not one prompt)
   appe models [query] [options]       browse / search the model catalogue
 
 ${bold("ESTIMATE OPTIONS")}
@@ -45,6 +59,18 @@ ${bold("ESTIMATE OPTIONS")}
       --output-tokens <n> Output tokens per item; wins over --output   [default: ${ASSUMED_OUTPUT_TOKENS}]
   -b, --batch             Apply each provider's batch-API discount
       --include-free      Include models with no output price (embedders, free tiers)
+
+${bold("ESTIMATE-AGENT OPTIONS")}
+      --turns <n>         Number of AI messages / turns (the dominant lever)
+      --typology <t>      feature | bugfix | refactor | research | chore | deploy
+      --complexity <c>    simple | moderate | complex
+      --preset <k>        coding-agent | rag-qa | batch-classify | scrape-summarise | research-plan
+      --continue          Compare continuing this conversation vs a fresh one
+      --existing-context <n>  Tokens already in the current context   [default: 120k]
+      --runs <n>          Repeat the whole run N times (batch of agent runs)
+      --reasoning         Reasoning model (thinking tokens billed as output)
+      --tools-per-turn <n> · --base-context <n> · --context-growth <n>
+      --output-per-turn <n> · --cache-hit <0-100>   (advanced levers)
 
 ${bold("MODELS OPTIONS")}
   -q, --query <text>      Search name / id / provider (also accepted as a positional)
@@ -66,6 +92,9 @@ ${bold("EXAMPLES")}
   appe estimate "answer a question about a PDF" -p anthropic,openai --top 5
   appe estimate "write a unit test" --tag reasoning --json | jq '.results[0]'
   cat prompt.md | appe estimate --tier small          # task piped in from stdin
+  appe estimate-agent --typology feature              # cost of a feature-shaped agent run
+  appe estimate-agent --turns 200 --continue          # continue-vs-new for a 200-turn task
+  appe estimate-agent --preset batch-classify --json  # a batch loop, machine-readable
   appe models claude --provider anthropic             # search the catalogue
   appe models --tag reasoning --max-cost 1 --sort context   # cheap reasoners
   appe models "gpt" --json | jq '.results[].id'       # ids for a pipeline
@@ -128,6 +157,20 @@ const main = () => {
         json: { type: "boolean", short: "j", default: false },
         help: { type: "boolean", short: "h", default: false },
         version: { type: "boolean", short: "v", default: false },
+        // estimate-agent
+        turns: { type: "string" },
+        typology: { type: "string" },
+        complexity: { type: "string" },
+        preset: { type: "string" },
+        "tools-per-turn": { type: "string" },
+        "base-context": { type: "string" },
+        "context-growth": { type: "string" },
+        "output-per-turn": { type: "string" },
+        "cache-hit": { type: "string" },
+        reasoning: { type: "boolean", default: false },
+        runs: { type: "string" },
+        continue: { type: "boolean", default: false },
+        "existing-context": { type: "string" },
       },
     });
   } catch (e) {
@@ -207,10 +250,75 @@ const main = () => {
     return;
   }
 
+  // `appe estimate-agent` — cost of an *agent run* (a loop with growing
+  // context), grounded in the empirical model fitted to real Claude Code runs.
+  if (command === "estimate-agent" || command === "agent") {
+    const { providers, tags, tiers } = parseFilters();
+
+    const typologyRaw = values.typology as string | undefined;
+    if (typologyRaw && !(typologyRaw in TYPOLOGY_PRIORS)) {
+      return fail(
+        `unknown --typology "${typologyRaw}".`,
+        `Task types: ${Object.keys(TYPOLOGY_PRIORS).join(", ")}`
+      );
+    }
+    const complexityRaw = values.complexity as string | undefined;
+    if (complexityRaw && !(complexityRaw in COMPLEXITY_PRESETS)) {
+      return fail(
+        `unknown --complexity "${complexityRaw}".`,
+        `Levels: ${Object.keys(COMPLEXITY_PRESETS).join(", ")}`
+      );
+    }
+    const presetRaw = values.preset as string | undefined;
+    if (presetRaw && !AGENT_PRESETS.some((p) => p.key === presetRaw)) {
+      return fail(
+        `unknown --preset "${presetRaw}".`,
+        `Presets: ${AGENT_PRESETS.map((p) => p.key).join(", ")}`
+      );
+    }
+
+    const num = (flag: string, key: string): number | undefined =>
+      values[key] === undefined
+        ? undefined
+        : number(values[key] as string, flag, NaN);
+
+    const agentOptions: AgentOptions = {
+      turns: num("--turns", "turns"),
+      typology: typologyRaw as AgentTypology | undefined,
+      complexity: complexityRaw as AgentComplexity | undefined,
+      preset: presetRaw,
+      toolsPerTurn: num("--tools-per-turn", "tools-per-turn"),
+      baseContextTokens: num("--base-context", "base-context"),
+      contextGrowthPerTurn: num("--context-growth", "context-growth"),
+      outputTokensPerTurn: num("--output-per-turn", "output-per-turn"),
+      cacheHitRate:
+        values["cache-hit"] === undefined
+          ? undefined
+          : number(values["cache-hit"] as string, "--cache-hit", NaN) / 100,
+      reasoning: Boolean(values.reasoning),
+      runs: num("--runs", "runs"),
+      compareContinue: Boolean(values.continue),
+      existingContextTokens: num("--existing-context", "existing-context"),
+      providers,
+      tags,
+      tiers,
+      top: number(values.top as string, "--top", 15),
+      json: Boolean(values.json),
+    };
+
+    const agentResult = runAgent(agentOptions);
+    process.stdout.write(
+      agentOptions.json
+        ? `${renderAgentJson(agentOptions, agentResult)}\n`
+        : `${renderAgentTable(agentOptions, agentResult)}\n`
+    );
+    return;
+  }
+
   if (command !== "estimate") {
     return fail(
       `unknown command "${command}".`,
-      "Commands: `appe estimate`, `appe models`. Run `appe --help`."
+      "Commands: `appe estimate`, `appe estimate-agent`, `appe models`. Run `appe --help`."
     );
   }
 
