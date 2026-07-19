@@ -1,5 +1,7 @@
+import ProviderCombobox from "@/components/ProviderCombobox";
 import { ProviderIcon } from "@/components/ProviderIcons";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -41,16 +43,17 @@ export default function AgentModelTable({
   onSelect: (m: Model) => void;
 }) {
   const [tier, setTier] = useState<string>("all");
-  const [providerQuery, setProviderQuery] = useState("");
+  const [provider, setProvider] = useState<string>("all");
+  const [nameQuery, setNameQuery] = useState("");
   const [sortBy, setSortBy] = useState<"cost" | "time">("cost");
 
   const ranked = useMemo(() => {
     return ALL_TEXT_MODELS.filter((m) => {
       if (tier !== "all" && m.tier !== tier) return false;
+      if (provider !== "all" && m.provider !== provider) return false;
       if (
-        providerQuery &&
-        !m.provider.toLowerCase().includes(providerQuery.toLowerCase()) &&
-        !m.name.toLowerCase().includes(providerQuery.toLowerCase())
+        nameQuery &&
+        !m.name.toLowerCase().includes(nameQuery.toLowerCase())
       )
         return false;
       // hide models with no output price (embedders/free) — noise in a cost sort
@@ -61,7 +64,7 @@ export default function AgentModelTable({
         return { m, cost: r.cost.total, time: r.durationSeconds };
       })
       .sort((a, b) => (sortBy === "time" ? a.time - b.time : a.cost - b.cost));
-  }, [config, tier, providerQuery, sortBy]);
+  }, [config, tier, provider, nameQuery, sortBy]);
 
   const shown = ranked.slice(0, MAX_ROWS);
 
@@ -74,12 +77,18 @@ export default function AgentModelTable({
         <span className="text-xs text-muted-foreground">
           {ranked.length.toLocaleString()} models · click to select
         </span>
-        <div className="ml-auto flex items-center gap-2">
-          <input
-            placeholder="Filter provider…"
-            value={providerQuery}
-            onChange={(e) => setProviderQuery(e.target.value)}
-            className="h-8 w-36 rounded-md border border-border bg-background px-2 text-sm"
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          <Input
+            placeholder="Search model…"
+            value={nameQuery}
+            onChange={(e) => setNameQuery(e.target.value)}
+            className="h-8 w-36"
+          />
+          <ProviderCombobox
+            value={provider}
+            onChange={setProvider}
+            className="h-8 w-40 sm:w-40"
+            placeholder="Filter by provider"
           />
           <Select value={tier} onValueChange={setTier}>
             <SelectTrigger className="h-8 w-28">

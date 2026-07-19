@@ -43,11 +43,11 @@ const VALUE_MAPPINGS = {
     medium: "1",
     big: "2",
   },
-  providerOptions: {
-    claude: "0",
-    mistral: "1",
-    openai: "2",
-  },
+  // Provider ids come from models.dev (~150 open strings) — the old fixed
+  // claude/mistral/openai index map couldn't represent them (e.g. the default
+  // "anthropic" wasn't mappable, so shared-URL provider selection was silently
+  // dropped). We now store the raw ids comma-joined instead — see
+  // compress/decompress of `selectedProviders`.
   models: ALL_TEXT_MODELS.reduce((acc, model, i) => {
     acc[model.id] = i.toString(); // Assuming each model has a unique id
     return acc;
@@ -64,12 +64,6 @@ const REVERSE_VALUE_MAPPINGS = {
   ),
   tierOptions: Object.fromEntries(
     Object.entries(VALUE_MAPPINGS.tierOptions).map(([key, value]) => [
-      value,
-      key,
-    ])
-  ),
-  providerOptions: Object.fromEntries(
-    Object.entries(VALUE_MAPPINGS.providerOptions).map(([key, value]) => [
       value,
       key,
     ])
@@ -144,15 +138,10 @@ function compressFormData(data: AppData): Record<string, unknown> {
         }
         break;
       case "selectedProviders":
+        // Store the raw models.dev provider ids, comma-joined — any provider id
+        // round-trips (the old index map only knew claude/mistral/openai).
         if (Array.isArray(value)) {
-          compressed[mappedKey] = value
-            .map(
-              (provider) =>
-                VALUE_MAPPINGS.providerOptions[
-                  provider as keyof typeof VALUE_MAPPINGS.providerOptions
-                ]
-            )
-            .join("");
+          compressed[mappedKey] = value.join(",");
         }
         break;
       case "imageSize":
@@ -272,15 +261,9 @@ function decompressFormData(
         break;
       case "selectedProviders":
         if (typeof value === "string") {
-          decompressed[originalKey] = value
-            .split("")
-            .map(
-              (provider) =>
-                REVERSE_VALUE_MAPPINGS.providerOptions[
-                  provider as keyof typeof REVERSE_VALUE_MAPPINGS.providerOptions
-                ]
-            )
-            .filter(Boolean) as AppData["selectedProviders"];
+          decompressed[originalKey] = (
+            value ? value.split(",") : []
+          ).filter(Boolean) as AppData["selectedProviders"];
         }
         break;
       case "imageSize":
