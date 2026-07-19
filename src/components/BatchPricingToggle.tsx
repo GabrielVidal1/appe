@@ -10,6 +10,13 @@ import { PROVIDERS } from "@appe/core";
 import { useState } from "react";
 import HelpButton from "./HelpButton";
 
+// The models.dev catalogue lists ~150 providers, but only a handful actually
+// offer a batch discount — the rest would just be "0% off" noise. List the ones
+// that give a real discount, deepest first.
+const BATCH_DISCOUNT_PROVIDERS = Object.entries(PROVIDERS)
+  .filter(([, p]) => p.batchDiscount < 1)
+  .sort((a, b) => a[1].batchDiscount - b[1].batchDiscount);
+
 interface BatchPricingToggleProps {
   checked: boolean;
   onCheckedChange: (checked: boolean) => void;
@@ -43,8 +50,8 @@ const BatchPricingToggle: React.FC<BatchPricingToggleProps> = ({
               Batch processing allows you to process multiple requests together
               at a discounted rate.
             </p>
-            <div className="space-y-2">
-              {Object.entries(PROVIDERS).map(([key, provider]) => (
+            <div className="max-h-56 space-y-2 overflow-y-auto pr-1">
+              {BATCH_DISCOUNT_PROVIDERS.map(([key, provider]) => (
                 <div
                   key={key}
                   className="flex justify-between items-center text-sm"
