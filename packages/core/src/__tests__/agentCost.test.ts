@@ -88,6 +88,14 @@ describe("estimateAgentRun", () => {
     expect(r.durationSeconds).toBeCloseTo(0.8 * 100 + 72000 / 45, 3);
   });
 
+  it("caps per-turn TTFT so a reasoning model's huge benchmark TTFT can't blow up the loop", () => {
+    // A reasoning model with a 30s benchmark TTFT (thinking bundled in). Over
+    // 100 turns the uncapped latency term would be 3000s; the cap holds it to
+    // 3s/turn = 300s, so generation time (72000/45 = 1600s) dominates instead.
+    const r = estimateAgentRun({ turns: 100 }, opus({ ttft_s: 30 }));
+    expect(r.durationSeconds).toBeCloseTo(3 * 100 + 72000 / 45, 3);
+  });
+
   it("a faster model finishes the same run in less wall-clock", () => {
     const slow = estimateAgentRun({ turns: 100 }, opus()); // 45 tps
     const fast = estimateAgentRun(

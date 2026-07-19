@@ -1,9 +1,9 @@
 {
   "source": "https://models.dev/api.json",
-  "generatedAt": "2026-07-19T18:01:14.584Z",
+  "generatedAt": "2026-07-19T18:51:00.952Z",
   "providerCount": 157,
   "modelCount": 5280,
   "logoCount": 157,
-  "speedSource": "tier-estimated",
-  "measuredSpeedCount": 0
+  "speedSource": "artificial-analysis",
+  "measuredSpeedCount": 2751
 }

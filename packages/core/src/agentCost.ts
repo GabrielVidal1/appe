@@ -34,12 +34,21 @@ export function estimateAgentRun(
   };
   const effectiveTurns = r.turns * r.runs || 1;
 
-  // Wall-clock: each turn pays the time-to-first-token latency once, then emits
-  // its output tokens at the model's tokens/sec. Summed over every turn of every
-  // run. `r.tokens.output` is the total output across the whole run(s), so
-  // dividing by tps gives all generation time; ttft is charged per turn.
+  // Wall-clock: each turn pays a small first-token latency once, then emits its
+  // output tokens at the model's tokens/sec. Summed over every turn of every run.
+  // `r.tokens.output` is the total output across the whole run(s), so dividing by
+  // tps gives all generation time; the latency is charged per turn.
+  //
+  // Note on TTFT for the agent loop: a benchmark's time-to-first-token for a
+  // *reasoning* model bundles the thinking phase into "first token" (tens of
+  // seconds on a fresh, uncached request). Charging that every turn would
+  // double-count — we already price reasoning as extra output tokens (the bulk
+  // of the time) via reasoningOutputMultiplier. So for the per-turn latency we
+  // cap TTFT at a realistic prefill/queue ceiling; the thinking time is already
+  // in the output term. The single-shot default estimator keeps the raw TTFT.
   const { tps, ttft } = modelSpeed(model);
-  const durationSeconds = ttft * effectiveTurns + r.tokens.output / tps;
+  const perTurnLatency = Math.min(ttft, AGENT_DEFAULTS.maxPerTurnTtftSeconds);
+  const durationSeconds = perTurnLatency * effectiveTurns + r.tokens.output / tps;
 
   return {
     model,

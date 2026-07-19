@@ -12,6 +12,11 @@ dist
 dist-ssr
 *.local
 
+# Secrets — never commit. .env holds AA_API_KEY (Artificial Analysis) etc.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

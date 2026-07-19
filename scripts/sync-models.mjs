@@ -71,12 +71,55 @@ function deriveTier(inputCost, outputCost) {
   return "big";
 }
 
+// Effort / variant suffix tokens that Artificial Analysis appends to a slug but
+// models.dev usually does not (a given base model is served at one speed
+// regardless of effort, close enough for an estimate). We index AA entries under
+// both the full slug AND a suffix-stripped base so either can match, and we
+// strip the same set off models.dev ids before looking up.
+const VARIANT_SUFFIXES = new Set([
+  "low",
+  "medium",
+  "high",
+  "minimal",
+  "thinking",
+  "think",
+  "nothink",
+  "reasoning",
+  "nonreasoning",
+  "codex",
+  "exp",
+  "preview",
+  "latest",
+  "instruct",
+  "chat",
+  "it",
+]);
+
 /** Normalise a name/id/slug for fuzzy matching AA models to models.dev models:
  *  lowercase, strip everything but alphanumerics. "GPT-4o mini" → "gpt4omini". */
 function speedKey(s) {
   return String(s || "")
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
+}
+
+/** A slug/id with any trailing effort/variant tokens removed, so
+ *  "claude-sonnet-5-low" and "gpt-oss-20b-high" collapse to their base model.
+ *  Also drops a leading provider prefix ("openai/o3" → "o3") and date stamps. */
+function baseKey(idOrSlug) {
+  let s = String(idOrSlug || "").toLowerCase();
+  // drop provider path prefixes and vendor dot-prefixes
+  s = s.split("/").pop();
+  s = s.replace(/^[a-z]+\./, ""); // e.g. "anthropic.claude-…"
+  const tokens = s.split(/[-_.\s]+/).filter(Boolean);
+  // drop trailing variant tokens and trailing date stamps (8-digit / yyyy…)
+  while (tokens.length > 1) {
+    const last = tokens[tokens.length - 1];
+    if (VARIANT_SUFFIXES.has(last) || /^\d{4,}$/.test(last) || /^v\d+$/.test(last)) {
+      tokens.pop();
+    } else break;
+  }
+  return tokens.join("");
 }
 
 /**
@@ -94,32 +137,51 @@ async function fetchSpeedIndex() {
     return index;
   }
   try {
-    const res = await fetch(AA_URL, {
-      headers: { "x-api-key": AA_API_KEY, accept: "application/json", ...UA },
-    });
-    if (!res.ok) {
-      process.stdout.write(
-        `· Artificial Analysis returned HTTP ${res.status} — falling back to tier estimates.\n`
-      );
-      return index;
-    }
-    const body = await res.json();
-    // The endpoint returns { data: [ …models… ] } (or a bare array on older
-    // shapes). Be liberal about the envelope.
-    const rows = Array.isArray(body) ? body : body.data ?? body.models ?? [];
-    for (const m of rows) {
-      const tps = Number(m.median_output_tokens_per_second);
-      const ttft = Number(m.median_time_to_first_token_seconds);
-      if (!(tps > 0)) continue;
-      const entry = { tps, ttft: ttft >= 0 ? ttft : null };
-      // Index under several keys so models.dev ids can match on any of them.
-      for (const k of [m.slug, m.id, m.name]) {
-        const key = speedKey(k);
-        if (key && !index.has(key)) index.set(key, entry);
+    let entries = 0;
+    let page = 1;
+    let totalPages = 1;
+    // The free endpoint is paginated (page_size 200, a few pages). Walk them.
+    do {
+      const url = `${AA_URL}?page=${page}`;
+      const res = await fetch(url, {
+        headers: { "x-api-key": AA_API_KEY, accept: "application/json", ...UA },
+      });
+      if (!res.ok) {
+        process.stdout.write(
+          `· Artificial Analysis returned HTTP ${res.status} (page ${page}) — using what we have + tier estimates.\n`
+        );
+        break;
       }
-    }
+      const body = await res.json();
+      totalPages = body.pagination?.total_pages ?? 1;
+      // { data: [ …models… ] }; each model's speed lives under `performance`.
+      const rows = Array.isArray(body) ? body : body.data ?? body.models ?? [];
+      for (const m of rows) {
+        const perf = m.performance ?? m; // tolerate either shape
+        const tps = Number(perf.median_output_tokens_per_second);
+        const ttft = Number(perf.median_time_to_first_token_seconds);
+        if (!(tps > 0)) continue;
+        const entry = { tps, ttft: ttft >= 0 ? ttft : null };
+        entries++;
+        // Index under both exact and suffix-stripped keys, so a models.dev id can
+        // match the full slug ("claude-sonnet-5-low") or its base
+        // ("claude-sonnet-5"). Exact keys are set first and never overwritten;
+        // base keys only fill if not already taken (first variant wins), so an
+        // exact match always beats a collapsed one.
+        for (const k of [m.slug, m.id, m.name]) {
+          const key = speedKey(k);
+          if (key && !index.has(key)) index.set(key, entry);
+        }
+        for (const k of [m.slug, m.id, m.name]) {
+          const key = baseKey(k);
+          if (key && !index.has(key)) index.set(key, entry);
+        }
+      }
+      page++;
+    } while (page <= totalPages);
+
     process.stdout.write(
-      `· Artificial Analysis: ${index.size} benchmarked speed entries.\n`
+      `· Artificial Analysis: ${entries} benchmarked models, ${index.size} lookup keys.\n`
     );
   } catch (err) {
     process.stdout.write(
@@ -132,8 +194,14 @@ async function fetchSpeedIndex() {
 /** Resolve a model's speed: measured from AA if we can match it, else tier
  *  fallback. `bareId` is the models.dev model id without the provider prefix. */
 function resolveSpeed(speedIndex, bareId, name, tier) {
+  // Try exact normalised id/name first (most specific), then the suffix-stripped
+  // base forms (so "claude-opus-4-8-think" or a dated id still finds the model).
   const hit =
-    speedIndex.get(speedKey(bareId)) || speedIndex.get(speedKey(name)) || null;
+    speedIndex.get(speedKey(bareId)) ||
+    speedIndex.get(speedKey(name)) ||
+    speedIndex.get(baseKey(bareId)) ||
+    speedIndex.get(baseKey(name)) ||
+    null;
   if (hit) {
     return {
       speed_tps: hit.tps,

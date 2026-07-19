@@ -132,6 +132,14 @@ export const AGENT_DEFAULTS = {
   cacheWriteInputMultiplier: 1.25,
   /** Residual ln-σ of the fitted cost model → p10/p90 = median × exp(±1.28σ). */
   residualLnSigma: 0.42,
+  /**
+   * Ceiling (seconds) on the per-turn time-to-first-token used in the agent
+   * duration estimate. A benchmark's TTFT for a reasoning model includes the
+   * whole thinking phase (tens of seconds); in a cached agent loop we already
+   * account for thinking as output tokens, so we cap the per-turn latency to a
+   * realistic prefill/queue value to avoid double-counting.
+   */
+  maxPerTurnTtftSeconds: 3,
 } as const;
 
 /** The emergent power law, for the reference curve & sanity checks (Opus rates). */
