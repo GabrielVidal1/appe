@@ -41,12 +41,111 @@ const PROVIDER_OVERRIDES = {
 };
 const DEFAULT_BATCH_DISCOUNT = 0.5; // most first-party providers offer 50% batch.
 
+// --- Speed / duration data ------------------------------------------------
+// models.dev carries NO speed data. The wall-clock estimator (packages/core/
+// speed.ts) needs output tokens/sec + time-to-first-token per model. Those come
+// from the Artificial Analysis free API when an API key is available; otherwise
+// every model gets a coarse tier-based fallback so the feature still works.
+//
+//   AA_API_KEY=<key> node scripts/sync-models.mjs   → measured speeds where AA
+//                                                      benchmarks the model
+//   node scripts/sync-models.mjs                     → tier-estimated speeds
+//
+// Get a free key (100 req/day) at https://artificialanalysis.ai/ (Insights
+// Platform → API keys). Attribution to artificialanalysis.ai is required by the
+// free tier and is shown in the UI when speed_source === "measured".
+const AA_API_KEY = process.env.AA_API_KEY || "";
+const AA_URL = "https://artificialanalysis.ai/api/v2/language/models/free";
+
+// Tier → fallback tokens/sec and TTFT (mirror of TIER_FALLBACK_* in speed.ts;
+// kept in sync so the baked JSON is self-describing and speed.ts's fallback is a
+// belt-and-braces default). small≈fast … big≈slow.
+const TIER_TPS = { small: 120, medium: 70, big: 45 };
+const TIER_TTFT = { small: 0.3, medium: 0.5, big: 0.8 };
+
 /** Rough small/medium/big tier from blended $/Mtok — models.dev has no tier. */
 function deriveTier(inputCost, outputCost) {
   const blended = (Number(inputCost) || 0) * 0.75 + (Number(outputCost) || 0) * 0.25;
   if (blended < 1) return "small";
   if (blended < 8) return "medium";
   return "big";
+}
+
+/** Normalise a name/id/slug for fuzzy matching AA models to models.dev models:
+ *  lowercase, strip everything but alphanumerics. "GPT-4o mini" → "gpt4omini". */
+function speedKey(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+/**
+ * Fetch the Artificial Analysis free benchmark and build a lookup of
+ * normalised-slug → { tps, ttft }. Returns an empty Map (no key, error, or rate
+ * limit) rather than throwing — the sync must never fail over optional speed
+ * data; models then fall back to tier estimates.
+ */
+async function fetchSpeedIndex() {
+  const index = new Map();
+  if (!AA_API_KEY) {
+    process.stdout.write(
+      "· No AA_API_KEY set — using tier-estimated model speeds.\n"
+    );
+    return index;
+  }
+  try {
+    const res = await fetch(AA_URL, {
+      headers: { "x-api-key": AA_API_KEY, accept: "application/json", ...UA },
+    });
+    if (!res.ok) {
+      process.stdout.write(
+        `· Artificial Analysis returned HTTP ${res.status} — falling back to tier estimates.\n`
+      );
+      return index;
+    }
+    const body = await res.json();
+    // The endpoint returns { data: [ …models… ] } (or a bare array on older
+    // shapes). Be liberal about the envelope.
+    const rows = Array.isArray(body) ? body : body.data ?? body.models ?? [];
+    for (const m of rows) {
+      const tps = Number(m.median_output_tokens_per_second);
+      const ttft = Number(m.median_time_to_first_token_seconds);
+      if (!(tps > 0)) continue;
+      const entry = { tps, ttft: ttft >= 0 ? ttft : null };
+      // Index under several keys so models.dev ids can match on any of them.
+      for (const k of [m.slug, m.id, m.name]) {
+        const key = speedKey(k);
+        if (key && !index.has(key)) index.set(key, entry);
+      }
+    }
+    process.stdout.write(
+      `· Artificial Analysis: ${index.size} benchmarked speed entries.\n`
+    );
+  } catch (err) {
+    process.stdout.write(
+      `· Artificial Analysis fetch failed (${err.message}) — using tier estimates.\n`
+    );
+  }
+  return index;
+}
+
+/** Resolve a model's speed: measured from AA if we can match it, else tier
+ *  fallback. `bareId` is the models.dev model id without the provider prefix. */
+function resolveSpeed(speedIndex, bareId, name, tier) {
+  const hit =
+    speedIndex.get(speedKey(bareId)) || speedIndex.get(speedKey(name)) || null;
+  if (hit) {
+    return {
+      speed_tps: hit.tps,
+      ttft_s: hit.ttft ?? TIER_TTFT[tier],
+      speed_source: "measured",
+    };
+  }
+  return {
+    speed_tps: TIER_TPS[tier],
+    ttft_s: TIER_TTFT[tier],
+    speed_source: "estimated",
+  };
 }
 
 /** Capability tags the UI filters on, derived from models.dev boolean flags. */
@@ -61,11 +160,13 @@ function deriveTags(m, inputs) {
   return tags;
 }
 
-function mapModel(providerId, m) {
+function mapModel(providerId, m, speedIndex) {
   const inputs = (m.modalities?.input ?? []).filter((x) => SUPPORTED_INPUT.has(x));
   const cost = m.cost ?? {};
   const inputCost = Number(cost.input) || 0;
   const outputCost = Number(cost.output) || 0;
+  const tier = deriveTier(inputCost, outputCost);
+  const speed = resolveSpeed(speedIndex, m.id, m.name ?? m.id, tier);
   return {
     // Composite id: the same base model appears under many providers (openai,
     // openrouter, requesty…) at different prices, so plain ids collide.
@@ -84,9 +185,14 @@ function mapModel(providerId, m) {
     input_audio_cost: cost.input_audio != null ? Number(cost.input_audio) : null,
     cache_cost: cost.cache_read != null ? Number(cost.cache_read) : null,
     max_token: m.limit?.context ?? null,
-    tier: deriveTier(inputCost, outputCost),
+    tier,
     tags: deriveTags(m, inputs),
     license: m.open_weights ? "opensource" : "commercial",
+    // Wall-clock speed: measured (Artificial Analysis) when matched, else a
+    // tier-based estimate. Drives the duration column in the app.
+    speed_tps: speed.speed_tps,
+    ttft_s: speed.ttft_s,
+    speed_source: speed.speed_source,
   };
 }
 
@@ -140,6 +246,9 @@ async function main() {
   if (!res.ok) throw new Error(`models.dev returned HTTP ${res.status}`);
   const api = await res.json();
 
+  // Optional speed benchmark (Artificial Analysis). Empty when no key / offline.
+  const speedIndex = await fetchSpeedIndex();
+
   const models = [];
   const providers = {};
 
@@ -147,7 +256,7 @@ async function main() {
     const kept = Object.values(provider.models ?? {}).filter(isEstimable);
     if (kept.length === 0) continue;
 
-    for (const m of kept) models.push(mapModel(providerId, m));
+    for (const m of kept) models.push(mapModel(providerId, m, speedIndex));
 
     const override = PROVIDER_OVERRIDES[providerId] ?? {};
     providers[providerId] = {
@@ -167,12 +276,19 @@ async function main() {
 
   const logoCount = await syncLogos(Object.keys(providers));
 
+  const measuredSpeedCount = models.filter(
+    (m) => m.speed_source === "measured"
+  ).length;
+
   const meta = {
     source: API_URL,
     generatedAt: new Date().toISOString(),
     providerCount: Object.keys(providers).length,
     modelCount: models.length,
     logoCount,
+    // Provenance for the speed/duration feature.
+    speedSource: AA_API_KEY ? "artificial-analysis" : "tier-estimated",
+    measuredSpeedCount,
   };
 
   await writeFile(join(DATA_DIR, "models.json"), JSON.stringify(models, null, 2) + "\n");
@@ -184,7 +300,10 @@ async function main() {
 
   process.stdout.write(
     `✓ Wrote ${models.length} models from ${meta.providerCount} providers to packages/core/src/data/\n` +
-      `✓ Downloaded ${logoCount}/${meta.providerCount} provider logos to public/logos/\n`
+      `✓ Downloaded ${logoCount}/${meta.providerCount} provider logos to public/logos/\n` +
+      `✓ Speed: ${measuredSpeedCount} measured (AA), ${
+        models.length - measuredSpeedCount
+      } tier-estimated\n`
   );
 }
 

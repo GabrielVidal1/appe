@@ -13,6 +13,7 @@ const COLUMNS_HIDEABLE = [
   "inputOutput",
   "tags",
   "cachedTokens",
+  "time",
 ] as const;
 
 type ColumnKey = (typeof COLUMNS_HIDEABLE)[number];

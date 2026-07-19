@@ -5,6 +5,7 @@ import {
   AgentRunConfig,
   SensitivityDriver,
 } from "./types/agent";
+import { modelSpeed } from "./speed";
 
 /**
  * Estimate the cost of an agentic run for a single model.
@@ -33,6 +34,13 @@ export function estimateAgentRun(
   };
   const effectiveTurns = r.turns * r.runs || 1;
 
+  // Wall-clock: each turn pays the time-to-first-token latency once, then emits
+  // its output tokens at the model's tokens/sec. Summed over every turn of every
+  // run. `r.tokens.output` is the total output across the whole run(s), so
+  // dividing by tps gives all generation time; ttft is charged per turn.
+  const { tps, ttft } = modelSpeed(model);
+  const durationSeconds = ttft * effectiveTurns + r.tokens.output / tps;
+
   return {
     model,
     turns: r.turns,
@@ -49,6 +57,7 @@ export function estimateAgentRun(
     perTurnTokens: Math.round(r.tokens.total / effectiveTurns),
     band,
     dominatedBy: sensitivity(cfg, model, r.cost.total),
+    durationSeconds,
   };
 }
 

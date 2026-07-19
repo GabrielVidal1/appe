@@ -62,6 +62,16 @@ export { computePrices, computeTokens, computeTokensAsync } from "./computations
 export { computeImagePrice } from "./imageCost";
 export { strToTokens, strToTokensSync } from "./tokenization";
 
+// Duration (wall-clock time) estimation — how long a task takes, driven by the
+// model's output tokens/sec and time-to-first-token (measured or tier-estimated).
+export {
+  estimateDuration,
+  modelSpeed,
+  formatDuration,
+  TIER_FALLBACK_TPS,
+  TIER_FALLBACK_TTFT,
+} from "./speed";
+
 // Shared constants and presentation helpers that are pure functions of the
 // estimate (no UI): capability labels, audio defaults, example templates.
 export {

@@ -103,6 +103,16 @@ export type AgentPricingResult = {
   band: { p10: number; p50: number; p90: number };
   /** Which input most drives the cost (largest Δ under a ±25% perturbation). */
   dominatedBy: SensitivityDriver;
+  /**
+   * Estimated model wall-clock (seconds) for the run: per turn, the time-to-
+   * first-token plus the turn's output tokens ÷ the model's tokens/sec, summed
+   * over all turns × runs. This is only the model's generation time — it
+   * excludes tool execution, network, and human latency between turns, so a real
+   * agent session takes longer, but it's what makes a fast model finish a
+   * 120-turn loop in a fraction of a slow one's time. Uses measured speed when
+   * available, else the tier fallback (see speed.ts / model.speed_source).
+   */
+  durationSeconds: number;
 };
 
 // ---------------------------------------------------------------------------

@@ -1,6 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { TableCell, TableRow } from "@/components/ui/table";
-import { PricingResult } from "@appe/core";
+import { PricingResult, formatDuration } from "@appe/core";
 import { getProviderIcon } from "../ProviderIcons";
 import { Checkbox } from "../ui/checkbox";
 
@@ -79,6 +79,21 @@ const ResultsTableRow = ({
           {result.model.cache_cost
             ? `${(result.model.cache_cost * 100).toFixed(0)} %`
             : "—"}
+        </TableCell>
+      )}
+      {showColumns.time !== false && (
+        <TableCell
+          className="text-right tabular-nums text-muted-foreground"
+          title={
+            result.model.speed_source === "estimated"
+              ? `~${result.model.speed_tps} tok/s (tier-estimated — no benchmark for this model)`
+              : `${result.model.speed_tps} tok/s (Artificial Analysis measured)`
+          }
+        >
+          {formatDuration(result.durationSeconds)}
+          {result.model.speed_source === "estimated" && (
+            <span className="ml-0.5 text-[10px] align-super">*</span>
+          )}
         </TableCell>
       )}
       <TableCell className="text-right font-semibold">

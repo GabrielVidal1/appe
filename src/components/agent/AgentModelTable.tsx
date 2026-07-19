@@ -21,6 +21,7 @@ import {
   AgentRunConfig,
   Model,
   estimateAgentRun,
+  formatDuration,
 } from "@appe/core";
 import { useMemo, useState } from "react";
 import { money } from "./format";
@@ -41,6 +42,7 @@ export default function AgentModelTable({
 }) {
   const [tier, setTier] = useState<string>("all");
   const [providerQuery, setProviderQuery] = useState("");
+  const [sortBy, setSortBy] = useState<"cost" | "time">("cost");
 
   const ranked = useMemo(() => {
     return ALL_TEXT_MODELS.filter((m) => {
@@ -54,9 +56,12 @@ export default function AgentModelTable({
       // hide models with no output price (embedders/free) — noise in a cost sort
       return m.output_cost > 0;
     })
-      .map((m) => ({ m, cost: estimateAgentRun(config, m).cost.total }))
-      .sort((a, b) => a.cost - b.cost);
-  }, [config, tier, providerQuery]);
+      .map((m) => {
+        const r = estimateAgentRun(config, m);
+        return { m, cost: r.cost.total, time: r.durationSeconds };
+      })
+      .sort((a, b) => (sortBy === "time" ? a.time - b.time : a.cost - b.cost));
+  }, [config, tier, providerQuery, sortBy]);
 
   const shown = ranked.slice(0, MAX_ROWS);
 
@@ -100,11 +105,24 @@ export default function AgentModelTable({
               <TableHead>Model</TableHead>
               <TableHead className="hidden sm:table-cell">Tier</TableHead>
               <TableHead className="text-right">In/Out $/M</TableHead>
-              <TableHead className="text-right">Run cost</TableHead>
+              <TableHead
+                className="cursor-pointer select-none text-right hover:text-foreground"
+                onClick={() => setSortBy("time")}
+                title="Estimated model generation time — click to sort"
+              >
+                Time{sortBy === "time" ? " ↓" : ""}
+              </TableHead>
+              <TableHead
+                className="cursor-pointer select-none text-right hover:text-foreground"
+                onClick={() => setSortBy("cost")}
+                title="Run cost — click to sort"
+              >
+                Run cost{sortBy === "cost" ? " ↓" : ""}
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {shown.map(({ m, cost }, i) => (
+            {shown.map(({ m, cost, time }, i) => (
               <TableRow
                 key={m.id}
                 onClick={() => onSelect(m)}
@@ -133,6 +151,19 @@ export default function AgentModelTable({
                 <TableCell className="text-right tabular-nums text-xs text-muted-foreground">
                   ${m.input_cost}/${m.output_cost}
                 </TableCell>
+                <TableCell
+                  className="text-right tabular-nums text-muted-foreground"
+                  title={
+                    m.speed_source === "estimated"
+                      ? `~${m.speed_tps} tok/s (tier-estimated)`
+                      : `${m.speed_tps} tok/s (measured)`
+                  }
+                >
+                  {formatDuration(time)}
+                  {m.speed_source === "estimated" && (
+                    <span className="ml-0.5 text-[10px]">*</span>
+                  )}
+                </TableCell>
                 <TableCell className="text-right font-medium tabular-nums">
                   {money(cost)}
                 </TableCell>
@@ -143,10 +174,24 @@ export default function AgentModelTable({
       </div>
       {ranked.length > MAX_ROWS && (
         <p className="text-xs text-muted-foreground">
-          Showing the {MAX_ROWS} cheapest of {ranked.length.toLocaleString()} —
-          filter to narrow.
+          Showing the {MAX_ROWS} {sortBy === "time" ? "fastest" : "cheapest"} of{" "}
+          {ranked.length.toLocaleString()} — filter to narrow.
         </p>
       )}
+      <p className="text-xs text-muted-foreground">
+        Time is the model's generation wall-clock (tokens ÷ output speed +
+        latency). <span className="tabular-nums">*</span> = speed tier-estimated;
+        unmarked models use{" "}
+        <a
+          href="https://artificialanalysis.ai/"
+          target="_blank"
+          rel="noreferrer"
+          className="underline hover:text-foreground"
+        >
+          Artificial Analysis
+        </a>{" "}
+        measurements.
+      </p>
     </div>
   );
 }

@@ -85,4 +85,28 @@ export type Model = {
    * opensource, commercial, proprietary, or the name of the license.
    */
   license: "opensource" | "commercial" | "proprietary" | string; // the name of the license
+
+  /**
+   * Median output generation speed, in output tokens per second, as measured by
+   * Artificial Analysis (P50 over the trailing window). This is what makes
+   * smaller models "faster": a task's wall-clock is dominated by output tokens ÷
+   * this rate. Null when we have no measurement AND no fallback (never happens
+   * in practice — the sync always fills a tier-based estimate). See `speed.ts`.
+   */
+  speed_tps: number | null;
+
+  /**
+   * Median time-to-first-token, in seconds (the latency before generation
+   * starts). Added to `outputTokens / speed_tps` gives the total response time.
+   */
+  ttft_s: number | null;
+
+  /**
+   * Where the speed figures came from:
+   * - "measured"  — from the Artificial Analysis benchmark (real numbers).
+   * - "estimated" — a tier-based fallback (small≈fast … big≈slow) used when the
+   *                 model isn't in the benchmark or no AA_API_KEY was set.
+   * The UI badges "estimated" so the reader knows it's a heuristic.
+   */
+  speed_source: "measured" | "estimated";
 };

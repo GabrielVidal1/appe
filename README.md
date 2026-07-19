@@ -105,9 +105,30 @@ never disagree about a number. Read it; that's the point.
 2. **Price** (`computePrices`) — input and output tokens are multiplied by the
    model's `$/Mtok` rates, then by the number of items, then by the provider's
    batch discount if batching is enabled.
+3. **Time** (`core/speed.ts`) — a model's wall-clock is dominated by generation
+   speed, which is why smaller models feel faster. The estimate is
+   `ttft + outputTokens / tps`, where `tps` (output tokens/sec) and `ttft`
+   (time-to-first-token) come from the
+   [Artificial Analysis](https://artificialanalysis.ai/) benchmark when
+   available, else a coarse **tier fallback** (small≈120 tok/s … big≈45 tok/s).
+   The agent estimator sums this per turn over the whole loop. Every model
+   carries `speed_source: "measured" | "estimated"`, and the UI badges the
+   estimated ones.
 
-If you think a number is wrong, those two functions are the whole story — a
-failing case there is the most useful bug report this project can get.
+If you think a number is wrong, those functions are the whole story — a failing
+case there is the most useful bug report this project can get.
+
+### Enabling *measured* speeds
+
+`models.dev` carries no speed data, so out of the box every model uses the tier
+fallback (flagged "estimated"). To light up real benchmarked numbers, get a free
+[Artificial Analysis](https://artificialanalysis.ai/) API key (Insights Platform
+→ API keys, 100 req/day) and expose it to the sync — either `export AA_API_KEY=…`
+or drop `AA_API_KEY=…` into a gitignored `.env.local`, which `sync-and-deploy.sh`
+sources. The sync then attaches `median_output_tokens_per_second` /
+`median_time_to_first_token_seconds` to every model it can match (by
+creator+slug/id/name); unmatched models keep the tier fallback. Attribution to
+artificialanalysis.ai is required by the free tier and is shown in the UI.
 
 ## Model data comes from models.dev — never hand-edit it
 
@@ -116,7 +137,7 @@ the per-provider logos, and **generates**:
 
 | File | Contents |
 | --- | --- |
-| `packages/core/src/data/models.json` | one entry per provider×model: costs, context window, tags, tier |
+| `packages/core/src/data/models.json` | one entry per provider×model: costs, context window, tags, tier, speed (tps/ttft, measured or estimated) |
 | `packages/core/src/data/provider_data.json` | provider display name, batch discount, PDF pricing knobs |
 | `packages/core/src/data/models.meta.json` | source, generation timestamp, provider/model/logo counts |
 | `public/logos/<id>.svg` | provider logos (inlined, so they adapt to dark mode) |

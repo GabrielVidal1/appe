@@ -38,6 +38,7 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProvider, setSelectedProvider] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [sortKey, setSortKey] = useState<"cost" | "time">("cost");
 
   const [showColumns, setShowColumns] = useFormState("showColumns");
   const [selectedTiers, setSelectedTiers] = useFormState("selectedTiers");
@@ -95,7 +96,9 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
           selectedProvider === "all" ||
           result.model.provider === selectedProvider
       )
-      .sortBy((result) => result.totalCost)
+      .sortBy((result) =>
+        sortKey === "time" ? result.durationSeconds : result.totalCost
+      )
       .thru((results) => (sortOrder === "desc" ? results.reverse() : results))
       // .groupBy((result) => result.model.provider)
       .value();
@@ -103,10 +106,17 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
     return {
       filteredResults,
     };
-  }, [pricingResults, selectedProvider, sortOrder]);
+  }, [pricingResults, selectedProvider, sortOrder, sortKey]);
 
-  const toggleSort = () => {
-    setSortOrder((current) => (current === "asc" ? "desc" : "asc"));
+  // Clicking a sortable header sorts by that key; clicking the active header
+  // flips the direction.
+  const sortByKey = (key: "cost" | "time") => {
+    if (key === sortKey) {
+      setSortOrder((current) => (current === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortOrder("asc");
+    }
   };
 
   const renderTierDots = (tier: string) => {
@@ -265,19 +275,45 @@ const ResultsTableFiltered: React.FC<ResultsTableFilteredProps> = ({
                   Cached Tokens
                 </TableHead>
               )}
+              {showColumns.time !== false && (
+                <TableHead
+                  scope="col"
+                  aria-sort={
+                    sortKey === "time"
+                      ? sortOrder === "asc"
+                        ? "ascending"
+                        : "descending"
+                      : "none"
+                  }
+                  className="font-semibold text-right"
+                >
+                  <Button
+                    variant="ghost"
+                    onClick={() => sortByKey("time")}
+                    aria-label="Sort by estimated time"
+                    className="p-0 h-auto"
+                    title="Estimated model generation time per request (output tokens ÷ speed + latency)"
+                  >
+                    Time
+                    <ArrowUpDown className="ml-1 h-3 w-3" aria-hidden="true" />
+                  </Button>
+                </TableHead>
+              )}
               <TableHead
                 scope="col"
                 aria-sort={
-                  sortOrder === "asc" ? "ascending" : "descending"
+                  sortKey === "cost"
+                    ? sortOrder === "asc"
+                      ? "ascending"
+                      : "descending"
+                    : "none"
                 }
                 className="font-semibold text-right"
               >
                 <Button
                   variant="ghost"
-                  onClick={toggleSort}
-                  aria-label={`Sort by total cost, currently ${
-                    sortOrder === "asc" ? "ascending" : "descending"
-                  }`}
+                  onClick={() => sortByKey("cost")}
+                  aria-label="Sort by total cost"
                   className="p-0 h-auto"
                 >
                   Total Cost

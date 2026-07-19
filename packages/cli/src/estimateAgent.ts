@@ -10,6 +10,7 @@ import {
   Model,
   TYPOLOGY_PRIORS,
   estimateAgentRun,
+  formatDuration,
 } from "@appe/core";
 
 import { bold, cyan, dim, table, usd } from "./format";
@@ -144,9 +145,14 @@ export function renderAgentTable(o: AgentOptions, r: ReturnType<typeof runAgent>
 
   if (head) {
     const b = head.result.band;
+    const speedNote =
+      head.model.speed_source === "estimated" ? " est." : "";
     lines.push(
       `${dim("headline")} ${bold(head.model.name)} ${dim(`(${head.model.provider})`)}  ` +
         `${bold(usd(b.p50))} ${dim(`· 80% ${usd(b.p10)}–${usd(b.p90)}`)}  ` +
+        `${dim("· ~")}${bold(formatDuration(head.result.durationSeconds))}${dim(
+          ` model time${speedNote}`,
+        )}  ` +
         `${dim("dominated by")} ${DRIVER[head.result.dominatedBy]}`,
     );
     const t = head.result.tokens;
@@ -225,11 +231,23 @@ export function renderAgentTable(o: AgentOptions, r: ReturnType<typeof runAgent>
         value: (x) => `${x.model.input_cost}/${x.model.output_cost}`,
       },
       {
+        header: "time",
+        align: "right",
+        value: (x) =>
+          formatDuration(x.result.durationSeconds) +
+          (x.model.speed_source === "estimated" ? "*" : ""),
+      },
+      {
         header: "run cost",
         align: "right",
         value: (x) => cyan(usd(x.result.cost.total)),
       },
     ]),
+  );
+  lines.push(
+    dim(
+      "  time = model generation wall-clock (tokens ÷ speed); * = tier-estimated speed",
+    ),
   );
   if (r.candidates.length > o.top) {
     lines.push(dim(`  … ${r.candidates.length - o.top} more (use --top N or filter)`));
@@ -268,6 +286,8 @@ export function renderAgentJson(o: AgentOptions, r: ReturnType<typeof runAgent>)
             dominatedBy: head.result.dominatedBy,
             perTurnCost: head.result.perTurnCost,
             tokens: head.result.tokens,
+            durationSeconds: head.result.durationSeconds,
+            speedSource: head.model.speed_source,
           }
         : null,
       compareContinueVsNew: compare,
@@ -278,6 +298,8 @@ export function renderAgentJson(o: AgentOptions, r: ReturnType<typeof runAgent>)
         tier: x.model.tier,
         cost: x.result.cost.total,
         band: x.result.band,
+        durationSeconds: x.result.durationSeconds,
+        speedSource: x.model.speed_source,
       })),
       modelCount: r.candidates.length,
     },

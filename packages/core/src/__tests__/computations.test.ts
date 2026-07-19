@@ -22,6 +22,9 @@ const makeModel = (overrides: Partial<Model> = {}): Model => ({
   tier: "medium",
   tags: [],
   license: "commercial",
+  speed_tps: 70,
+  ttft_s: 0.5,
+  speed_source: "estimated",
   ...overrides,
 });
 

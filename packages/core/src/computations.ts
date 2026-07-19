@@ -4,6 +4,7 @@ import { getProviderParams } from "./types/provider";
 import { PricingResult, TokenResults } from "./types/results";
 import { computeImagePrice } from "./imageCost";
 import { strToTokens, strToTokensSync } from "./tokenization";
+import { estimateDuration } from "./speed";
 
 /**
  * Computes the token usage for a given appData and model.
@@ -187,6 +188,11 @@ export const computePrices = (
       batchDiscount;
   }
 
+  // Per-request wall-clock: driven by output generation speed. Not × dataCount —
+  // batch requests run in parallel, so we report per-item time (the UI notes the
+  // parallelism). tokenResults.outputTokens is the per-request output.
+  const durationSeconds = estimateDuration(model, tokenResults.outputTokens, 1);
+
   return {
     ...tokenResults,
     inputCost: {
@@ -208,5 +214,6 @@ export const computePrices = (
       inputDocumentCost +
       inputImageCost +
       inputAudioCost,
+    durationSeconds,
   };
 };

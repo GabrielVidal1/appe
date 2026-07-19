@@ -33,6 +33,7 @@ export type AppData = {
     inputOutput: boolean;
     tags: boolean;
     cachedTokens?: boolean; // percentage of cached tokens
+    time?: boolean; // estimated wall-clock time (output speed)
   };
   selectedModels: string[]; // Models selected in the results table
 
@@ -63,5 +64,6 @@ export const DEFAULT_APP_DATA: AppData = {
     size: false,
     inputOutput: false,
     tags: true,
+    time: true,
   },
 };

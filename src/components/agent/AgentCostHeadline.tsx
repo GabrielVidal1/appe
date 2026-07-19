@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { AgentPricingResult } from "@appe/core";
+import { AgentPricingResult, formatDuration } from "@appe/core";
 import { ProviderIcon } from "@/components/ProviderIcons";
+import { Clock } from "lucide-react";
 import { money } from "./format";
 
 const DRIVER_COPY: Record<AgentPricingResult["dominatedBy"], string> = {
@@ -14,7 +15,8 @@ export default function AgentCostHeadline({
 }: {
   result: AgentPricingResult;
 }) {
-  const { model, band, dominatedBy, runs, turns } = result;
+  const { model, band, dominatedBy, runs, turns, durationSeconds } = result;
+  const estimated = model.speed_source === "estimated";
 
   return (
     <Card className="overflow-hidden border-primary/40">
@@ -34,12 +36,37 @@ export default function AgentCostHeadline({
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-sm">
-          <span className="text-muted-foreground">80% range</span>
-          <span className="font-medium tabular-nums">
-            {money(band.p10)} – {money(band.p90)}
-          </span>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm">
+          <div className="flex items-center gap-2">
+            <span className="text-muted-foreground">80% range</span>
+            <span className="font-medium tabular-nums">
+              {money(band.p10)} – {money(band.p90)}
+            </span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5 text-muted-foreground" />
+            <span className="text-muted-foreground">~</span>
+            <span
+              className="font-medium tabular-nums"
+              title={
+                estimated
+                  ? "Estimated from the model's price tier — no measured benchmark for this model."
+                  : "From Artificial Analysis benchmark (median output tokens/sec + time-to-first-token)."
+              }
+            >
+              {formatDuration(durationSeconds)}
+            </span>
+            <span className="text-muted-foreground">
+              model time{estimated && " (est.)"}
+            </span>
+          </div>
         </div>
+
+        <p className="text-xs text-muted-foreground">
+          Wall-clock is the model's generation time only ({model.speed_tps ?? "—"}{" "}
+          tok/s{estimated ? ", tier-estimated" : ", measured"}) — it excludes
+          tool execution, network, and thinking between turns.
+        </p>
 
         <p className="text-sm text-muted-foreground">
           Dominated by{" "}

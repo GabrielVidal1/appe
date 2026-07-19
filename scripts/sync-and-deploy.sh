@@ -16,6 +16,18 @@ cd "$PROJECT_DIR"
 
 echo "=== appe model sync $(date -Is) ==="
 
+# Optional: an Artificial Analysis API key enables *measured* model speeds
+# (output tokens/sec, TTFT) for the duration estimator. Drop a line
+# `AA_API_KEY=...` into projects/appe/.env.local (gitignored) and it's picked up
+# here; without it the sync uses tier-estimated speeds. Get a free key at
+# https://artificialanalysis.ai/ (Insights Platform → API keys).
+if [[ -f "$PROJECT_DIR/.env.local" ]]; then
+  set -a
+  # shellcheck disable=SC1091
+  source "$PROJECT_DIR/.env.local"
+  set +a
+fi
+
 # 1. Refresh src/data/models.json + provider_data.json from models.dev.
 node scripts/sync-models.mjs
 

@@ -21,6 +21,9 @@ const opus = (overrides: Partial<Model> = {}): Model => ({
   tier: "big",
   tags: ["reasoning", "tools"],
   license: "proprietary",
+  speed_tps: 45,
+  ttft_s: 0.8,
+  speed_source: "estimated",
   ...overrides,
 });
 
@@ -76,5 +79,21 @@ describe("estimateAgentRun", () => {
     const r = estimateAgentRun({ turns: 0 }, opus());
     expect(r.cost.total).toBe(0);
     expect(Number.isFinite(r.perTurnCost)).toBe(true);
+  });
+
+  it("estimates wall-clock duration from the model's speed", () => {
+    // 100 turns, default 720 output tok/turn = 72_000 output tokens.
+    // duration = ttft·turns + output/tps = 0.8·100 + 72000/45 = 80 + 1600 = 1680s.
+    const r = estimateAgentRun({ turns: 100 }, opus());
+    expect(r.durationSeconds).toBeCloseTo(0.8 * 100 + 72000 / 45, 3);
+  });
+
+  it("a faster model finishes the same run in less wall-clock", () => {
+    const slow = estimateAgentRun({ turns: 100 }, opus()); // 45 tps
+    const fast = estimateAgentRun(
+      { turns: 100 },
+      opus({ speed_tps: 150, ttft_s: 0.3 })
+    );
+    expect(fast.durationSeconds).toBeLessThan(slow.durationSeconds);
   });
 });
