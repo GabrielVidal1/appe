@@ -1,12 +1,5 @@
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { ALL_PROVIDERS } from "@appe/core";
+import ProviderCombobox from "@/components/ProviderCombobox";
 import { Search } from "lucide-react";
 
 interface FilterControlsProps {
@@ -34,19 +27,13 @@ const FilterControls = ({
         />
       </div>
 
-      <Select value={selectedProvider} onValueChange={setSelectedProvider}>
-        <SelectTrigger className="w-full sm:w-48">
-          <SelectValue placeholder="Filter by provider" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="all">All Providers</SelectItem>
-          {ALL_PROVIDERS.map((provider) => (
-            <SelectItem key={provider} value={provider}>
-              {provider}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      {/* Searchable provider picker — the models.dev catalogue lists ~50+
+          providers, so a plain dropdown was unusable. Shows a handful at a
+          time; type to reach the rest. */}
+      <ProviderCombobox
+        value={selectedProvider}
+        onChange={setSelectedProvider}
+      />
     </div>
   );
 };
