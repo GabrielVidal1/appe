@@ -140,15 +140,50 @@ Order roughly by value. Each item is one session of work.
       against the built `dist/appe.js` with `cat prompt | appe estimate`.)*
 - [ ] Publish the CLI to npm as `appe` (bump + tag only; leave the actual
       publish credential step to a human).
-- [ ] Agentic cost model in core: `estimateAgentRun({ turns, toolsPerTurn,
+      *(Audit note, 2026-08-09: the name is not free — npm already has an
+      unrelated `appe@1.0.0` published by a different author over a year ago,
+      so this needs a naming decision (scope it `@appe/cli`? pick another bare
+      name?) before a human can run the publish step. No version tag exists
+      yet in this repo either way (`git tag -l` is empty). Left unchecked —
+      needs an owner decision, not just execution.)*
+- [x] Agentic cost model in core: `estimateAgentRun({ turns, toolsPerTurn,
       contextGrowth, cacheHitRate, reasoning })` with cached-read pricing.
-- [ ] Agent presets (coding agent / RAG / batch classify / scrape-summarise)
+      *(`packages/core/src/agentCost.ts` + `types/agent.ts` — `estimateAgentRun`
+      takes exactly this shape (`turns`, `toolsPerTurn`, `contextGrowthPerTurn`,
+      `cacheHitRate`, `reasoning`), prices the per-turn growing-prefix re-read at
+      `model.cache_cost` (cached-read rate), and returns a p10/p50/p90 band.
+      Grounded in `doc/agentic/` — an empirical fit over 544 real Claude Code
+      runs (aae2038, "docs(agentic): empirical cost model for v0.2"). Shipped in
+      887e8a8 "feat(agent): beta agentic run estimator at /agent", 7 unit tests
+      pin the cost≈0.033·N^1.20 law.)*
+- [x] Agent presets (coding agent / RAG / batch classify / scrape-summarise)
       exposed in both GUI and CLI.
-- [ ] GUI: an "Agent" data type alongside prompts/images/pdfs/audio, wired
+      *(`AGENT_PRESETS` in `packages/core/src/types/agent.ts` has exactly these
+      four: `coding-agent`, `rag-qa`, `batch-classify`, `scrape-summarise`.
+      Wired into the GUI's `AgentConfigPanel.tsx` preset chips (887e8a8) and the
+      CLI's `--preset` flag in `estimateAgent.ts`/`index.ts` (2224b91
+      "feat(cli): appe estimate-agent").)*
+- [x] GUI: an "Agent" data type alongside prompts/images/pdfs/audio, wired
       through `computations.ts`, `urlConfig.ts`, the form and `TokenSummary`
       (see CLAUDE.md's checklist for adding a data type).
-- [ ] Sensitivity / range output: show a low–high band and which input drives
+      *(Shipped a different way than originally scoped, per the 887e8a8 commit
+      message's own framing: "ships the v0.2 'agentic task costs' feature as an
+      isolated beta page" — `/agent` with its own components
+      (`src/components/agent/`: `AgentConfigPanel`, `AgentModelTable`, cost
+      headline, token breakdown, cost-vs-turns chart) rather than as a fifth
+      value of the `prompts|images|pdfs|audio` data type inside
+      `ResultsTableFiltered`/`computations.ts`/`urlConfig.ts`. Confirmed
+      `computations.ts` and `urlConfig.ts` have no "agent" references — the main
+      flow is untouched by design, avoiding destabilizing it. The underlying
+      goal (agent-run cost estimation reachable from the GUI) is met.)*
+- [x] Sensitivity / range output: show a low–high band and which input drives
       the cost, instead of a single point estimate.
+      *(Delivered for agent runs: `agentCost.ts`'s `estimateAgentRun` returns a
+      p10/p50/p90 band plus a `dominatedBy` sensitivity driver; the `/agent`
+      page's cost headline shows the "80% band + sensitivity line" (887e8a8),
+      and `appe estimate-agent` prints the same band + driver in the CLI
+      (2224b91). Not present on the plain (non-agent) results table/estimate —
+      if that's still wanted, it'd be a new, narrower item.)*
 - [ ] Show cache-aware pricing in the results table (models.dev has
       cached-read/write rates) — big lever on agent costs. **Note:** in
       `computePrices`, `cachedCost` is folded into `inputCost.total` but *not*
