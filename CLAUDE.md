@@ -40,6 +40,28 @@ Mapping notes (see the script for detail):
   models.dev has one, else the estimator falls back to `input_cost`.
 - `tier` is a heuristic from blended $/Mtok; `tags` are derived from capability
   flags (vision/audio/video/reasoning/tools/opensource).
+- `model_size` (parameters, in billions) is **mined from the id/name** by
+  `scripts/model-size.mjs` — models.dev carries no parameter count. MoE names are
+  handled (`235b-a22b` → 235 total, `8x22b` → 176); closed models that publish no
+  size stay `null`. Unit-tested in `scripts/__tests__/model-size.test.ts`.
+
+## The catalogue is also a static API (`/api/…`)
+
+APPE is the homelab's model-data source of truth, so the catalogue is published
+as static JSON for other apps (the ai-agent's composer lists every OpenRouter
+model with its $/Mtok and size, and prices pi.dev sessions off these rates —
+nobody keeps a second copy of the prices):
+
+- `https://appe.dev.gabvdl.xyz/api/index.json` — meta + providers (id, name, count)
+- `https://appe.dev.gabvdl.xyz/api/models/<provider>.json` — one provider's models
+
+Written into `public/api/` by `scripts/build-api.mjs`, which runs as npm's
+`prebuild` (so `npm run build` and `npm run deploy` always regenerate it). It is
+gitignored — the source of truth stays `packages/core/src/data/models.json`. Each
+entry is the `Model` shape verbatim plus `api_id`: the id **without** the
+provider prefix, i.e. what you pass to that provider's API
+(`openrouter/qwen/qwen3-coder` → `qwen/qwen3-coder`). Per-provider slices because
+the whole catalogue is ~2.5 MB and one provider is ~170 KB.
 
 ## Daily sync
 
