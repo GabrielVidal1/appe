@@ -14,6 +14,7 @@
 import { writeFile, mkdir, rm } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { deriveModelSize } from "./model-size.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = join(__dirname, "..", "packages", "core", "src", "data");
@@ -244,7 +245,9 @@ function mapModel(providerId, m, speedIndex) {
     version: m.release_date ?? "",
     task: inputs, // always includes "text" (guaranteed by the filter below)
     description: m.description ?? "",
-    model_size: null, // models.dev does not expose parameter counts
+    // models.dev exposes no parameter count, so it's mined from the id/name —
+    // null for closed models that never publish one (see deriveModelSize).
+    model_size: deriveModelSize(m.id, m.name ?? m.id),
     input_cost: inputCost,
     output_cost: outputCost,
     // Dedicated audio-input $/Mtok when models.dev provides it; otherwise the
