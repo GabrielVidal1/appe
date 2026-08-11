@@ -33,41 +33,57 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 
 ## Horizons
 
-### Short term — v0.1 (now): a real, installable open-source tool
+*(v0.1 "installable open-source tool" and v0.2 "agentic task costs" both
+shipped — MIT + README, `@appe/core`, the `appe` CLI, and the full agentic
+cost model with presets and sensitivity bands are all checked off below.)*
 
-The web app already works; make it a project people can actually adopt.
+### Short term — v0.3 (now): numbers people can trust on every input
 
-- An OSI license (MIT) and a contributor-facing README (not the scaffold one).
-- The estimator core extracted out of `src/lib/` into a framework-free package
-  (`@appe/core`: token estimation + pricing math + the models.dev catalogue),
-  imported by the web app so the two never drift.
-- A `appe` CLI on top of that core: `appe estimate --task "…" --count 1000`
-  → a ranked table of models and costs, `--json` for pipelines.
-- The web app renamed and versioned properly (`package.json` is still
-  `vite_react_shadcn_ts@0.0.0`).
+The estimator is right for the common case; close the gaps that would make a
+specific answer wrong or unavailable.
 
-### Middle term — v0.2: agentic task costs
+- Settle and fix the cache-aware pricing self-inconsistency already flagged in
+  the wishlist (`cachedCost` folded into `inputCost.total` but not
+  `totalCost`) — a real bug, and a prerequisite for anything downstream that
+  trusts the total.
+- Model reasoning-token overhead in the **plain, non-agent** estimator too —
+  today only `estimateAgentRun` applies `reasoningOutputMultiplier`; a single
+  complex prompt to a `reasoning`-tagged model (o-series, GPT-5-thinking-class,
+  DeepSeek-R-class) is silently undercosted on the main results table.
+- Import a Claude Code / OpenAI usage export and re-price it against every
+  other model ("what would this have cost on X") — already scoped in the
+  wishlist below.
+- An OG-image / static preview card for shared permalinks.
 
-Estimate what an **agent run** costs, not just one prompt. An agent is a loop:
-N turns, growing context, tool results fed back in, cache hits on the prefix.
-That's a different formula from "input + output × count", and nobody offers it.
+### Middle term — v0.4: build vs buy
 
-- A model of an agentic run: turns, tools per turn, context growth, prompt
-  caching (cached-read vs write pricing), reasoning-token overhead.
-- Presets for the shapes people actually run — coding agent over a repo, RAG
-  question-answering, batch classification, a scraper-summariser loop.
-- Sensitivity output: "the estimate is $2–$18; it is dominated by turn count."
-- `appe estimate-agent` in the CLI with the same model.
+APPE already knows a model's price *and*, since the parameter-count mining
+(commit `08907b1`), its size and whether it's open-weight. That's exactly the
+missing half of the question every self-hoster actually asks: "at my volume,
+is the API cheaper or is a GPU?" Nobody else answers this from real model
+economics instead of raw hardware specs.
+
+- A self-host vs API comparison: for `license: "opensource"` models with a
+  known `model_size`, estimate the GPU tier needed (VRAM from params ×
+  quantization) and its hourly cloud-rental cost from a small, explicitly
+  versioned reference table (a few named tiers — consumer/prosumer/datacenter
+  — not a live pricing feed), then show the monthly token volume where
+  self-hosting undercuts the cheapest matching API model.
+- Make the static catalogue API (`/api/index.json`, `/api/models/*.json`,
+  shipped in `08907b1`) actually citable outside the homelab: CORS headers on
+  the static response and a one-page docs listing the shape + an example
+  fetch, linked from the README. The data already exists; nothing outside
+  `homelab_main` knows to reach for it yet.
 
 ### Long term — v1.0 / someday
 
 APPE is the thing you reach for before you build anything with an LLM: paste a
-task (or point it at a repo, a dataset, an agent trace), get cost, latency and
-the cheapest model that can actually do it. The core is a package other tools
-import; the catalogue is trusted enough that people cite it. Possibly it reads
-a real usage log (an Anthropic/OpenAI billing export, a Claude Code transcript)
-and tells you what you *would have* paid on every other model — estimation
-validated against reality.
+task, point it at a repo or a real usage trace, or ask "self-host or API for
+this workload" — and get a defensible number plus the cheapest model or
+deployment that can actually do it. The catalogue is trusted enough that
+people cite it or pull the static API into their own tools. Estimation stays
+validated against reality (the usage-export re-pricing above is the first
+step) rather than drifting into a second set of made-up numbers.
 
 ## Wishlist
 
@@ -184,16 +200,37 @@ Order roughly by value. Each item is one session of work.
       and `appe estimate-agent` prints the same band + driver in the CLI
       (2224b91). Not present on the plain (non-agent) results table/estimate —
       if that's still wanted, it'd be a new, narrower item.)*
-- [ ] Show cache-aware pricing in the results table (models.dev has
-      cached-read/write rates) — big lever on agent costs. **Note:** in
-      `computePrices`, `cachedCost` is folded into `inputCost.total` but *not*
-      into `totalCost`, and the input cost is still billed at the full
-      (uncached) rate on every item — so today's cache handling is
-      self-inconsistent. Settle the intended semantics before surfacing it.
+- [ ] Fix the cache-aware pricing self-inconsistency in `computePrices`
+      (`cachedCost` is folded into `inputCost.total` but *not* into
+      `totalCost`, and the input cost is still billed at the full uncached
+      rate on every item) — settle the intended semantics, *then* surface
+      cache-aware pricing in the results table (models.dev has cached-read/
+      write rates; big lever on agent costs).
+- [ ] Model reasoning-token overhead in the plain (non-agent) estimator for
+      models tagged `reasoning` — reuse `AGENT_DEFAULTS.reasoningOutputMultiplier`
+      (today only `estimateAgentRun` applies it) and show a "+N tokens:
+      reasoning overhead" note next to the affected row, so a single complex
+      prompt to an o-series/GPT-5-thinking-class/DeepSeek-R-class model isn't
+      silently undercosted.
+- [ ] Self-host vs API comparison: for `license: "opensource"` models with a
+      known `model_size`, derive a GPU tier (VRAM from params × quantization)
+      and its hourly cloud-rental cost from a small versioned reference table,
+      then surface the monthly token volume where self-hosting undercuts the
+      cheapest matching API model. The parameter-count mining (`08907b1`)
+      already has the data this needs; this is the feature it was for.
+- [ ] Make the static catalogue API citable outside the homelab: add CORS
+      headers to `/api/index.json` and `/api/models/*.json` (zipgo/static
+      config) and a one-page docs listing the shape + an example `fetch`,
+      linked from the README.
 - [ ] Import a Claude Code / OpenAI usage export and re-price it against every
       other model ("what would this have cost on X").
 - [ ] A shareable permalink already exists — add an OG-image endpoint or static
       card so a shared estimate previews with the number.
+- [ ] Context-window utilization: a small bar/percentage next to each row's
+      token count showing how much of that model's context window the task
+      would use — cheap to compute (tokens ÷ `context_window`, already on
+      every `Model`), and every competing token-counter tool treats it as a
+      headline signal APPE's results table currently omits.
 - [x] Accessibility + mobile pass on the results table (it's the core surface).
       *(The results table (`ResultsTableFiltered` + `table/ResultsTableRow`) had
       several a11y gaps: unlabeled select-all / per-row checkboxes, tier conveyed
@@ -239,3 +276,40 @@ Order roughly by value. Each item is one session of work.
 - Refactors (e.g. the core extraction) must be behaviour-preserving — if the
   estimate for the same inputs changes, that's a bug, not a feature.
 - No paid API calls. APPE estimates costs; it must never incur them.
+- The self-host GPU-rate table (v0.4) is a small, explicitly versioned static
+  constant to be updated occasionally by hand — not a live pricing feed. Don't
+  wire in a paid API to fetch real-time cloud GPU spot prices.
+
+## Research log
+
+<!-- Appended by the goal-seeder agent. Newest first. -->
+
+### 2026-08-11 — seeded v0.3/v0.4
+
+- v0.1 and v0.2 are both essentially shipped (every horizon bullet under them
+  has a matching `[x]` below) — rolled the short/middle horizons forward
+  instead of refilling a stalled list.
+- Read the code (`packages/core/src/computations.ts` vs `agentCost.ts`):
+  `reasoningOutputMultiplier` is only applied in the agent estimator, never in
+  the plain single-shot one → a real, currently-silent undercost for
+  `reasoning`-tagged models on a normal prompt. New wishlist item.
+- https://www.navyaai.com/onprem-llm-cost-estimator ,
+  https://curlscape.com/tools/llm-pricing-calculator → both compare
+  self-hosting vs API cost from raw hardware specs. APPE's last commit
+  (`08907b1`, mining `model_size` + publishing the static catalogue API) gives
+  it the ingredient to do the same comparison from real per-model economics
+  instead — the "build vs buy" v0.4 middle-term horizon + its wishlist item.
+- https://docs.helicone.ai/references/how-we-calculate-cost ,
+  OpenRouter's per-key spend dashboard → real-usage tracking with an account
+  and a proxy. Explicitly out of scope: APPE's non-goals rule out accounts,
+  backends and telemetry; noted and rejected, not added.
+- https://tokencost.app/ , DevToolbox's token counter → both surface
+  context-window utilization (% of the model's window used) as a headline
+  stat; APPE's results table computes tokens but never divides by
+  `context_window`. Cheap, high-signal, added as a wishlist item.
+- Considered and rejected: migrating the UI from shadcn/Radix to `@gabvdl/ui`
+  — no `@gabvdl/ui` import exists in this project today, but shadcn already
+  gives it accessible primitives and the app just did an a11y pass on top of
+  them; swapping design systems now would be pure churn with no capability
+  gain, not a genuine gap. `npm outdated` on the Radix packages is all routine
+  minor/patch bumps — no major-version payoff worth a wishlist item.
