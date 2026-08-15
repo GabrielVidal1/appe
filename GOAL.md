@@ -19,8 +19,6 @@ account, no telemetry, no upsell. The unit of input is a **task** ("summarise
 <!-- Claims by goal-keeper agents. One bullet per in-flight item; remove
      yours in the same commit that ticks its checkbox. -->
 
-- [appe] Fix cache-aware pricing self-inconsistency in computePrices — @2026-08-15T06:02Z
-
 ## Target
 
 - **Me (Gabriel)** — budget a homelab AI feature before writing it, and answer
@@ -202,12 +200,42 @@ Order roughly by value. Each item is one session of work.
       and `appe estimate-agent` prints the same band + driver in the CLI
       (2224b91). Not present on the plain (non-agent) results table/estimate —
       if that's still wanted, it'd be a new, narrower item.)*
-- [ ] Fix the cache-aware pricing self-inconsistency in `computePrices`
+- [x] Fix the cache-aware pricing self-inconsistency in `computePrices`
       (`cachedCost` is folded into `inputCost.total` but *not* into
       `totalCost`, and the input cost is still billed at the full uncached
       rate on every item) — settle the intended semantics, *then* surface
       cache-aware pricing in the results table (models.dev has cached-read/
       write rates; big lever on agent costs).
+      *(Settled semantics: of `dataCount` calls, only the first pays the full
+      input rate — the rest read from cache at the (cheaper) `cache_cost`
+      rate, mirroring how prompt caching actually bills in production.
+      `packages/core/src/computations.ts`'s `computePrices` now reassigns
+      `inputCost` to the single full-price call inside the `cache_cost !==
+      null` branch (was unconditionally `× dataCount`, with the intended
+      per-call reassignment dead-code-commented-out) and adds `cachedCost`
+      into `totalCost` (was only folded into `inputCost.total`, so the two
+      never agreed) — `totalCost` is now always exactly `inputCost.total +
+      outputCost + …`, restoring the invariant the breakdown is supposed to
+      satisfy. Two test files pinned the old self-inconsistent numbers on
+      purpose (their own comments said so, citing this wishlist item) and are
+      rewritten to pin the corrected math instead:
+      `packages/core/src/__tests__/computations.test.ts`'s cache describe
+      block, and `packages/cli/src/__tests__/estimate.test.ts`'s "does not
+      drift" golden number plus its "scales linearly with --count" test — the
+      fix makes cost genuinely *sub-linear* in `--count` for a cache-priced
+      model (economies of scale from caching), so linearity now only holds
+      for a model with no `cache_cost`; a new test asserts the sub-linear
+      case explicitly instead of silently breaking the linear one. 104/104
+      tests pass, typecheck and `npm run build` + `npm run build:cli` are all
+      green. Verified end-to-end: the built CLI (`appe estimate --provider
+      anthropic`) prices Claude Haiku 4.5 at 10k calls at $25.01, matching the
+      new formula by hand (1 call × $1/Mtok + 9999 × $0.1/Mtok cached + output
+      × $5/Mtok); a browserless screenshot of the built web app's results
+      table (after entering a prompt and submitting) confirms it still
+      renders real per-model costs with no regressions.
+      Cache-aware pricing is not yet surfaced as its own column/breakdown in
+      the results table — `totalCost` already reflects it, so that's now a
+      thin, low-risk follow-up rather than blocked on this fix.)*
 - [ ] Model reasoning-token overhead in the plain (non-agent) estimator for
       models tagged `reasoning` — reuse `AGENT_DEFAULTS.reasoningOutputMultiplier`
       (today only `estimateAgentRun` applies it) and show a "+N tokens:

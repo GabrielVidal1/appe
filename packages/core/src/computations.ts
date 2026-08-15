@@ -126,7 +126,7 @@ export const computePrices = (
     (output_cost / 1000000) *
     appData.dataCount *
     batchDiscount;
-  const inputCost =
+  let inputCost =
     tokenResults.inputTokens.text *
     (input_cost / 1000000) *
     appData.dataCount *
@@ -137,13 +137,16 @@ export const computePrices = (
   let inputAudioCost = 0;
 
   if (cache_cost !== null) {
+    // Cache-aware pricing: only the first of `dataCount` calls pays the full
+    // input rate — every subsequent call reads the same prompt from cache
+    // instead, at the (cheaper) cache rate.
+    inputCost =
+      tokenResults.inputTokens.text * (input_cost / 1000000) * batchDiscount;
     cachedCost =
       (appData.dataCount - 1) *
       tokenResults.inputTokens.text *
       (cache_cost / 1000000) *
       batchDiscount;
-    // inputCost =
-    //   tokenResults.inputTokens.text * (input_cost / 1000000) * batchDiscount;
   }
 
   if (appData.dataType === "pdfs" && appData.pdfData) {
@@ -213,7 +216,8 @@ export const computePrices = (
       outputCost +
       inputDocumentCost +
       inputImageCost +
-      inputAudioCost,
+      inputAudioCost +
+      cachedCost,
     durationSeconds,
   };
 };

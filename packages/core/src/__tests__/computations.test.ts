@@ -272,30 +272,31 @@ describe("computePrices — audio", () => {
   });
 });
 
-describe("computePrices — cached input tokens (current semantics)", () => {
-  // These lock in today's behaviour so the planned core extraction stays
-  // behaviour-preserving. The semantics themselves are known to be
-  // self-inconsistent — see the cache-aware-pricing item in GOAL.md: the cached
-  // cost is added to inputCost.total but NOT to totalCost, and text input is
-  // still billed at the full uncached rate on every item.
+describe("computePrices — cached input tokens", () => {
+  // Cache-aware pricing: only the first of `dataCount` calls pays the full
+  // input rate; every subsequent call reads the same prompt from cache at the
+  // (cheaper) cache rate — and totalCost must include that cached cost, since
+  // it's just as real a charge as any other cost bucket.
   const appData = makeAppData({ dataCount: 1000 });
 
-  it("adds a cached cost for every item after the first, into inputCost.total only", () => {
+  it("bills one call at the full rate and the rest at the cache rate, reflected in totalCost", () => {
     const model = makeModel({ cache_cost: 0.1 });
     const prices = computePrices(appData, model, computeTokens(appData, model));
 
-    const expectedCached = (1000 - 1) * 100 * (0.1 / 1e6); // $0.00999
-    expect(prices.inputCost.text).toBeCloseTo((100 * 1) / 1e6 * 1000, 12);
-    expect(prices.inputCost.total).toBeCloseTo(prices.inputCost.text + expectedCached, 12);
+    const expectedFull = (100 * 1) / 1e6; // one call, full input rate
+    const expectedCached = (1000 - 1) * 100 * (0.1 / 1e6); // 999 calls, cache rate
 
-    // …and, today, totalCost ignores it.
-    expect(prices.totalCost).toBeCloseTo(prices.inputCost.text + prices.outputCost, 12);
+    expect(prices.inputCost.text).toBeCloseTo(expectedFull, 12);
+    expect(prices.inputCost.total).toBeCloseTo(expectedFull + expectedCached, 12);
+    expect(prices.totalCost).toBeCloseTo(prices.inputCost.total + prices.outputCost, 12);
   });
 
   it("charges nothing extra when the model has no cache pricing", () => {
     const model = makeModel({ cache_cost: null });
     const prices = computePrices(appData, model, computeTokens(appData, model));
 
+    expect(prices.inputCost.text).toBeCloseTo((100 * 1) / 1e6 * 1000, 12);
     expect(prices.inputCost.total).toBeCloseTo(prices.inputCost.text, 12);
+    expect(prices.totalCost).toBeCloseTo(prices.inputCost.total + prices.outputCost, 12);
   });
 });

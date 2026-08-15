@@ -66,8 +66,11 @@ describe("runEstimate", () => {
     expect(row!.totalCost).toBe(expected.totalCost);
     expect(row!.outputCost).toBe(expected.outputCost);
     expect(row!.inputTokens.total).toBe(expected.inputTokens.total);
-    // 14 input tokens × $1/Mtok × 10k + 500 output × $5/Mtok × 10k
-    expect(row!.totalCost).toBeCloseTo(25.14, 10);
+    // Claude Haiku 4.5 has cache pricing ($0.1/Mtok cached vs $1/Mtok full), so
+    // of the 10k calls only the first pays the full input rate and the other
+    // 9999 pay the cached rate: 14 tokens × $1/Mtok (one call)
+    // + 14 tokens × $0.1/Mtok × 9999 (cached calls) + 500 output × $5/Mtok × 10k.
+    expect(row!.totalCost).toBeCloseTo(0.000014 + 0.0139986 + 25, 10);
   });
 
   it("applies the provider's batch discount", () => {
@@ -124,13 +127,32 @@ describe("runEstimate", () => {
     expect(byTag.rows.every((r) => r.model.tags.includes("reasoning"))).toBe(true);
   });
 
-  it("scales linearly with --count", () => {
+  it("scales linearly with --count when the model has no cache pricing", () => {
+    // Claude Haiku 4.5 (used elsewhere in this file) has cache pricing, which
+    // makes cost sub-linear in --count by design — the first call pays full
+    // price and the rest pay the cheaper cached rate. Linear scaling only
+    // holds for a model with no cache_cost.
+    const one = rowFor(
+      options({ count: 1, providers: ["openai"] }),
+      "GPT-4o (2024-05-13)"
+    );
+    const many = rowFor(
+      options({ count: 1000, providers: ["openai"] }),
+      "GPT-4o (2024-05-13)"
+    );
+    expect(one!.model.cache_cost).toBeNull();
+    expect(many!.totalCost).toBeCloseTo(one!.totalCost * 1000, 8);
+  });
+
+  it("charges less per call as --count grows when the model has cache pricing", () => {
     const one = rowFor(options({ count: 1, providers: ["anthropic"] }), "Claude Haiku 4.5");
     const many = rowFor(
       options({ count: 1000, providers: ["anthropic"] }),
       "Claude Haiku 4.5"
     );
-    expect(many!.totalCost).toBeCloseTo(one!.totalCost * 1000, 8);
+    // Sub-linear: the average cost per call drops once cached calls kick in.
+    expect(many!.totalCost).toBeLessThan(one!.totalCost * 1000);
+    expect(many!.totalCost).toBeGreaterThan(0);
   });
 
   it("returns no rows for an impossible filter combination", () => {
