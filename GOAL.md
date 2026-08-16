@@ -236,12 +236,48 @@ Order roughly by value. Each item is one session of work.
       Cache-aware pricing is not yet surfaced as its own column/breakdown in
       the results table — `totalCost` already reflects it, so that's now a
       thin, low-risk follow-up rather than blocked on this fix.)*
-- [ ] Model reasoning-token overhead in the plain (non-agent) estimator for
+- [x] Model reasoning-token overhead in the plain (non-agent) estimator for
       models tagged `reasoning` — reuse `AGENT_DEFAULTS.reasoningOutputMultiplier`
       (today only `estimateAgentRun` applies it) and show a "+N tokens:
       reasoning overhead" note next to the affected row, so a single complex
       prompt to an o-series/GPT-5-thinking-class/DeepSeek-R-class model isn't
       silently undercosted.
+      *(New exported `applyReasoningOverhead(rawOutputTokens, model)` in
+      `packages/core/src/computations.ts`: for a `reasoning`-tagged model it
+      inflates the raw output-token count by `reasoningOutputMultiplier` (8x)
+      and returns the extra as `reasoningOverheadTokens`. Both `computeTokens`
+      and `computeTokensAsync` call it, so `TokenResults`/`PricingResult` now
+      always carry `reasoningOverheadTokens` (0 for a non-reasoning model) and
+      `outputTokens`/`totalCost` already include it — no changes needed in
+      `computePrices`, which just consumes whatever token counts it's handed.
+      Surfaced in both consumers: the GUI's `ResultsTableRow` shows a "†"
+      marker + tooltip on the Output Cost cell; the CLI's `appe estimate`
+      prints "(+N tokens: reasoning overhead for <model>)" on the "Each item"
+      line and adds `tokens.reasoningOverhead` to `--json`. The CLI's
+      `--output-tokens`/assumed-default path (`withOutputOverride` in
+      `packages/cli/src/estimate.ts`) re-applies the same helper per model —
+      without that, the *common* CLI path (no `--output` sample given) would
+      have kept silently undercosting reasoning models, since it bypasses
+      `computeTokens`'s own tokenization entirely.
+      **Caught and fixed in the same pass**: `estimate.test.ts`'s "does not
+      drift from the web app" golden test pinned Claude Haiku 4.5 (now
+      `reasoning`-tagged in the synced catalogue) at the old, undercosted
+      $25 output cost — exactly the bug this item fixes. Rewrote it to derive
+      the expected overhead via the new exported helper instead of a
+      hardcoded number, so it can't silently re-pin a wrong value again;
+      corrected total is $200 (500 × 8 × $5/Mtok × 10k), confirmed by hand.
+      6 new unit tests (`computations.test.ts`), 108/108 total pass, both
+      typechecks and all three builds (`npm run build`, `build:cli`) green.
+      **Verified end-to-end**: built CLI against the real catalogue —
+      `appe estimate --tag reasoning --provider openai` on GPT-5 Nano went
+      from $0.2001/1000 items (pre-fix) to the correct $1.60/1000 items
+      (8x, matching the multiplier) with the reasoning-overhead note printed
+      and `reasoningOverhead:3500` in `--json`; ran the built web app via
+      `vite preview` + browserless and confirmed the Output Cost column
+      renders real per-model numbers with the new field wired through with
+      no runtime errors (the reasoning-marker tooltip itself needs an example
+      output typed in, which automation couldn't reliably drive through the
+      form — the CLI and unit-test coverage carry the correctness proof).)*
 - [ ] Self-host vs API comparison: for `license: "opensource"` models with a
       known `model_size`, derive a GPU tier (VRAM from params × quantization)
       and its hourly cloud-rental cost from a small versioned reference table,
