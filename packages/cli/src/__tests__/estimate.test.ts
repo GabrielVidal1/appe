@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   ALL_TEXT_MODELS,
   DEFAULT_APP_DATA,
+  applyReasoningOverhead,
   computePrices,
   computeTokens,
   type AppData,
@@ -56,10 +57,19 @@ describe("runEstimate", () => {
       selectedModels: [],
     };
     const tokens = computeTokens(appData, model!);
+    // Claude Haiku 4.5 is tagged "reasoning" in the catalogue, so the assumed
+    // 500 visible-answer tokens get the same reasoningOutputMultiplier the
+    // CLI applies — computed here via the same exported helper, not
+    // hardcoded, so this test doesn't re-drift if the model's tags change.
+    const { outputTokens, reasoningOverheadTokens } = applyReasoningOverhead(
+      ASSUMED_OUTPUT_TOKENS,
+      model!
+    );
     const expected = computePrices(appData, model!, {
       ...tokens,
-      outputTokens: ASSUMED_OUTPUT_TOKENS,
-      totalTokens: tokens.inputTokens.total + ASSUMED_OUTPUT_TOKENS,
+      outputTokens,
+      reasoningOverheadTokens,
+      totalTokens: tokens.inputTokens.total + outputTokens,
     });
 
     const row = rowFor(o, "Claude Haiku 4.5");
@@ -69,8 +79,10 @@ describe("runEstimate", () => {
     // Claude Haiku 4.5 has cache pricing ($0.1/Mtok cached vs $1/Mtok full), so
     // of the 10k calls only the first pays the full input rate and the other
     // 9999 pay the cached rate: 14 tokens × $1/Mtok (one call)
-    // + 14 tokens × $0.1/Mtok × 9999 (cached calls) + 500 output × $5/Mtok × 10k.
-    expect(row!.totalCost).toBeCloseTo(0.000014 + 0.0139986 + 25, 10);
+    // + 14 tokens × $0.1/Mtok × 9999 (cached calls). Output is inflated 8x for
+    // the reasoning tag: 500 × 8 = 4000 output tokens × $5/Mtok × 10k.
+    expect(reasoningOverheadTokens).toBe(3500);
+    expect(row!.totalCost).toBeCloseTo(0.000014 + 0.0139986 + 200, 10);
   });
 
   it("applies the provider's batch discount", () => {

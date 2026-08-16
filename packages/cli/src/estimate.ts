@@ -11,6 +11,7 @@ import {
   ALL_TEXT_MODELS,
   DEFAULT_APP_DATA,
   MODELS_META,
+  applyReasoningOverhead,
   computePrices,
   computeTokens,
   tokensToRealWorldText,
@@ -86,17 +87,26 @@ export const runEstimate = (o: EstimateOptions) => {
     selectedModels: [],
   };
 
-  // An explicit --output-tokens replaces the tokenized sample. Patching the
+  // An explicit --output-tokens (or the assumed default) replaces the
+  // tokenized sample with a raw visible-answer count. Patching the
   // TokenResults (rather than the AppData) keeps the pricing maths untouched:
-  // computePrices consumes whatever token counts it is handed.
-  const withOutputOverride = (t: ReturnType<typeof computeTokens>) =>
-    o.outputTokens === undefined
-      ? t
-      : {
-          ...t,
-          outputTokens: o.outputTokens,
-          totalTokens: t.inputTokens.total + o.outputTokens,
-        };
+  // computePrices consumes whatever token counts it is handed. Reasoning
+  // overhead is re-applied on top per model, same as the tokenized-example
+  // path — otherwise a reasoning-tagged model would be undercosted every time
+  // the user doesn't type out an example answer, which is the common case.
+  const withOutputOverride = (t: ReturnType<typeof computeTokens>, model: Model) => {
+    if (o.outputTokens === undefined) return t;
+    const { outputTokens, reasoningOverheadTokens } = applyReasoningOverhead(
+      o.outputTokens,
+      model
+    );
+    return {
+      ...t,
+      outputTokens,
+      reasoningOverheadTokens,
+      totalTokens: t.inputTokens.total + outputTokens,
+    };
+  };
 
   const matched = ALL_TEXT_MODELS.filter((m) => matchesFilters(m, o));
   const hiddenFree = o.includeFree ? 0 : matched.filter(hasNoOutputPrice).length;
@@ -106,7 +116,7 @@ export const runEstimate = (o: EstimateOptions) => {
 
   const rows: EstimateRow[] = candidates
     .map((model) => {
-      const tokens = withOutputOverride(computeTokens(appData, model));
+      const tokens = withOutputOverride(computeTokens(appData, model), model);
       return { ...computePrices(appData, model, tokens), model } as EstimateRow;
     })
     .sort((a, b) => a.totalCost - b.totalCost);
@@ -160,6 +170,7 @@ export const renderJson = (o: EstimateOptions, r: ReturnType<typeof runEstimate>
         tokens: {
           input: row.inputTokens.total,
           output: row.outputTokens,
+          reasoningOverhead: row.reasoningOverheadTokens,
           total: row.totalTokens,
         },
         costPerItem: row.totalCost / o.count,
@@ -198,6 +209,11 @@ export const renderTable = (
     `${bold("Each item")}  ${int(inTok)} input + ${int(outTok)} output tokens` +
       (o.outputAssumed
         ? dim("  (output assumed — set --output-tokens or --output)")
+        : "") +
+      (sample.reasoningOverheadTokens > 0
+        ? dim(
+            `  (+${int(sample.reasoningOverheadTokens)} tokens: reasoning overhead for ${sample.model.name})`
+          )
         : "")
   );
   out.push(

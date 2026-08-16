@@ -11,6 +11,12 @@ export type TokenResults = {
   };
   outputTokens: number;
   totalTokens: number;
+  /**
+   * Extra output tokens already folded into `outputTokens` because the model
+   * is tagged `reasoning` (thinking tokens billed as output). 0 for a
+   * non-reasoning model — see `AGENT_DEFAULTS.reasoningOutputMultiplier`.
+   */
+  reasoningOverheadTokens: number;
 };
 
 export type PricingResult = TokenResults & {

@@ -51,6 +51,7 @@ describe("computeTokens — prompts", () => {
       total: 100,
     });
     expect(result.outputTokens).toBe(10);
+    expect(result.reasoningOverheadTokens).toBe(0);
     expect(result.totalTokens).toBe(110);
   });
 
@@ -58,6 +59,37 @@ describe("computeTokens — prompts", () => {
     const result = computeTokens(makeAppData({ dataCount: 5000 }), makeModel());
 
     expect(result.totalTokens).toBe(110);
+  });
+});
+
+describe("computeTokens — reasoning models", () => {
+  it("inflates output tokens by reasoningOutputMultiplier for a reasoning-tagged model", () => {
+    const result = computeTokens(
+      makeAppData(),
+      makeModel({ tags: ["reasoning"] })
+    );
+
+    // 10 raw output tokens × 8 (AGENT_DEFAULTS.reasoningOutputMultiplier)
+    expect(result.outputTokens).toBe(80);
+    expect(result.reasoningOverheadTokens).toBe(70);
+    expect(result.totalTokens).toBe(180);
+  });
+
+  it("leaves non-reasoning-tagged models untouched", () => {
+    const result = computeTokens(
+      makeAppData(),
+      makeModel({ tags: ["vision", "multilingual"] })
+    );
+
+    expect(result.outputTokens).toBe(10);
+    expect(result.reasoningOverheadTokens).toBe(0);
+  });
+
+  it("is a no-op with no model (tags unknown)", () => {
+    const result = computeTokens(makeAppData());
+
+    expect(result.outputTokens).toBe(10);
+    expect(result.reasoningOverheadTokens).toBe(0);
   });
 });
 
@@ -156,6 +188,27 @@ describe("computePrices — prompts", () => {
     expect(prices.inputCost.document).toBe(0);
     expect(prices.inputCost.image).toBe(0);
     expect(prices.inputCost.audio).toBe(0);
+  });
+
+  it("bills a reasoning-tagged model's hidden thinking tokens as output cost", () => {
+    const appData = makeAppData({ dataCount: 1000 });
+    const plainModel = makeModel();
+    const reasoningModel = makeModel({ tags: ["reasoning"] });
+
+    const plainCost = computePrices(
+      appData,
+      plainModel,
+      computeTokens(appData, plainModel)
+    ).outputCost;
+    const reasoningCost = computePrices(
+      appData,
+      reasoningModel,
+      computeTokens(appData, reasoningModel)
+    ).outputCost;
+
+    // Same $/Mtok output rate, but 8x the tokens for the reasoning model —
+    // undercosting this before the fix.
+    expect(reasoningCost).toBeCloseTo(plainCost * 8, 6);
   });
 });
 

@@ -58,7 +58,12 @@ export {
 } from "./data";
 
 // Estimation + pricing.
-export { computePrices, computeTokens, computeTokensAsync } from "./computations";
+export {
+  applyReasoningOverhead,
+  computePrices,
+  computeTokens,
+  computeTokensAsync,
+} from "./computations";
 export { computeImagePrice } from "./imageCost";
 export { strToTokens, strToTokensSync } from "./tokenization";
 

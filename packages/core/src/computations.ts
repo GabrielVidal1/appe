@@ -1,10 +1,35 @@
 import { AppData } from "./types/appData";
+import { AGENT_DEFAULTS } from "./types/agent";
 import { Model } from "./types/model";
 import { getProviderParams } from "./types/provider";
 import { PricingResult, TokenResults } from "./types/results";
 import { computeImagePrice } from "./imageCost";
 import { strToTokens, strToTokensSync } from "./tokenization";
 import { estimateDuration } from "./speed";
+
+/**
+ * Reasoning-tagged models (o-series, GPT-5-thinking-class, DeepSeek-R-class)
+ * emit hidden "thinking" tokens billed as output — `estimateAgentRun` already
+ * accounts for this via `reasoningOutputMultiplier`; the plain single-shot
+ * estimator did not, silently undercosting a complex prompt to those models.
+ *
+ * `rawOutputTokens` is the visible-answer token count (from tokenizing the
+ * example, or an explicit --output-tokens); exported so callers that build
+ * their own output-token estimate (the CLI's assumed-output-tokens path)
+ * apply the same overhead instead of re-deriving it.
+ */
+export const applyReasoningOverhead = (
+  rawOutputTokens: number,
+  model?: Model
+): { outputTokens: number; reasoningOverheadTokens: number } => {
+  const reasoningOverheadTokens = model?.tags?.includes("reasoning")
+    ? rawOutputTokens * (AGENT_DEFAULTS.reasoningOutputMultiplier - 1)
+    : 0;
+  return {
+    outputTokens: rawOutputTokens + reasoningOverheadTokens,
+    reasoningOverheadTokens,
+  };
+};
 
 /**
  * Computes the token usage for a given appData and model.
@@ -38,7 +63,10 @@ export const computeTokens = (
     inputAudioTokens =
       appData.audioData.seconds * appData.audioData.tokensPerSecond;
   }
-  const outputTokens = strToTokensSync(appData.example);
+  const { outputTokens, reasoningOverheadTokens } = applyReasoningOverhead(
+    strToTokensSync(appData.example),
+    model
+  );
 
   const inputTotal =
     inputTextTokens + inputDocumentTokens + inputImageTokens + inputAudioTokens;
@@ -53,6 +81,7 @@ export const computeTokens = (
       total: inputTotal,
     },
     outputTokens: outputTokens,
+    reasoningOverheadTokens,
     totalTokens: inputTotal + outputTokens,
   };
 };
@@ -89,7 +118,10 @@ export const computeTokensAsync = async (
     inputAudioTokens =
       appData.audioData.seconds * appData.audioData.tokensPerSecond;
   }
-  const outputTokens = await strToTokens(appData.example, model?.provider);
+  const { outputTokens, reasoningOverheadTokens } = applyReasoningOverhead(
+    await strToTokens(appData.example, model?.provider),
+    model
+  );
 
   const inputTotal =
     inputTextTokens + inputDocumentTokens + inputImageTokens + inputAudioTokens;
@@ -104,6 +136,7 @@ export const computeTokensAsync = async (
       total: inputTotal,
     },
     outputTokens: outputTokens,
+    reasoningOverheadTokens,
     totalTokens: inputTotal + outputTokens,
   };
 };

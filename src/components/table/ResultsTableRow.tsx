@@ -69,8 +69,23 @@ const ResultsTableRow = ({
           <TableCell className="text-right">
             ${result.inputCost.total.toFixed(2)}
           </TableCell>
-          <TableCell className="text-right">
+          <TableCell
+            className="text-right"
+            title={
+              result.reasoningOverheadTokens > 0
+                ? `Includes +${result.reasoningOverheadTokens.toLocaleString()} tokens: reasoning overhead (this model bills hidden "thinking" tokens as output)`
+                : undefined
+            }
+          >
             ${result.outputCost.toFixed(2)}
+            {result.reasoningOverheadTokens > 0 && (
+              <span
+                className="ml-0.5 text-[10px] align-super text-muted-foreground"
+                aria-label={`Includes ${result.reasoningOverheadTokens.toLocaleString()} tokens of reasoning overhead`}
+              >
+                †
+              </span>
+            )}
           </TableCell>
         </>
       )}
